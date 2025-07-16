@@ -1,27 +1,31 @@
-/* Basic reset & layout */
+/* ==========================================================================
+   1. RESET & VARIABLES
+   ========================================================================== */
+
+/* Basic reset & box-model */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ──────── Global mobile touch settings ──────── */
+/* Mobile touch & overscroll behavior */
 html,
 body {
-  touch-action: manipulation; /* disable double-tap/pinch zoom */
-  -ms-touch-action: manipulation; /* legacy IE/Edge */
-  overscroll-behavior: none; /* prevent pull-to-refresh/overscroll */
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 :root {
-  --color-bg: #1f1f1f; /* Dark charcoal background */
-  --color-dark: #141414; /* Even darker panels/header */
-  --color-light: #d6d6d6; /* Off-white text and panels */
-  --color-primary: #d67c30; /* Copper primary buttons */
-  --color-secondary: #34917d; /* Teal secondary buttons */
-  --color-accent: #ffbf00; /* Gold accent highlights */
-  --color-muted: #555555; /* Muted grey for nav buttons */
-  --color-muted-light: #888888; /* Lighter grey for disabled states */
+  --color-bg: #1f1f1f; /* Dark charcoal */
+  --color-dark: #141414; /* Even darker panel bg */
+  --color-light: #f0f0f0; /* Bright text for contrast */
+  --color-primary: #d67c30; /* Copper buttons */
+  --color-secondary: #34917d; /* Teal buttons */
+  --color-accent: #ffbf00; /* Gold highlights */
+  --color-muted: #555555; /* Muted grey */
+  --color-muted-light: #888888; /* Lighter grey */
   --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.2);
   --radius: 6px;
@@ -29,16 +33,16 @@ body {
   --transition-faster: 0.1s ease;
 }
 
-body {
-  font-family: sans-serif;
-  background: var(--color-bg);
-  color: #ffffff;
-}
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
 
 header {
   position: relative;
   z-index: 1100;
-  background-image: url("images/banner.jpg");
+  background-image: url("images/main/banner.jpg");
+  background-size: cover;
+  background-position: center;
   color: var(--color-light);
   padding: 1rem;
   display: flex;
@@ -48,6 +52,19 @@ header {
 
 header h1 {
   flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.logo01 {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5rem;
+}
+
+nav {
+  display: flex;
+  align-items: center;
 }
 
 nav button {
@@ -66,6 +83,30 @@ nav button.active {
   background: var(--color-accent);
 }
 
+#money-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em 1em;
+  background: var(--color-muted);
+  color: var(--color-light);
+  border-radius: 20px;
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   3. BODY & BASE ELEMENTS
+   ========================================================================== */
+
+body {
+  font-family: sans-serif;
+  background: var(--color-bg);
+  color: var(--color-light);
+}
+
 main {
   padding: 1rem;
 }
@@ -74,35 +115,102 @@ main {
   display: none;
 }
 
-/* Mine screen buttons */
-#mine-btn,
-#sell-all-btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  color: var(--color-light);
+/* General panel styling */
+.panel {
+  background: var(--color-light);
   border-radius: var(--radius);
-  cursor: pointer;
-  margin-top: 1rem;
+  padding: 1rem;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 1rem;
+  color: var(--color-dark); /* dark text on light panel */
 }
 
-#mine-btn {
-  background: var(--color-primary);
+/* Global button styles & ripple effect */
+button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+  touch-action: manipulation;
+  font-size: 16px;
 }
 
-#sell-all-btn {
-  background: var(--color-secondary);
-  margin-left: 1rem;
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-#sell-all-btn:disabled {
-  background: var(--color-muted-light);
-  cursor: not-allowed;
+button.ripple::after {
+  transform: translate(-50%, -50%) scale(2);
+  opacity: 1;
+  transition: transform 0.6s ease-out, opacity 0.8s ease-out;
 }
 
-/* Shop */
+/* ==========================================================================
+   4. FOOTER
+   ========================================================================== */
+
+footer {
+  text-align: center;
+  padding: 0.5rem;
+  color: var(--color-muted-light);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   5. SHOP PANEL & DRAWER
+   ========================================================================== */
+
+#screen-shop {
+  position: fixed;
+  top: 4rem;
+  bottom: 0;
+  right: 0;
+  width: 80%;
+  max-width: 400px;
+  background-image: url("images/shop-background.png");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  color: var(--color-light);
+}
+
+#screen-shop.open {
+  transform: translateX(0);
+}
+
+#screen-shop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+
+#screen-shop > * {
+  position: relative;
+  z-index: 1;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 900;
+}
+
+#overlay.open {
+  pointer-events: auto;
+}
+
 #shop-list {
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 #shop-list li {
@@ -129,127 +237,12 @@ main {
   cursor: not-allowed;
 }
 
-/* 1. Button base state */
-button {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.1s ease-out, box-shadow 0.2s ease;
-  touch-action: manipulation; /* disable element-level zoom */
-  font-size: 16px; /* stop iOS “smart zoom” on small text */
-}
-
-/* 2. Pop on press */
-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-/* 4. Trigger ripple */
-button.ripple::after {
-  transform: translate(-50%, -50%) scale(2);
-  opacity: 1;
-  transition: transform 0.6s ease-out, opacity 0.8s ease-out;
-}
-
-/* Money display box in header nav */
-#money-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5em 0em;
-  margin-right: 0px;
-  background-color: var(--color-muted);
-  color: var(--color-light);
-  border-radius: 20px;
-  font-weight: bold;
-  pointer-events: none;
-  user-select: none;
-  margin-bottom: 12px;
-}
-
-/* countdown timer, hidden until you have auto-seller drones */
-#sell-timer {
-  font-size: 0.9rem;
-  color: #ffffff;
-  margin-top: 0.5em;
-}
-
-#sell-timer.hidden {
-  display: none;
-}
-
-/* Layout for auto-status */
-#auto-status {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-#auto-status p {
-  margin: 0;
-}
-
-/* Button hover effects */
-nav button:hover:not(:disabled),
-.shop-btn:hover:not(:disabled),
-#mine-btn:hover:not(:disabled),
-#sell-all-btn:hover:not(:disabled) {
-  background: var(--color-accent);
-  transform: translateY(-1px);
-}
-
-/* Panel layout for Mine & Shop screens */
-.panel {
-  background: var(--color-light);
-  border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: var(--shadow-light);
-  margin-bottom: 1rem;
-}
-
-/* Shop drawer sliding panel */
-#screen-shop {
-  position: fixed; /* stays fixed to viewport */
-  top: 4rem;
-  bottom: 0;
-  right: 0;
-  width: 80%;
-  max-width: 400px;
-  /* Shop background image */
-  background-image: url("images/shop-background.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  overflow: hidden; /* clip the overlay */
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-  transform: translateX(100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
-}
-
-#screen-shop.open {
-  transform: translateX(0);
-}
-
-/* Overlay behind shop drawer */
-#overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: none;
-  z-index: 900;
-}
-
-/* Resource selector tabs */
 .resource-tabs {
   display: flex;
   gap: 0.5rem;
-  margin: 1rem 0;
+  margin-bottom: 1rem;
 }
+
 .resource-tab {
   padding: 0.5rem 1rem;
   background: var(--color-muted-light);
@@ -258,31 +251,149 @@ nav button:hover:not(:disabled),
   cursor: pointer;
   font-weight: bold;
 }
+
 .resource-tab.active {
   background: var(--color-accent);
   color: var(--color-light);
 }
 
-/* Resource panels */
+/* ==========================================================================
+   6. MINE SCREEN & IRON WIDGET
+   ========================================================================== */
+
+#screen-mine {
+  position: relative;
+  background: var(--color-dark); /* uniform dark bg */
+  min-height: calc(100vh - 4rem);
+  overflow: hidden;
+  color: var(--color-light);
+}
+
+#screen-mine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+}
+
+#screen-mine > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Layout wrapper */
+.resources-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+/* Panels default */
 .resource-panel {
   display: none;
+  align-self: flex-start;
 }
+.resource-panel:first-of-type,
 .resource-panel.active {
   display: block;
 }
 
-.logo01 {
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5rem;
-}
-/* Make the Sell button a positioning context */
-#sell-all-btn {
+/* Iron widget styling */
+.resource-panel[data-resource="iron"] {
   position: relative;
-  overflow: visible;
+  width: 100%; /* fill container width */
+  background-image: url("images/iron/iron-background.png");
+  background-size: cover; /* fill widget horizontally */
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  color: var(--color-light); /* high contrast text */
 }
 
-/* Pop-and-fade keyframes for the dollar sign */
+.resource-panel[data-resource="iron"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.resource-panel[data-resource="iron"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Iron flex layout */
+.resource-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iron-icon {
+  width: 5rem;
+  height: 5rem;
+}
+
+/* Buttons */
+#mine-iron-btn,
+#sell-iron-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-top: 1rem;
+  color: var(--color-light);
+}
+
+#mine-iron-btn {
+  background: var(--color-primary);
+}
+
+#sell-iron-btn {
+  background: var(--color-secondary);
+  margin-left: 1rem;
+}
+
+#sell-iron-btn:disabled {
+  background: var(--color-muted-light);
+  cursor: not-allowed;
+}
+
+/* Auto-status inside widget */
+#auto-status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+#sell-timer {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+#sell-timer.hidden {
+  display: none;
+}
+
+/* Hover effects */
+nav button:hover:not(:disabled),
+.shop-btn:hover:not(:disabled),
+#mine-iron-btn:hover:not(:disabled),
+#sell-iron-btn:hover:not(:disabled) {
+  background: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+/* Ripple sell pop */
 @keyframes sell-pop {
   0% {
     transform: scale(1);
@@ -294,18 +405,17 @@ nav button:hover:not(:disabled),
   }
 }
 
-/* The popped dollar sign element */
 .sell-pop {
   position: absolute;
-  top: -1rem; /* floats above the button */
-  right: 0.5rem; /* aligned near its right edge */
+  top: -1rem;
+  right: 0.5rem;
   font-size: 1.2rem;
-  color: var(--color-secondary); /* match your secondary button color */
+  color: var(--color-secondary);
   animation: sell-pop 1s ease-out forwards;
-  pointer-events: none; /* clicks go through it */
+  pointer-events: none;
 }
 
-/* Auto-Sell Toggle Switch */
+/* Toggle switch */
 .switch {
   position: relative;
   display: inline-block;
@@ -321,7 +431,6 @@ nav button:hover:not(:disabled),
 }
 .slider {
   position: absolute;
-  cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
@@ -331,10 +440,10 @@ nav button:hover:not(:disabled),
   border-radius: 1rem;
 }
 .slider:before {
-  position: absolute;
   content: "";
-  height: 0.8rem;
+  position: absolute;
   width: 0.8rem;
+  height: 0.8rem;
   left: 0.1rem;
   bottom: 0.1rem;
   background: var(--color-light);
@@ -346,59 +455,4 @@ nav button:hover:not(:disabled),
 }
 .switch input:checked + .slider:before {
   transform: translateX(1rem);
-}
-/* Generic flex container for any resource display */
-.resource-display {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-/* Icon sizing for Iron */
-.iron-icon {
-  width: 5rem;
-  height: 5rem;
-}
-
-/* Background image for the Mine panel */
-#screen-mine {
-  background-image: url("images/iron-background.png"); /* adjust path */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Dark overlay for text readability */
-#screen-mine::before {
-  content: "";
-  position: absolute;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 0;
-}
-
-/* Bring Mine UI elements above the overlay */
-#screen-mine > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Dark overlay for Shop drawer */
-#screen-shop::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 0;
-}
-
-/* Keep Shop content above the overlay */
-#screen-shop > * {
-  position: relative;
-  z-index: 1;
 }

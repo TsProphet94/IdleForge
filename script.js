@@ -1,25 +1,29 @@
+// script.js — Full updated file with modular resource panels and fixed shop toggling
+
 import { resources } from './resources/iron.js';
 import { shopItems } from './shop/items.js';
 
-// UI Elements
-const oreCountEl    = document.getElementById('iron-count');
-const autoRateEl    = document.getElementById('auto-rate');
-const moneyCountEl  = document.getElementById('money-count');
-const mineBtn       = document.getElementById('mine-btn');
-const sellAllBtn    = document.getElementById('sell-all-btn');
-const shopList      = document.getElementById('shop-list');
-const tabMine       = document.getElementById('tab-mine');
-const tabShop       = document.getElementById('tab-shop');
-const mineScreen    = document.getElementById('screen-mine');
-const shopScreen    = document.getElementById('screen-shop');
-const overlay       = document.getElementById('overlay');
-// Auto-sell toggle control
+// ─── UI ELEMENTS ───────────────────────────────────────────────────────────────
+const moneyCountEl   = document.getElementById('money-count');
+const autoRateEl     = document.getElementById('auto-rate');
+const mineBtn        = document.getElementById('mine-iron-btn');
+const sellAllBtn     = document.getElementById('sell-iron-btn');
+const shopList       = document.getElementById('shop-list');
+const tabMine        = document.getElementById('tab-mine');
+const tabShop        = document.getElementById('tab-shop');
+const shopScreen     = document.getElementById('screen-shop');
+const overlay        = document.getElementById('overlay');
 const autoSellToggle = document.getElementById('auto-sell-toggle');
+const resourceTabs   = document.querySelectorAll('.resource-tab');
 
-// Resource selection and shop filtering
-let currentResource = 'iron';
-const resourceTabs  = document.querySelectorAll('.resource-tab');
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentResource   = 'iron';
+let autoSellTimer     = null;
+let countdownTimer    = null;
+let nextSellTime      = 0;
+let autoSellInterval  = 0;
 
+// ─── RENDER SHOP ──────────────────────────────────────────────────────────────
 function renderShop() {
   shopList.innerHTML = '';
   shopItems
@@ -29,14 +33,13 @@ function renderShop() {
       const btn = document.createElement('button');
       btn.id        = item.id;
       btn.className = 'shop-btn';
-      // Removed direct click listener for buyItem
       li.appendChild(btn);
       shopList.appendChild(li);
     });
   updateUI();
 }
 
-// Delegate shop button clicks to avoid duplicate handlers
+// Delegate clicks on shop buttons
 shopList.addEventListener('click', e => {
   if (e.target.matches('.shop-btn')) {
     const item = shopItems.find(i => i.id === e.target.id);
@@ -44,68 +47,52 @@ shopList.addEventListener('click', e => {
   }
 });
 
+// ─── SWITCH RESOURCE (Iron, Gold, etc.) ──────────────────────────────────────
 function switchResource(res) {
   currentResource = res;
-  // Show only the active resource panel
-  document.querySelector('.resource-panel.active')
-    .classList.remove('active');
-  document.getElementById(`resource-${res}`)
-    .classList.add('active');
-  // Highlight the active resource tab
-  document.querySelector('.resource-tab.active')
-    .classList.remove('active');
-  document.querySelector(`.resource-tab[data-resource="${res}"]`)
-    .classList.add('active');
+
+  // Show/Hide panels
+  const prevPanel = document.querySelector('.resource-panel.active');
+  if (prevPanel) prevPanel.classList.remove('active');
+  const newPanel = document.querySelector(`.resource-panel[data-resource="${res}"]`);
+  if (newPanel) newPanel.classList.add('active');
+
+  // Highlight active tab
+  const prevTab = document.querySelector('.resource-tab.active');
+  if (prevTab) prevTab.classList.remove('active');
+  const newTab = document.querySelector(`.resource-tab[data-resource="${res}"]`);
+  if (newTab) newTab.classList.add('active');
+
   renderShop();
 }
 
-// Developer mode flag
+// ─── DEVELOPER MODE (optional) ───────────────────────────────────────────────
 const isDev = false;
-
-// Show or hide dev panel
 const devPanel = document.getElementById('dev-panel');
 if (devPanel) devPanel.classList.toggle('hidden', !isDev);
 
-// Dev button handlers
 if (isDev) {
-  const devAddIron  = document.getElementById('dev-add-iron');
-  const devAddMoney = document.getElementById('dev-add-money');
-  if (devAddIron)  devAddIron.addEventListener('click', () => { resources.iron.count += 1000; updateUI(); });
-  if (devAddMoney) devAddMoney.addEventListener('click', () => { resources.money.count += 1000; updateUI(); });
+  document.getElementById('dev-add-iron')
+    .addEventListener('click', () => { resources.iron.count += 1000; updateUI(); });
+  document.getElementById('dev-add-money')
+    .addEventListener('click', () => { resources.money.count += 1000; updateUI(); });
 }
 
-
-// Auto‐sell timer handle
-
-let autoSellTimer    = null;   // your existing interval
-let countdownTimer   = null;   // updates the seconds display
-let nextSellTime     = 0;      // timestamp (ms) when the next sell will fire
-let autoSellInterval = 0;      // current sell interval (ms)
-
-/**
- * (Re)starts the auto-sell loop and countdown based on how many drones you own.
- * @param {number} count  number of Auto-Seller Drones purchased
- */
+// ─── AUTO-SELL CONTROLS ───────────────────────────────────────────────────────
 function updateAutoSell(count) {
-  // clear existing timers
   if (autoSellTimer)  clearInterval(autoSellTimer);
   if (countdownTimer) clearInterval(countdownTimer);
 
-  // show or hide the countdown line
-  const timerLine = document.getElementById("sell-timer");
-  if (timerLine) timerLine.classList.toggle("hidden", count <= 0);
+  const timerLine = document.getElementById('sell-timer');
+  if (timerLine) timerLine.classList.toggle('hidden', count <= 0);
 
   if (count > 0) {
-    const maxTier = 1;
-    // map [1 → 10 000ms] … [5 → 2 000ms]
     autoSellInterval = 5000;
     nextSellTime = Date.now() + autoSellInterval;
 
-    // start countdown updater
     updateSellCountdown();
     countdownTimer = setInterval(updateSellCountdown, 500);
 
-    // start auto-sell loop
     autoSellTimer = setInterval(() => {
       sellAll();
       nextSellTime = Date.now() + autoSellInterval;
@@ -113,88 +100,74 @@ function updateAutoSell(count) {
   }
 }
 
-/**
- * Updates the “sell-countdown” span every half-second
- */
 function updateSellCountdown() {
   const now  = Date.now();
   const diff = nextSellTime - now;
   const sec  = Math.ceil(diff / 1000);
-  const el   = document.getElementById("sell-countdown");
+  const el   = document.getElementById('sell-countdown');
   if (el) el.textContent = sec > 0 ? sec : 0;
 }
 
-// Update all UI elements
+// ─── UI REFRESH ────────────────────────────────────────────────────────────────
 function updateUI() {
-  oreCountEl.textContent   = resources.iron.count.toFixed(1);
-  autoRateEl.textContent   = resources.iron.perSecond.toFixed(1);
+  // Counts & rates
+  const countEl = document.getElementById(`${currentResource}-count`);
+  countEl.textContent    = resources[currentResource].count.toFixed(1);
+  autoRateEl.textContent = resources[currentResource].perSecond.toFixed(1);
   moneyCountEl.textContent = `$${resources.money.count}`;
 
+  // Sell button
+  sellAllBtn.disabled = resources[currentResource].count <= 0;
 
-  // Sell All button state
-  sellAllBtn.disabled = resources.iron.count <= 0;
-
-
-  // Shop buttons state & labels (only active resource items)
+  // Shop buttons: labels & disabled state
   shopItems
     .filter(item => item.category === currentResource)
     .forEach(item => {
       const btn = document.getElementById(item.id);
       if (!btn) return;
       if (item.count >= item.max) {
-        // Max purchased: disable and show "Max Purchased"
-        btn.disabled = true;
+        btn.disabled    = true;
         btn.textContent = `${item.name} - Max Purchased`;
       } else {
-        const affordable = resources.money.count >= item.price;
-        btn.disabled = !affordable;
+        const afford = resources.money.count >= item.price;
+        btn.disabled    = !afford;
         btn.textContent = `${item.name} ($${item.price}) [${item.count}/${item.max}]`;
       }
     });
-
 }
 
-// Mine on click
+// ─── USER ACTIONS ─────────────────────────────────────────────────────────────
 function mineClick() {
-  resources.iron.count += resources.iron.perClick;
+  resources[currentResource].count += resources[currentResource].perClick;
   updateUI();
 }
 
-// Sell all mined iron
 function sellAll() {
-  const amount = Math.floor(resources.iron.count * resources.iron.sellPrice);
-  resources.money.count += amount;
-  resources.iron.count = 0;
+  const amt = Math.floor(
+    resources[currentResource].count * resources[currentResource].sellPrice
+  );
+  resources.money.count                 += amt;
+  resources[currentResource].count       = 0;
   updateUI();
   createSellPop();
 }
 
-// Create a pop-up effect on the Sell All button
 function createSellPop() {
-  const pop = document.createElement('span');
-  pop.className = 'sell-pop';
+  const pop       = document.createElement('span');
+  pop.className   = 'sell-pop';
   pop.textContent = '$';
   sellAllBtn.appendChild(pop);
   pop.addEventListener('animationend', () => pop.remove());
 }
 
-// Buy an upgrade
 function buyItem(item) {
   if (resources.money.count >= item.price && item.count < item.max) {
     resources.money.count -= item.price;
     item.apply();
-item.count++;
-item.price = Math.floor(item.basePrice *
-  Math.pow(item.scale, item.count));
-if (item.id === 'auto-seller') {
-  updateAutoSell(item.count);
-  const drone = shopItems.find(i => i.id === 'auto-seller');
-if (drone && drone.count > 0) updateAutoSell(drone.count);
-}
+    item.count++;
+    item.price = Math.floor(item.basePrice * Math.pow(item.scale, item.count));
 
-    // if this is our auto‐seller upgrade, restart the loop
     if (item.id === 'auto-seller') {
-      // note: make sure item.apply() or buyItem logic increments item.count first
       updateAutoSell(item.count);
     }
 
@@ -202,100 +175,95 @@ if (drone && drone.count > 0) updateAutoSell(drone.count);
   }
 }
 
-// Auto-miner loop (runs every 0.1s for fluidity)
+// ─── AUTO-MINER LOOP ──────────────────────────────────────────────────────────
 setInterval(() => {
-  resources.iron.count += resources.iron.perSecond / 10;
+  resources[currentResource].count += resources[currentResource].perSecond / 10;
   updateUI();
 }, 100);
 
-
-// Tab switching
+// ─── SHOP PANEL TOGGLING ──────────────────────────────────────────────────────
 function switchTab(showMine) {
   if (showMine) {
+    // hide shop + overlay
     shopScreen.classList.remove('open');
+    shopScreen.classList.add('hidden');
     overlay.classList.remove('open');
+    overlay.classList.add('hidden');
+
+    // activate mine tab
     tabMine.classList.add('active');
     tabShop.classList.remove('active');
   } else {
+    // show shop + overlay
     shopScreen.classList.add('open');
+    shopScreen.classList.remove('hidden');
     overlay.classList.add('open');
+    overlay.classList.remove('hidden');
+
+    // activate shop tab
     tabShop.classList.add('active');
     tabMine.classList.remove('active');
   }
 }
 
+// ─── BUTTON RIPPLE EFFECT ────────────────────────────────────────────────────
 function createRipple(e) {
-  const btn = e.currentTarget;
-  // Calculate click position relative to button
+  const btn  = e.currentTarget;
   const rect = btn.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  // Set CSS variables for the ripple position
-  btn.style.setProperty("--ripple-x", `${x}px`);
-  btn.style.setProperty("--ripple-y", `${y}px`);
-  // Restart animation
-  btn.classList.remove("ripple");
+  btn.style.setProperty('--ripple-x', `${e.clientX - rect.left}px`);
+  btn.style.setProperty('--ripple-y', `${e.clientY - rect.top}px`);
+  btn.classList.remove('ripple');
   void btn.offsetWidth;
-  btn.classList.add("ripple");
-  // Remove the ripple class after animation completes
-  setTimeout(() => {
-    btn.classList.remove("ripple");
-  }, 600);
+  btn.classList.add('ripple');
+  setTimeout(() => btn.classList.remove('ripple'), 600);
 }
 
-document.querySelectorAll("button").forEach(btn =>
-  btn.addEventListener("click", createRipple)
+// ─── EVENT BINDINGS ───────────────────────────────────────────────────────────
+document.querySelectorAll('button').forEach(btn =>
+  btn.addEventListener('click', createRipple)
 );
-
+mineBtn.addEventListener('click', mineClick);
+sellAllBtn.addEventListener('click', sellAll);
 tabMine.addEventListener('click', () => switchTab(true));
 tabShop.addEventListener('click', () => switchTab(false));
 overlay.addEventListener('click', () => switchTab(true));
-mineBtn.addEventListener('click', mineClick);
-sellAllBtn.addEventListener('click', sellAll);
 
-// Enable or disable auto-sell via toggle
 if (autoSellToggle) {
   autoSellToggle.addEventListener('change', () => {
     if (autoSellToggle.checked) {
-      // Resume auto-sell if drones purchased
       const drone = shopItems.find(i => i.id === 'auto-seller');
-      if (drone && drone.count > 0) updateAutoSell(drone.count);
-      // Restore timer text when re-enabled
-      const sellTimerP = document.getElementById('sell-timer');
-      if (sellTimerP) {
-        sellTimerP.classList.remove('hidden');
-        sellTimerP.innerHTML = `Next auto-sell in <span id="sell-countdown">--</span>s`;
-        // Reattach the toggle switch
-        sellTimerP.appendChild(autoSellToggle.closest('.switch'));
+      if (drone && drone.count > 0) {
+        updateAutoSell(drone.count);
+        const sellTimerP = document.getElementById('sell-timer');
+        if (sellTimerP) {
+          sellTimerP.classList.remove('hidden');
+          sellTimerP.innerHTML = `Next auto-sell in <span id="sell-countdown">--</span>s`;
+          sellTimerP.appendChild(autoSellToggle.closest('.switch'));
+        }
       }
     } else {
-      // Pause auto-sell and countdown
-      if (autoSellTimer) clearInterval(autoSellTimer);
+      if (autoSellTimer)  clearInterval(autoSellTimer);
       if (countdownTimer) clearInterval(countdownTimer);
-      // Show disabled state text
       const sellTimerP = document.getElementById('sell-timer');
       if (sellTimerP) {
         sellTimerP.classList.remove('hidden');
-        // Set disabled message
         sellTimerP.textContent = 'Auto sell disabled';
-        // Reattach the toggle switch
         sellTimerP.appendChild(autoSellToggle.closest('.switch'));
       }
     }
   });
 
+  // Load version on startup
   fetch('version.txt')
-  .then(res => res.text())
-  .then(txt => {
-    document.getElementById('version').textContent = txt;
-  });
+    .then(res => res.text())
+    .then(txt => {
+      document.getElementById('version').textContent = txt;
+    });
 }
 
-// Wire up resource tabs
+// ─── INITIALIZATION ──────────────────────────────────────────────────────────
 resourceTabs.forEach(tab =>
-  tab.addEventListener('click', () =>
-    switchResource(tab.dataset.resource)
-  )
+  tab.addEventListener('click', () => switchResource(tab.dataset.resource))
 );
-// Initialize UI for the default resource
+switchTab(true);
 switchResource(currentResource);
