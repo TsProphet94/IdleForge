@@ -1,17 +1,21 @@
 /* Basic reset & layout */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --color-bg: #1f1f1f;            /* Dark charcoal background */
-  --color-dark: #141414;          /* Even darker panels/header */
-  --color-light: #d6d6d6;         /* Off-white text and panels */
-  --color-primary: #d67c30;       /* Copper primary buttons */
-  --color-secondary: #34917d;     /* Teal secondary buttons */
-  --color-accent: #ffbf00;        /* Gold accent highlights */
-  --color-muted: #555555;         /* Muted grey for nav buttons */
-  --color-muted-light: #888888;   /* Lighter grey for disabled states */
-  --shadow-light: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-medium: 0 2px 4px rgba(0,0,0,0.2);
+  --color-bg: #1f1f1f; /* Dark charcoal background */
+  --color-dark: #141414; /* Even darker panels/header */
+  --color-light: #d6d6d6; /* Off-white text and panels */
+  --color-primary: #d67c30; /* Copper primary buttons */
+  --color-secondary: #34917d; /* Teal secondary buttons */
+  --color-accent: #ffbf00; /* Gold accent highlights */
+  --color-muted: #555555; /* Muted grey for nav buttons */
+  --color-muted-light: #888888; /* Lighter grey for disabled states */
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.2);
   --radius: 6px;
   --transition-fast: 0.2s ease;
   --transition-faster: 0.1s ease;
@@ -26,7 +30,7 @@ body {
 header {
   position: relative;
   z-index: 1100;
-  background-image: url('images/banner.jpg');
+  background-image: url("images/banner.jpg");
   color: var(--color-light);
   padding: 1rem;
   display: flex;
@@ -46,7 +50,8 @@ nav button {
   cursor: pointer;
   margin-left: 0.5rem;
   border-radius: 4px;
-  transition: background var(--transition-fast), transform var(--transition-faster);
+  transition: background var(--transition-fast),
+    transform var(--transition-faster);
 }
 
 nav button.active {
@@ -87,7 +92,6 @@ main {
   cursor: not-allowed;
 }
 
-
 /* Shop */
 #shop-list {
   list-style: none;
@@ -101,7 +105,6 @@ main {
   justify-content: space-between;
   align-items: center;
   box-shadow: var(--shadow-light);
-  
 }
 
 .shop-btn {
@@ -123,12 +126,13 @@ button {
   position: relative;
   overflow: hidden;
   transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+  touch-action: manipulation; /* Prevent mobile double-tap zoom */
 }
 
 /* 2. Pop on press */
 button:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* 4. Trigger ripple */
@@ -197,20 +201,20 @@ nav button:hover:not(:disabled),
 
 /* Shop drawer sliding panel */
 #screen-shop {
-  position: fixed;      /* stays fixed to viewport */
+  position: fixed; /* stays fixed to viewport */
   top: 4rem;
   bottom: 0;
   right: 0;
   width: 80%;
   max-width: 400px;
   /* Shop background image */
-  background-image: url('images/shop-background.png');
+  background-image: url("images/shop-background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow: hidden;     /* clip the overlay */
+  overflow: hidden; /* clip the overlay */
   /* background: var(--color-light); -- optional to remove */
-  box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   transform: translateX(100%);
   transition: transform 0.3s ease;
   z-index: 1000;
@@ -231,7 +235,6 @@ nav button:hover:not(:disabled),
   pointer-events: none;
   z-index: 900;
 }
-
 
 /* Resource selector tabs */
 .resource-tabs {
@@ -264,7 +267,6 @@ nav button:hover:not(:disabled),
   width: 40px;
   height: 40px;
   margin-right: 0.5rem;
-
 }
 /* Make the Sell button a positioning context */
 #sell-all-btn {
@@ -274,20 +276,26 @@ nav button:hover:not(:disabled),
 
 /* Pop-and-fade keyframes for the dollar sign */
 @keyframes sell-pop {
-  0%   { transform: scale(1);  opacity: 1; }
-  100% { transform: scale(2);  opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 /* The popped dollar sign element */
 .sell-pop {
   position: absolute;
-  top: -1rem;                      /* floats above the button */
-  right: 0.5rem;                   /* aligned near its right edge */
+  top: -1rem; /* floats above the button */
+  right: 0.5rem; /* aligned near its right edge */
   font-size: 1.2rem;
-  color: var(--color-secondary);   /* match your secondary button color */
+  color: var(--color-secondary); /* match your secondary button color */
   animation: sell-pop 1s ease-out forwards;
-  pointer-events: none;            /* clicks go through it */
-} 
+  pointer-events: none; /* clicks go through it */
+}
 
 /* Auto-Sell Toggle Switch */
 .switch {
@@ -306,7 +314,10 @@ nav button:hover:not(:disabled),
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #ccc;
   transition: 0.2s;
   border-radius: 1rem;
@@ -344,7 +355,7 @@ nav button:hover:not(:disabled),
 
 /* Background image for the Mine panel */
 #screen-mine {
-  background-image: url('images/iron-background.png'); /* adjust path */
+  background-image: url("images/iron-background.png"); /* adjust path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -370,8 +381,10 @@ nav button:hover:not(:disabled),
 #screen-shop::before {
   content: "";
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.4);
   z-index: 0;
 }

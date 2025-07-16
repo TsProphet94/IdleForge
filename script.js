@@ -283,6 +283,12 @@ if (autoSellToggle) {
       }
     }
   });
+
+  fetch('version.txt')
+  .then(res => res.text())
+  .then(txt => {
+    document.getElementById('version').textContent = txt;
+  });
 }
 
 // Wire up resource tabs
