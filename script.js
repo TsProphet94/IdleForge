@@ -60,7 +60,7 @@ function switchResource(res) {
 }
 
 // Developer mode flag
-const isDev = true;
+const isDev = false;
 
 // Show or hide dev panel
 const devPanel = document.getElementById('dev-panel');
