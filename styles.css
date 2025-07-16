@@ -5,6 +5,14 @@
   padding: 0;
 }
 
+/* ──────── Global mobile touch settings ──────── */
+html,
+body {
+  touch-action: manipulation; /* disable double-tap/pinch zoom */
+  -ms-touch-action: manipulation; /* legacy IE/Edge */
+  overscroll-behavior: none; /* prevent pull-to-refresh/overscroll */
+}
+
 :root {
   --color-bg: #1f1f1f; /* Dark charcoal background */
   --color-dark: #141414; /* Even darker panels/header */
@@ -126,7 +134,8 @@ button {
   position: relative;
   overflow: hidden;
   transition: transform 0.1s ease-out, box-shadow 0.2s ease;
-  touch-action: manipulation; /* Prevent mobile double-tap zoom */
+  touch-action: manipulation; /* disable element-level zoom */
+  font-size: 16px; /* stop iOS “smart zoom” on small text */
 }
 
 /* 2. Pop on press */
@@ -213,7 +222,6 @@ nav button:hover:not(:disabled),
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden; /* clip the overlay */
-  /* background: var(--color-light); -- optional to remove */
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   transform: translateX(100%);
   transition: transform 0.3s ease;
