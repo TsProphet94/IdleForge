@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Idle Miner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1 class="logo">
+        <img
+          src="images/pickaxe.png"
+          alt="Cartoon pickaxe icon"
+          class="logo01"
+        />
+        Idle Miner
+      </h1>
+      <!-- Dev tools (visible only in dev mode) -->
+
+      <div id="dev-panel" class="hidden">
+        <button id="dev-add-iron">+1000 Iron</button>
+        <button id="dev-add-money">+1000 Money</button>
+      </div>
+      <nav>
+        <div id="money-display" class="nav-box">
+          <span id="money-count">0</span>
+        </div>
+
+        <button id="tab-mine" class="active">Mine</button>
+        <button id="tab-shop">Shop</button>
+      </nav>
+    </header>
+    <!-- Overlay for shop drawer -->
+    <div id="overlay" class="hidden"></div>
+
+    <main>
+      <section id="resource-iron" class="resource-panel active">
+        <!-- Mine Screen -->
+        <section id="screen-mine" class="panel">
+          <div id="resource-display-iron" class="resource-display">
+            <img src="images/fe.png" alt="Iron Icon" class="icon iron-icon" />
+            <div class="resource-content">
+              <p>Iron: <span id="iron-count">0</span></p>
+              <button id="mine-btn">Mine Iron</button>
+              <button id="sell-all-btn" disabled>Sell All Iron</button>
+            </div>
+          </div>
+          <div id="auto-status">
+            <p>Auto-mining rate: <span id="auto-rate">0</span>/s</p>
+            <!-- New: next-sell timer -->
+            <p id="sell-timer" class="hidden">
+              Next auto-sell in <span id="sell-countdown">--</span>s
+              <label class="switch">
+                <input type="checkbox" id="auto-sell-toggle" checked />
+                <span class="slider round"></span>
+              </label>
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <section id="screen-shop" class="panel">
+        <h2>Shop</h2>
+        <!-- Resource selector tabs -->
+        <div id="resource-tabs" class="resource-tabs">
+          <button data-resource="iron" class="resource-tab active">Iron</button>
+          <!-- future: <button data-resource="gold" class="resource-tab">Gold</button> -->
+        </div>
+        <ul id="shop-list">
+          <!-- Populated by your renderShop() logic -->
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
