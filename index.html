@@ -7,7 +7,6 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Idle Miner</title>
-    <!-- Global resets & variables -->
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -23,6 +22,7 @@
 
       <div id="dev-panel" class="hidden">
         <button id="dev-add-iron">+1000 Iron</button>
+        <button id="dev-add-copper">+1000 Copper</button>
         <button id="dev-add-money">+1000 Money</button>
       </div>
 
@@ -30,21 +30,18 @@
         <div id="money-display" class="nav-box">
           <span id="money-count">0</span>
         </div>
-
         <button id="tab-mine" class="active">Mine</button>
         <button id="tab-shop">Shop</button>
       </nav>
     </header>
 
-    <!-- Overlay for shop drawer -->
     <div id="overlay" class="hidden"></div>
 
     <main>
-      <!-- === MINE SCREEN === -->
+      <!-- Mine Screen -->
       <section id="screen-mine" class="screen-panel panel">
-        <!-- Container for resource panels -->
         <div class="resources-container">
-          <!-- Iron resource panel -->
+          <!-- Iron Panel -->
           <div class="resource-panel" data-resource="iron">
             <div class="resource-display">
               <img
@@ -58,39 +55,88 @@
                 <button id="sell-iron-btn" disabled>Sell All Iron</button>
               </div>
             </div>
-
-            <!-- Moved here: auto‐mine & auto‐sell controls -->
-            <div id="auto-status">
-              <p>Auto-mining rate: <span id="auto-rate">0</span>/s</p>
-              <p id="sell-timer" class="hidden">
-                Next auto-sell in <span id="sell-countdown">--</span>s
+            <div class="auto-status">
+              <p>
+                Auto-mining rate:
+                <span id="auto-rate-iron">0</span>/s
+              </p>
+              <p id="sell-timer-iron" class="hidden">
+                Next auto-sell in
+                <span id="sell-countdown-iron">--</span>s
                 <label class="switch">
-                  <input type="checkbox" id="auto-sell-toggle" checked />
+                  <input type="checkbox" id="auto-sell-toggle-iron" />
                   <span class="slider round"></span>
                 </label>
               </p>
             </div>
           </div>
 
-          <!-- Add more resources by duplicating the block above and changing data-resource, icons, IDs, etc. -->
+          <!-- Copper Panel (Locked) -->
+          <div class="resource-panel locked" data-resource="copper">
+            <div class="resource-display">
+              <img
+                src="images/copper/cu.png"
+                alt="Copper Icon"
+                class="icon copper-icon"
+              />
+              <div class="resource-content">
+                <p>Copper: <span id="copper-count">0</span></p>
+                <button id="mine-copper-btn" disabled>Mine Copper</button>
+                <button id="sell-copper-btn" disabled>Sell All Copper</button>
+              </div>
+            </div>
+            <div class="auto-status">
+              <p>
+                Auto-mining rate:
+                <span id="auto-rate-copper">0</span>/s
+              </p>
+              <p id="sell-timer-copper" class="hidden">
+                Next auto-sell in
+                <span id="sell-countdown-copper">--</span>s
+                <label class="switch">
+                  <input type="checkbox" id="auto-sell-toggle-copper" />
+                  <span class="slider round"></span>
+                </label>
+              </p>
+            </div>
+            <div class="lock-overlay" id="lock-overlay-copper">
+              <button id="unlock-copper-btn">Unlock Copper ($2000)</button>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- === SHOP SCREEN === -->
+      <!-- Shop Screen -->
       <section id="screen-shop" class="screen-panel panel hidden">
         <h2>Shop</h2>
         <div id="resource-tabs" class="resource-tabs">
           <button data-resource="iron" class="resource-tab active">Iron</button>
-          <!-- future: <button data-resource="gold" class="resource-tab">Gold</button> -->
+          <button
+            data-resource="copper"
+            id="tab-resource-copper"
+            class="resource-tab locked"
+          >
+            Copper
+          </button>
         </div>
         <ul id="shop-list">
-          <!-- Populated by your renderShop() logic -->
+          <!-- Populated via renderShop() -->
         </ul>
       </section>
     </main>
 
     <footer>
-      <small id="version"></small>
+      <div class="footer-content">
+        <small id="version"></small>
+        <p>Made with VsCode/ChatGPT 4.1-mini-high</p>
+        <a
+          href="https://github.com/TsProphet94/IdleForge"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
+      </div>
     </footer>
 
     <script type="module" src="script.js"></script>

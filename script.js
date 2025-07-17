@@ -1,269 +1,302 @@
-// script.js — Full updated file with modular resource panels and fixed shop toggling
+// script.js — Iron & Copper with independent auto-sell and smooth shop updates
 
-import { resources } from './resources/iron.js';
+import iron from './resources/iron.js';
+import copper from './resources/copper.js';
 import { shopItems } from './shop/items.js';
 
-// ─── UI ELEMENTS ───────────────────────────────────────────────────────────────
-const moneyCountEl   = document.getElementById('money-count');
-const autoRateEl     = document.getElementById('auto-rate');
-const mineBtn        = document.getElementById('mine-iron-btn');
-const sellAllBtn     = document.getElementById('sell-iron-btn');
-const shopList       = document.getElementById('shop-list');
-const tabMine        = document.getElementById('tab-mine');
-const tabShop        = document.getElementById('tab-shop');
-const shopScreen     = document.getElementById('screen-shop');
-const overlay        = document.getElementById('overlay');
-const autoSellToggle = document.getElementById('auto-sell-toggle');
-const resourceTabs   = document.querySelectorAll('.resource-tab');
+// ─── Data Model ────────────────────────────────────────────────────────────
+export const resources = {
+  iron,
+  copper,
+  money: { id: 'money', count: 0 }
+};
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let currentResource   = 'iron';
-let autoSellTimer     = null;
-let countdownTimer    = null;
-let nextSellTime      = 0;
-let autoSellInterval  = 0;
+// ─── UI ELEMENTS ────────────────────────────────────────────────────────────
+const ironCountEl     = document.getElementById('iron-count');
+const copperCountEl   = document.getElementById('copper-count');
+const moneyCountEl    = document.getElementById('money-count');
+const shopList        = document.getElementById('shop-list');
+const resourceTabs    = document.querySelectorAll('.resource-tab');
+const tabMine         = document.getElementById('tab-mine');
+const tabShop         = document.getElementById('tab-shop');
+const shopScreen      = document.getElementById('screen-shop');
+const overlay         = document.getElementById('overlay');
+const unlockCopperBtn = document.getElementById('unlock-copper-btn');
 
-// ─── RENDER SHOP ──────────────────────────────────────────────────────────────
-function renderShop() {
-  shopList.innerHTML = '';
-  shopItems
-    .filter(item => item.category === currentResource)
-    .forEach(item => {
-      const li  = document.createElement('li');
-      const btn = document.createElement('button');
-      btn.id        = item.id;
-      btn.className = 'shop-btn';
-      li.appendChild(btn);
-      shopList.appendChild(li);
-    });
-  updateUI();
+const mineIronBtn   = document.getElementById('mine-iron-btn');
+const sellIronBtn   = document.getElementById('sell-iron-btn');
+const mineCopperBtn = document.getElementById('mine-copper-btn');
+const sellCopperBtn = document.getElementById('sell-copper-btn');
+
+// Dev-panel (optional)
+const isDev        = true;
+const devPanel     = document.getElementById('dev-panel');
+const devAddIron   = document.getElementById('dev-add-iron');
+const devAddCopper = document.getElementById('dev-add-copper');
+const devAddMoney  = document.getElementById('dev-add-money');
+
+// ─── Auto-sell state ─────────────────────────────────────────────────────────
+const autoSellTimers    = {};
+const countdownTimers   = {};
+const nextSellTimes     = {};
+const autoSellIntervals = {};
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let currentResource = 'iron';
+let copperUnlocked  = false; // block copper until unlocked
+
+// ─── Dev-panel logic ──────────────────────────────────────────────────────────
+if (devPanel) devPanel.classList.toggle('hidden', !isDev);
+if (isDev) {
+  devAddIron.addEventListener('click',   () => { resources.iron.count   += 1000; updateUI(); });
+  devAddCopper.addEventListener('click', () => { resources.copper.count += 1000; updateUI(); });
+  devAddMoney.addEventListener('click',  () => { resources.money.count  += 1000; updateUI(); });
 }
 
-// Delegate clicks on shop buttons
+// ─── Initial UI setup ────────────────────────────────────────────────────────
+shopScreen.classList.add('hidden');
+overlay.classList.add('hidden');
+tabMine.classList.add('active');
+
+// Disable Copper until unlocked
+mineCopperBtn.disabled = true;
+sellCopperBtn.disabled = true;
+
+// ─── Mining & Selling ────────────────────────────────────────────────────────
+// Iron
+mineIronBtn.addEventListener('click', () => {
+  resources.iron.count += resources.iron.perClick;
+  updateUI();
+});
+
+sellIronBtn.addEventListener('click', () => {
+  const amt = Math.floor(resources.iron.count * resources.iron.sellPrice);
+  resources.money.count += amt;
+  resources.iron.count = 0;
+  updateUI();
+  createSellPop('iron');
+});
+
+// Copper (blocked until unlocked)
+mineCopperBtn.addEventListener('click', () => {
+  if (!copperUnlocked) return;
+  resources.copper.count += resources.copper.perClick;
+  updateUI();
+});
+
+sellCopperBtn.addEventListener('click', () => {
+  if (!copperUnlocked) return;
+  const amt = Math.floor(resources.copper.count * resources.copper.sellPrice);
+  resources.money.count += amt;
+  resources.copper.count = 0;
+  updateUI();
+  createSellPop('copper');
+});
+
+// ─── Auto-mine loop (both resources) ─────────────────────────────────────────
+setInterval(() => {
+  resources.iron.count += resources.iron.perSecond / 10;
+  if (copperUnlocked) {
+    resources.copper.count += resources.copper.perSecond / 10;
+  }
+
+  updateUI();
+
+  // Smoothly update shop buttons if Shop is open
+  if (shopScreen.classList.contains('open')) {
+    updateShopButtons();
+  }
+}, 100);
+
+// ─── Shop purchase handler ───────────────────────────────────────────────────
 shopList.addEventListener('click', e => {
-  if (e.target.matches('.shop-btn')) {
-    const item = shopItems.find(i => i.id === e.target.id);
-    if (item) buyItem(item);
+  if (!e.target.matches('.shop-btn')) return;
+  const item = shopItems.find(i => i.id === e.target.id);
+  if (!item) return;
+
+  // Purchase
+  resources.money.count -= item.price;
+  item.apply();
+  item.count++;
+  item.price = Math.floor(item.basePrice * Math.pow(item.scale, item.count));
+
+  updateUI();
+  updateShopButtons();
+
+  // Auto-Seller logic
+  if (item.id.startsWith('auto-seller')) {
+    const resId = item.category;
+    document.getElementById(`sell-timer-${resId}`).classList.remove('hidden');
+    const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+    if (toggle) {
+      toggle.checked = true;
+      startAutoSell(resId);
+    }
   }
 });
 
-// ─── SWITCH RESOURCE (Iron, Gold, etc.) ──────────────────────────────────────
-function switchResource(res) {
-  currentResource = res;
+// ─── Resource tab switching ──────────────────────────────────────────────────
+resourceTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    currentResource = tab.dataset.resource;
+    resourceTabs.forEach(t => t.classList.toggle('active', t === tab));
+    switchResource(currentResource);
+  });
+});
 
-  // Show/Hide panels
-  const prevPanel = document.querySelector('.resource-panel.active');
-  if (prevPanel) prevPanel.classList.remove('active');
-  const newPanel = document.querySelector(`.resource-panel[data-resource="${res}"]`);
-  if (newPanel) newPanel.classList.add('active');
+// ─── Shop drawer toggling ────────────────────────────────────────────────────
+tabMine.addEventListener('click',   () => switchTab(true));
+tabShop.addEventListener('click',   () => switchTab(false));
+overlay.addEventListener('click',   () => switchTab(true));
 
-  // Highlight active tab
-  const prevTab = document.querySelector('.resource-tab.active');
-  if (prevTab) prevTab.classList.remove('active');
-  const newTab = document.querySelector(`.resource-tab[data-resource="${res}"]`);
-  if (newTab) newTab.classList.add('active');
+// ─── Auto-sell toggles per resource ──────────────────────────────────────────
+['iron', 'copper'].forEach(resId => {
+  const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+  if (toggle) {
+    toggle.addEventListener('change', () => {
+      toggle.checked ? startAutoSell(resId) : stopAutoSell(resId);
+    });
+  }
+});
 
-  renderShop();
-}
+// ─── Unlock Copper handler ───────────────────────────────────────────────────
+unlockCopperBtn.addEventListener('click', () => {
+  if (resources.money.count < 2000) {
+    alert('You need $2000 to unlock Copper!');
+    return;
+  }
 
-// ─── DEVELOPER MODE (optional) ───────────────────────────────────────────────
-const isDev = false;
-const devPanel = document.getElementById('dev-panel');
-if (devPanel) devPanel.classList.toggle('hidden', !isDev);
+  resources.money.count -= 2000;
+  copperUnlocked = true;
+  mineCopperBtn.disabled = false;
+  sellCopperBtn.disabled = false;
+  updateUI();
 
-if (isDev) {
-  document.getElementById('dev-add-iron')
-    .addEventListener('click', () => { resources.iron.count += 1000; updateUI(); });
-  document.getElementById('dev-add-money')
-    .addEventListener('click', () => { resources.money.count += 1000; updateUI(); });
-}
+  // Remove lock UI
+  const panel = document.querySelector('.resource-panel[data-resource="copper"]');
+  panel.classList.remove('locked');
+  document.getElementById('lock-overlay-copper').remove();
 
-// ─── AUTO-SELL CONTROLS ───────────────────────────────────────────────────────
-function updateAutoSell(count) {
-  if (autoSellTimer)  clearInterval(autoSellTimer);
-  if (countdownTimer) clearInterval(countdownTimer);
+  // Reveal Copper tab
+  document.getElementById('tab-resource-copper').classList.remove('locked');
+});
 
-  const timerLine = document.getElementById('sell-timer');
-  if (timerLine) timerLine.classList.toggle('hidden', count <= 0);
-
-  if (count > 0) {
-    autoSellInterval = 5000;
-    nextSellTime = Date.now() + autoSellInterval;
-
-    updateSellCountdown();
-    countdownTimer = setInterval(updateSellCountdown, 500);
-
-    autoSellTimer = setInterval(() => {
-      sellAll();
-      nextSellTime = Date.now() + autoSellInterval;
-    }, autoSellInterval);
+// ─── CORE FUNCTIONS ──────────────────────────────────────────────────────────
+function switchTab(showMine) {
+  if (showMine) {
+    shopScreen.classList.remove('open');
+    shopScreen.classList.add('hidden');
+    overlay.classList.remove('open');
+    overlay.classList.add('hidden');
+    tabMine.classList.add('active');
+    tabShop.classList.remove('active');
+  } else {
+    shopScreen.classList.remove('hidden');
+    shopScreen.classList.add('open');
+    overlay.classList.remove('hidden');
+    overlay.classList.add('open');
+    tabShop.classList.add('active');
+    tabMine.classList.remove('active');
+    renderShop();
   }
 }
 
-function updateSellCountdown() {
-  const now  = Date.now();
-  const diff = nextSellTime - now;
-  const sec  = Math.ceil(diff / 1000);
-  const el   = document.getElementById('sell-countdown');
-  if (el) el.textContent = sec > 0 ? sec : 0;
+function switchResource(res) {
+  document.querySelectorAll('.resource-panel').forEach(panel =>
+    panel.classList.toggle('active', panel.dataset.resource === res)
+  );
+  renderShop();
+  updateUI();
 }
 
-// ─── UI REFRESH ────────────────────────────────────────────────────────────────
-function updateUI() {
-  // Counts & rates
-  const countEl = document.getElementById(`${currentResource}-count`);
-  countEl.textContent    = resources[currentResource].count.toFixed(1);
-  autoRateEl.textContent = resources[currentResource].perSecond.toFixed(1);
-  moneyCountEl.textContent = `$${resources.money.count}`;
-
-  // Sell button
-  sellAllBtn.disabled = resources[currentResource].count <= 0;
-
-  // Shop buttons: labels & disabled state
+function updateShopButtons() {
   shopItems
     .filter(item => item.category === currentResource)
     .forEach(item => {
       const btn = document.getElementById(item.id);
       if (!btn) return;
-      if (item.count >= item.max) {
-        btn.disabled    = true;
-        btn.textContent = `${item.name} - Max Purchased`;
-      } else {
-        const afford = resources.money.count >= item.price;
-        btn.disabled    = !afford;
-        btn.textContent = `${item.name} ($${item.price}) [${item.count}/${item.max}]`;
-      }
+      const canAfford = resources.money.count >= item.price;
+      btn.disabled = !canAfford || item.count >= item.max;
+      btn.textContent = item.count >= item.max
+        ? `${item.name} (Max)`
+        : `${item.name} ($${item.price}) [${item.count}/${item.max}]`;
     });
 }
 
-// ─── USER ACTIONS ─────────────────────────────────────────────────────────────
-function mineClick() {
-  resources[currentResource].count += resources[currentResource].perClick;
-  updateUI();
+function renderShop() {
+  shopList.innerHTML = '';
+  shopItems
+    .filter(i => i.category === currentResource)
+    .forEach(item => {
+      const li  = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.id        = item.id;
+      btn.className = 'shop-btn';
+      btn.textContent = `${item.name} ($${item.price}) [${item.count}/${item.max}]`;
+      btn.disabled  = resources.money.count < item.price || item.count >= item.max;
+      li.appendChild(btn);
+      shopList.appendChild(li);
+    });
 }
 
-function sellAll() {
-  const amt = Math.floor(
-    resources[currentResource].count * resources[currentResource].sellPrice
-  );
-  resources.money.count                 += amt;
-  resources[currentResource].count       = 0;
-  updateUI();
-  createSellPop();
+function updateUI() {
+  ironCountEl.textContent   = resources.iron.count.toFixed(1);
+  copperCountEl.textContent = resources.copper.count.toFixed(1);
+  moneyCountEl.textContent  = `$${resources.money.count}`;
+
+  sellIronBtn.disabled   = resources.iron.count <= 0;
+  sellCopperBtn.disabled = resources.copper.count <= 0;
+
+  document.getElementById('auto-rate-iron').textContent   = resources.iron.perSecond.toFixed(1);
+  document.getElementById('auto-rate-copper').textContent = resources.copper.perSecond.toFixed(1);
 }
 
-function createSellPop() {
-  const pop       = document.createElement('span');
+function createSellPop(resourceId) {
+  const btn = document.getElementById(`sell-${resourceId}-btn`);
+  const pop = document.createElement('span');
   pop.className   = 'sell-pop';
   pop.textContent = '$';
-  sellAllBtn.appendChild(pop);
+  btn.appendChild(pop);
   pop.addEventListener('animationend', () => pop.remove());
 }
 
-function buyItem(item) {
-  if (resources.money.count >= item.price && item.count < item.max) {
-    resources.money.count -= item.price;
-    item.apply();
-    item.count++;
-    item.price = Math.floor(item.basePrice * Math.pow(item.scale, item.count));
+function startAutoSell(resId) {
+  stopAutoSell(resId);
+  const seller = shopItems.find(i =>
+    i.category === resId && i.id.startsWith('auto-seller')
+  );
+  if (!seller || seller.count === 0) return;
 
-    if (item.id === 'auto-seller') {
-      updateAutoSell(item.count);
-    }
+  autoSellIntervals[resId] = 5000;
+  nextSellTimes[resId]     = Date.now() + autoSellIntervals[resId];
 
+  document.getElementById(`sell-timer-${resId}`).classList.remove('hidden');
+  countdownTimers[resId] = setInterval(() => updateSellCountdown(resId), 500);
+  autoSellTimers[resId]  = setInterval(() => {
+    const amt = Math.floor(resources[resId].count * resources[resId].sellPrice);
+    resources.money.count += amt;
+    resources[resId].count = 0;
     updateUI();
-  }
+    createSellPop(resId);
+    nextSellTimes[resId] = Date.now() + autoSellIntervals[resId];
+  }, autoSellIntervals[resId]);
 }
 
-// ─── AUTO-MINER LOOP ──────────────────────────────────────────────────────────
-setInterval(() => {
-  resources[currentResource].count += resources[currentResource].perSecond / 10;
-  updateUI();
-}, 100);
-
-// ─── SHOP PANEL TOGGLING ──────────────────────────────────────────────────────
-function switchTab(showMine) {
-  if (showMine) {
-    // hide shop + overlay
-    shopScreen.classList.remove('open');
-    shopScreen.classList.add('hidden');
-    overlay.classList.remove('open');
-    overlay.classList.add('hidden');
-
-    // activate mine tab
-    tabMine.classList.add('active');
-    tabShop.classList.remove('active');
-  } else {
-    // show shop + overlay
-    shopScreen.classList.add('open');
-    shopScreen.classList.remove('hidden');
-    overlay.classList.add('open');
-    overlay.classList.remove('hidden');
-
-    // activate shop tab
-    tabShop.classList.add('active');
-    tabMine.classList.remove('active');
-  }
+function stopAutoSell(resId) {
+  clearInterval(autoSellTimers[resId]);
+  clearInterval(countdownTimers[resId]);
 }
 
-// ─── BUTTON RIPPLE EFFECT ────────────────────────────────────────────────────
-function createRipple(e) {
-  const btn  = e.currentTarget;
-  const rect = btn.getBoundingClientRect();
-  btn.style.setProperty('--ripple-x', `${e.clientX - rect.left}px`);
-  btn.style.setProperty('--ripple-y', `${e.clientY - rect.top}px`);
-  btn.classList.remove('ripple');
-  void btn.offsetWidth;
-  btn.classList.add('ripple');
-  setTimeout(() => btn.classList.remove('ripple'), 600);
+function updateSellCountdown(resId) {
+  const sec = Math.ceil((nextSellTimes[resId] - Date.now()) / 1000);
+  document.getElementById(`sell-countdown-${resId}`).textContent = Math.max(sec, 0);
 }
 
-// ─── EVENT BINDINGS ───────────────────────────────────────────────────────────
-document.querySelectorAll('button').forEach(btn =>
-  btn.addEventListener('click', createRipple)
-);
-mineBtn.addEventListener('click', mineClick);
-sellAllBtn.addEventListener('click', sellAll);
-tabMine.addEventListener('click', () => switchTab(true));
-tabShop.addEventListener('click', () => switchTab(false));
-overlay.addEventListener('click', () => switchTab(true));
+// Load version into footer
+fetch('version.txt')
+  .then(r => r.text())
+  .then(txt => document.getElementById('version').textContent = txt);
 
-if (autoSellToggle) {
-  autoSellToggle.addEventListener('change', () => {
-    if (autoSellToggle.checked) {
-      const drone = shopItems.find(i => i.id === 'auto-seller');
-      if (drone && drone.count > 0) {
-        updateAutoSell(drone.count);
-        const sellTimerP = document.getElementById('sell-timer');
-        if (sellTimerP) {
-          sellTimerP.classList.remove('hidden');
-          sellTimerP.innerHTML = `Next auto-sell in <span id="sell-countdown">--</span>s`;
-          sellTimerP.appendChild(autoSellToggle.closest('.switch'));
-        }
-      }
-    } else {
-      if (autoSellTimer)  clearInterval(autoSellTimer);
-      if (countdownTimer) clearInterval(countdownTimer);
-      const sellTimerP = document.getElementById('sell-timer');
-      if (sellTimerP) {
-        sellTimerP.classList.remove('hidden');
-        sellTimerP.textContent = 'Auto sell disabled';
-        sellTimerP.appendChild(autoSellToggle.closest('.switch'));
-      }
-    }
-  });
-
-  // Load version on startup
-  fetch('version.txt')
-    .then(res => res.text())
-    .then(txt => {
-      document.getElementById('version').textContent = txt;
-    });
-}
-
-// ─── INITIALIZATION ──────────────────────────────────────────────────────────
-resourceTabs.forEach(tab =>
-  tab.addEventListener('click', () => switchResource(tab.dataset.resource))
-);
-switchTab(true);
+// ─── INITIALIZE ─────────────────────────────────────────────────────────────
 switchResource(currentResource);
+switchTab(true);

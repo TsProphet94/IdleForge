@@ -19,7 +19,7 @@ body {
 
 :root {
   --color-bg: #1f1f1f; /* Dark charcoal */
-  --color-dark: #141414; /* Even darker panel bg */
+  --color-dark: #141414; /* Evener darker panel bg */
   --color-light: #f0f0f0; /* Bright text for contrast */
   --color-primary: #d67c30; /* Copper buttons */
   --color-secondary: #34917d; /* Teal buttons */
@@ -115,17 +115,6 @@ main {
   display: none;
 }
 
-/* General panel styling */
-.panel {
-  background: var(--color-light);
-  border-radius: var(--radius);
-  padding: 1rem;
-  box-shadow: var(--shadow-light);
-  margin-bottom: 1rem;
-  color: var(--color-dark); /* dark text on light panel */
-}
-
-/* Global button styles & ripple effect */
 button {
   position: relative;
   overflow: hidden;
@@ -258,12 +247,12 @@ footer {
 }
 
 /* ==========================================================================
-   6. MINE SCREEN & IRON WIDGET
+   6. MINE SCREEN & RESOURCE PANELS
    ========================================================================== */
 
 #screen-mine {
   position: relative;
-  background: var(--color-dark); /* uniform dark bg */
+  background: var(--color-dark);
   min-height: calc(100vh - 4rem);
   overflow: hidden;
   color: var(--color-light);
@@ -273,7 +262,7 @@ footer {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 0;
 }
 
@@ -282,7 +271,6 @@ footer {
   z-index: 1;
 }
 
-/* Layout wrapper */
 .resources-container {
   display: flex;
   flex-wrap: wrap;
@@ -291,35 +279,30 @@ footer {
   padding: 1rem 0;
 }
 
-/* Panels default */
+/* Always show all resource panels side by side */
 .resource-panel {
-  display: none;
-  align-self: flex-start;
-}
-.resource-panel:first-of-type,
-.resource-panel.active {
   display: block;
+  align-self: flex-start;
 }
 
 /* Iron widget styling */
 .resource-panel[data-resource="iron"] {
   position: relative;
-  width: 100%; /* fill container width */
+  width: 100%;
   background-image: url("images/iron/iron-background.png");
-  background-size: cover; /* fill widget horizontally */
+  background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   padding: 1.5rem;
   border-radius: var(--radius);
   box-shadow: var(--shadow-light);
-  color: var(--color-light); /* high contrast text */
+  color: var(--color-light);
 }
 
 .resource-panel[data-resource="iron"]::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: var(--radius);
   z-index: 0;
 }
@@ -329,21 +312,54 @@ footer {
   z-index: 1;
 }
 
-/* Iron flex layout */
+/* ==========================================================================
+   Copper widget styling (mirrors the Iron widget)
+   ========================================================================== */
+
+.resource-panel[data-resource="copper"] {
+  position: relative;
+  width: 100%;
+  background-image: url("images/copper/copper-background.png");
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  color: var(--color-light);
+}
+
+.resource-panel[data-resource="copper"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.resource-panel[data-resource="copper"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Common display flexbox for resource icons/content */
 .resource-display {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.iron-icon {
-  width: 5rem;
-  height: 5rem;
+.iron-icon,
+.copper-icon {
+  width: 50px;
+  height: 50px;
 }
 
-/* Buttons */
+/* Mine & Sell buttons */
 #mine-iron-btn,
-#sell-iron-btn {
+#sell-iron-btn,
+#mine-copper-btn,
+#sell-copper-btn {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   border: none;
@@ -356,31 +372,40 @@ footer {
 #mine-iron-btn {
   background: var(--color-primary);
 }
-
 #sell-iron-btn {
   background: var(--color-secondary);
   margin-left: 1rem;
 }
+#mine-copper-btn {
+  background: var(--color-primary);
+}
+#sell-copper-btn {
+  background: var(--color-secondary);
+  margin-left: 1rem;
+}
 
-#sell-iron-btn:disabled {
+#sell-iron-btn:disabled,
+#sell-copper-btn:disabled {
   background: var(--color-muted-light);
   cursor: not-allowed;
 }
 
-/* Auto-status inside widget */
-#auto-status {
+/* Auto-status inside each resource panel */
+.auto-status {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-top: 1rem;
 }
 
-#sell-timer {
+/* Sell-timer paragraphs for iron & copper */
+[id^="sell-timer-"] {
   font-size: 0.9rem;
   margin: 0;
 }
 
-#sell-timer.hidden {
+/* Hide when toggled off */
+[id^="sell-timer-"].hidden {
   display: none;
 }
 
@@ -388,12 +413,14 @@ footer {
 nav button:hover:not(:disabled),
 .shop-btn:hover:not(:disabled),
 #mine-iron-btn:hover:not(:disabled),
-#sell-iron-btn:hover:not(:disabled) {
+#sell-iron-btn:hover:not(:disabled),
+#mine-copper-btn:hover:not(:disabled),
+#sell-copper-btn:hover:not(:disabled) {
   background: var(--color-accent);
   transform: translateY(-1px);
 }
 
-/* Ripple sell pop */
+/* Ripple sell pop animation */
 @keyframes sell-pop {
   0% {
     transform: scale(1);
@@ -455,4 +482,89 @@ nav button:hover:not(:disabled),
 }
 .switch input:checked + .slider:before {
   transform: translateX(1rem);
+}
+
+/* Copper panel locked state */
+.resource-panel.locked {
+  filter: grayscale(100%);
+  position: relative;
+}
+
+/* Overlay to cover locked panel */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.lock-overlay button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-dark);
+  cursor: pointer;
+}
+/* ==========================================================================
+   Lock styling for Copper panel and tab
+   ========================================================================== */
+
+/* Hide any shop tab flagged as locked */
+.resource-tab.locked {
+  display: none;
+}
+
+/* Copper panel locked state (grayscale + relative positioning for overlay) */
+.resource-panel.locked {
+  filter: grayscale(100%);
+  position: relative;
+}
+
+/* Overlay to cover locked panel */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.lock-overlay button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-dark);
+  cursor: pointer;
+}
+/* ==========================================================================
+   Footer layout
+   ========================================================================== */
+footer .footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+footer .footer-content small,
+footer .footer-content p,
+footer .footer-content a {
+  margin: 0;
+  color: var(--color-muted-light);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+footer .footer-content a:hover {
+  text-decoration: underline;
 }
