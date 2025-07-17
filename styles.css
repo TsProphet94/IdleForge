@@ -1,0 +1,570 @@
+/* ==========================================================================
+   1. RESET & VARIABLES
+   ========================================================================== */
+
+/* Basic reset & box-model */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile touch & overscroll behavior */
+html,
+body {
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+:root {
+  --color-bg: #1f1f1f; /* Dark charcoal */
+  --color-dark: #141414; /* Evener darker panel bg */
+  --color-light: #f0f0f0; /* Bright text for contrast */
+  --color-primary: #d67c30; /* Copper buttons */
+  --color-secondary: #34917d; /* Teal buttons */
+  --color-accent: #ffbf00; /* Gold highlights */
+  --color-muted: #555555; /* Muted grey */
+  --color-muted-light: #888888; /* Lighter grey */
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --radius: 6px;
+  --transition-fast: 0.2s ease;
+  --transition-faster: 0.1s ease;
+}
+
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
+
+header {
+  position: relative;
+  z-index: 1100;
+  background-image: url("images/main/banner.jpg");
+  background-size: cover;
+  background-position: center;
+  color: var(--color-light);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-medium);
+}
+
+header h1 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.logo01 {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5rem;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+nav button {
+  background: var(--color-muted);
+  color: var(--color-light);
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  transition: background var(--transition-fast),
+    transform var(--transition-faster);
+}
+
+nav button.active {
+  background: var(--color-accent);
+}
+
+#money-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em 1em;
+  background: var(--color-muted);
+  color: var(--color-light);
+  border-radius: 20px;
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   3. BODY & BASE ELEMENTS
+   ========================================================================== */
+
+body {
+  font-family: sans-serif;
+  background: var(--color-bg);
+  color: var(--color-light);
+}
+
+main {
+  padding: 1rem;
+}
+
+.hidden {
+  display: none;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+  touch-action: manipulation;
+  font-size: 16px;
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button.ripple::after {
+  transform: translate(-50%, -50%) scale(2);
+  opacity: 1;
+  transition: transform 0.6s ease-out, opacity 0.8s ease-out;
+}
+
+/* ==========================================================================
+   4. FOOTER
+   ========================================================================== */
+
+footer {
+  text-align: center;
+  padding: 0.5rem;
+  color: var(--color-muted-light);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   5. SHOP PANEL & DRAWER
+   ========================================================================== */
+
+#screen-shop {
+  position: fixed;
+  top: 4rem;
+  bottom: 0;
+  right: 0;
+  width: 80%;
+  max-width: 400px;
+  background-image: url("images/shop-background.png");
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  color: var(--color-light);
+}
+
+#screen-shop.open {
+  transform: translateX(0);
+}
+
+#screen-shop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+
+#screen-shop > * {
+  position: relative;
+  z-index: 1;
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 900;
+}
+
+#overlay.open {
+  pointer-events: auto;
+}
+
+#shop-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#shop-list li {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-light);
+}
+
+.shop-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #28a;
+  color: var(--color-light);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.shop-btn:disabled {
+  background: var(--color-muted-light);
+  cursor: not-allowed;
+}
+
+.resource-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.resource-tab {
+  padding: 0.5rem 1rem;
+  background: var(--color-muted-light);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.resource-tab.active {
+  background: var(--color-accent);
+  color: var(--color-light);
+}
+
+/* ==========================================================================
+   6. MINE SCREEN & RESOURCE PANELS
+   ========================================================================== */
+
+#screen-mine {
+  position: relative;
+  background: var(--color-dark);
+  min-height: calc(100vh - 4rem);
+  overflow: hidden;
+  color: var(--color-light);
+}
+
+#screen-mine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+}
+
+#screen-mine > * {
+  position: relative;
+  z-index: 1;
+}
+
+.resources-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+/* Always show all resource panels side by side */
+.resource-panel {
+  display: block;
+  align-self: flex-start;
+}
+
+/* Iron widget styling */
+.resource-panel[data-resource="iron"] {
+  position: relative;
+  width: 100%;
+  background-image: url("images/iron/iron-background.png");
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  color: var(--color-light);
+}
+
+.resource-panel[data-resource="iron"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.resource-panel[data-resource="iron"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Copper widget styling (mirrors the Iron widget)
+   ========================================================================== */
+
+.resource-panel[data-resource="copper"] {
+  position: relative;
+  width: 100%;
+  background-image: url("images/copper/copper-background.png");
+  background-size: cover;
+  background-position: center;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  color: var(--color-light);
+}
+
+.resource-panel[data-resource="copper"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  z-index: 0;
+}
+
+.resource-panel[data-resource="copper"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Common display flexbox for resource icons/content */
+.resource-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.iron-icon,
+.copper-icon {
+  width: 50px;
+  height: 50px;
+}
+
+/* Mine & Sell buttons */
+#mine-iron-btn,
+#sell-iron-btn,
+#mine-copper-btn,
+#sell-copper-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-top: 1rem;
+  color: var(--color-light);
+}
+
+#mine-iron-btn {
+  background: var(--color-primary);
+}
+#sell-iron-btn {
+  background: var(--color-secondary);
+  margin-left: 1rem;
+}
+#mine-copper-btn {
+  background: var(--color-primary);
+}
+#sell-copper-btn {
+  background: var(--color-secondary);
+  margin-left: 1rem;
+}
+
+#sell-iron-btn:disabled,
+#sell-copper-btn:disabled {
+  background: var(--color-muted-light);
+  cursor: not-allowed;
+}
+
+/* Auto-status inside each resource panel */
+.auto-status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Sell-timer paragraphs for iron & copper */
+[id^="sell-timer-"] {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Hide when toggled off */
+[id^="sell-timer-"].hidden {
+  display: none;
+}
+
+/* Hover effects */
+nav button:hover:not(:disabled),
+.shop-btn:hover:not(:disabled),
+#mine-iron-btn:hover:not(:disabled),
+#sell-iron-btn:hover:not(:disabled),
+#mine-copper-btn:hover:not(:disabled),
+#sell-copper-btn:hover:not(:disabled) {
+  background: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+/* Ripple sell pop animation */
+@keyframes sell-pop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.sell-pop {
+  position: absolute;
+  top: -1rem;
+  right: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--color-secondary);
+  animation: sell-pop 1s ease-out forwards;
+  pointer-events: none;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 2rem;
+  height: 1rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ccc;
+  transition: 0.2s;
+  border-radius: 1rem;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 0.8rem;
+  height: 0.8rem;
+  left: 0.1rem;
+  bottom: 0.1rem;
+  background: var(--color-light);
+  transition: 0.2s;
+  border-radius: 50%;
+}
+.switch input:checked + .slider {
+  background: var(--color-secondary);
+}
+.switch input:checked + .slider:before {
+  transform: translateX(1rem);
+}
+
+/* Copper panel locked state */
+.resource-panel.locked {
+  filter: grayscale(100%);
+  position: relative;
+}
+
+/* Overlay to cover locked panel */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.lock-overlay button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-dark);
+  cursor: pointer;
+}
+/* ==========================================================================
+   Lock styling for Copper panel and tab
+   ========================================================================== */
+
+/* Hide any shop tab flagged as locked */
+.resource-tab.locked {
+  display: none;
+}
+
+/* Copper panel locked state (grayscale + relative positioning for overlay) */
+.resource-panel.locked {
+  filter: grayscale(100%);
+  position: relative;
+}
+
+/* Overlay to cover locked panel */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.lock-overlay button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-dark);
+  cursor: pointer;
+}
+/* ==========================================================================
+   Footer layout
+   ========================================================================== */
+footer .footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+footer .footer-content small,
+footer .footer-content p,
+footer .footer-content a {
+  margin: 0;
+  color: var(--color-muted-light);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+footer .footer-content a:hover {
+  text-decoration: underline;
+}
