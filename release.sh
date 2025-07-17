@@ -1,33 +1,53 @@
 #!/bin/bash
 
+# Configuration
 REPO_URL="https://github.com/TsProphet94/IdleForge.git"
 DEPLOY_DIR="../idleforge-deploy"
+VERSION_FILE="version.txt"
 
-VERSION=$(date +%Y%m%d-%H%M)
+# Determine new semantic version
+if [[ -f "$VERSION_FILE" ]] && CURRENT_VERSION=$(grep -Eo '([0-9]+\.){2}[0-9]+' "$VERSION_FILE"); then
+  if [[ "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+    MAJOR=${BASH_REMATCH[1]}
+    MINOR=${BASH_REMATCH[2]}
+    PATCH=${BASH_REMATCH[3]}
+    NEW_PATCH=$((PATCH + 1))
+    NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+  else
+    # if version.txt is malformed, reset to 0.1.0
+    NEW_VERSION="0.1.0"
+  fi
+else
+  # first-ever release
+  NEW_VERSION="0.1.0"
+fi
 
-echo "🔧 Committing changes to main..."
+echo "🔧 Releasing version $NEW_VERSION"
+
+# Commit any outstanding changes
 git add .
-git commit -m "Release $VERSION"
+git commit -m "Release $NEW_VERSION"
 git push origin main
 
-echo "🧾 Updating version.txt..."
-echo "Version $VERSION" > version.txt
-git add version.txt
-git commit -m "Tag version $VERSION"
+# Update version.txt
+echo "Version $NEW_VERSION" > "$VERSION_FILE"
+git add "$VERSION_FILE"
+git commit -m "Tag version $NEW_VERSION"
 git push origin main
 
+# Deploy to gh-pages
 echo "🚀 Deploying to gh-pages..."
-rm -rf $DEPLOY_DIR
-mkdir $DEPLOY_DIR
-cp -r * $DEPLOY_DIR
-cp .nojekyll $DEPLOY_DIR 2>/dev/null || touch $DEPLOY_DIR/.nojekyll
+rm -rf "$DEPLOY_DIR"
+mkdir -p "$DEPLOY_DIR"
+cp -r * "$DEPLOY_DIR"
+cp .nojekyll "$DEPLOY_DIR" 2>/dev/null || touch "$DEPLOY_DIR/.nojekyll"
 
-cd $DEPLOY_DIR
+cd "$DEPLOY_DIR"
 git init
-git remote add origin $REPO_URL
+git remote add origin "$REPO_URL"
 git checkout -b gh-pages
 git add .
-git commit -m "Deploy version $VERSION"
+git commit -m "Deploy version $NEW_VERSION"
 git push -u origin gh-pages --force
 
 echo "✅ Deployment complete!"
