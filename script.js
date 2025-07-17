@@ -161,12 +161,12 @@ overlay.addEventListener('click',   () => switchTab(true));
 
 // ─── Unlock Copper handler ───────────────────────────────────────────────────
 unlockCopperBtn.addEventListener('click', () => {
-  if (resources.money.count < 2000) {
-    alert('You need $2000 to unlock Copper!');
+  if (resources.money.count < 5000) {
+    alert('You need $5000 to unlock Copper!');
     return;
   }
 
-  resources.money.count -= 2000;
+  resources.money.count -= 5000;
   copperUnlocked = true;
   mineCopperBtn.disabled = false;
   sellCopperBtn.disabled = false;

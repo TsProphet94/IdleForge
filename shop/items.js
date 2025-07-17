@@ -8,8 +8,8 @@ export const shopItems = [
     name: 'Tougher Pickaxe',
     description: '+1 per click',
     category: 'iron',
-    basePrice: 30,
-    price: 30,
+    basePrice: 20,
+    price: 20,
     scale: 1.15,
     count: 0,
     max: 10,
@@ -22,13 +22,13 @@ export const shopItems = [
     name: 'Small Drill',
     description: 'Mines 1 per second',
     category: 'iron',
-    basePrice: 150,
-    price: 150,
+    basePrice: 100,
+    price: 100,
     scale: 1.2,
     count: 0,
-    max: 20,
+    max: 10,
     apply() {
-      resources.iron.perSecond += 1;
+      resources.iron.perSecond += 2;
     }
   },
   {
@@ -36,13 +36,13 @@ export const shopItems = [
     name: 'Jackhammer',
     description: 'Mines 2 per second',
     category: 'iron',
-    basePrice: 400,
-    price: 400,
+    basePrice: 250,
+    price: 250,
     scale: 1.25,
     count: 0,
-    max: 15,
+    max: 10,
     apply() {
-      resources.iron.perSecond += 2;
+      resources.iron.perSecond += 3;
     }
   },
   {
@@ -50,11 +50,11 @@ export const shopItems = [
     name: 'Coring Rig',
     description: '+5 per second',
     category: 'iron',
-    basePrice: 1500,
-    price: 1500,
+    basePrice: 600,
+    price: 600,
     scale: 1.2,
     count: 0,
-    max: 10,
+    max: 8,
     apply() {
       resources.iron.perSecond += 5;
     }
@@ -64,13 +64,13 @@ export const shopItems = [
     name: 'Mining Rig',
     description: '+10 per second',
     category: 'iron',
-    basePrice: 4000,
-    price: 4000,
+    basePrice: 1500,
+    price: 1500,
     scale: 1.25,
     count: 0,
-    max: 10,
+    max: 5,
     apply() {
-      resources.iron.perSecond += 10;
+      resources.iron.perSecond += 20;
     }
   },
   {
@@ -78,13 +78,13 @@ export const shopItems = [
     name: 'Auto-Seller',
     description: 'Automatically sell Iron every 5s',
     category: 'iron',
-    basePrice: 1000,
-    price: 1000,
+    basePrice: 1200,
+    price: 1200,
     scale: 1.3,
     count: 0,
     max: 1,
     apply() {
-      // auto‐sell handled in script.js
+      // auto-sell handled in script.js
     }
   },
 
@@ -94,8 +94,8 @@ export const shopItems = [
     name: 'Reinforced Chisel',
     description: '+1 copper per click',
     category: 'copper',
-    basePrice: 75,
-    price: 75,
+    basePrice: 50,
+    price: 50,
     scale: 1.15,
     count: 0,
     max: 10,
@@ -108,11 +108,11 @@ export const shopItems = [
     name: 'Copper Drill',
     description: 'Mines 1 copper/sec',
     category: 'copper',
-    basePrice: 150,
-    price: 150,
+    basePrice: 120,
+    price: 120,
     scale: 1.2,
     count: 0,
-    max: 20,
+    max: 10,
     apply() {
       resources.copper.perSecond += 1;
     }
@@ -122,11 +122,11 @@ export const shopItems = [
     name: 'Automated Smelter',
     description: 'Mines 3 copper/sec',
     category: 'copper',
-    basePrice: 700,
-    price: 700,
+    basePrice: 360,
+    price: 360,
     scale: 1.2,
     count: 0,
-    max: 10,
+    max: 8,
     apply() {
       resources.copper.perSecond += 3;
     }
@@ -150,8 +150,8 @@ export const shopItems = [
     name: 'Hydraulic Excavator',
     description: 'Mines 25 copper/sec',
     category: 'copper',
-    basePrice: 5000,
-    price: 5000,
+    basePrice: 3000,
+    price: 3000,
     scale: 1.3,
     count: 0,
     max: 2,
@@ -164,8 +164,8 @@ export const shopItems = [
     name: 'Auto Seller',
     description: 'Automatically sells copper every 5s',
     category: 'copper',
-    basePrice: 2000,
-    price: 2000,
+    basePrice: 2400,
+    price: 2400,
     scale: 1.3,
     count: 0,
     max: 1,
