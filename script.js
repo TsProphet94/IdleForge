@@ -1,4 +1,4 @@
-// script.js — Iron & Copper with independent auto-sell and smooth shop updates
+// script.js — Iron & Copper with independent auto-sell, smooth shop updates, and save/load + main menu
 
 import iron from './resources/iron.js';
 import copper from './resources/copper.js';
@@ -28,12 +28,31 @@ const sellIronBtn   = document.getElementById('sell-iron-btn');
 const mineCopperBtn = document.getElementById('mine-copper-btn');
 const sellCopperBtn = document.getElementById('sell-copper-btn');
 
-// Dev-panel (optional)
+// ─── MENU & SAVE/LOAD ELEMENTS ────────────────────────────────────────────────
+const mainMenu       = document.getElementById('main-menu');
+const settingsMenu   = document.getElementById('settings-menu');
+const gameUI         = document.getElementById('game-ui');
+const btnContinue    = document.getElementById('btn-continue');
+const btnNewGame     = document.getElementById('btn-new');
+const btnSettings    = document.getElementById('btn-settings');
+const btnBackToMenu  = document.getElementById('btn-back-to-menu');
+const toggleAutoSave = document.getElementById('toggle-auto-save');
+const btnSaveMenu    = document.getElementById('btn-save-menu');
+const saveIndicator  = document.getElementById('save-indicator');
+
+// ─── Dev-panel (optional) ────────────────────────────────────────────────────
 const isDev        = false;
 const devPanel     = document.getElementById('dev-panel');
 const devAddIron   = document.getElementById('dev-add-iron');
 const devAddCopper = document.getElementById('dev-add-copper');
 const devAddMoney  = document.getElementById('dev-add-money');
+
+if (devPanel) devPanel.classList.toggle('hidden', !isDev);
+if (isDev) {
+  devAddIron?.addEventListener('click',   () => { resources.iron.count   += 1000; updateUI(); });
+  devAddCopper?.addEventListener('click', () => { resources.copper.count += 1000; updateUI(); });
+  devAddMoney?.addEventListener('click',  () => { resources.money.count  += 1000; updateUI(); });
+}
 
 // ─── Auto-sell state ─────────────────────────────────────────────────────────
 const autoSellTimers    = {};
@@ -45,15 +64,7 @@ const autoSellIntervals = {};
 let currentResource = 'iron';
 let copperUnlocked  = false; // block copper until unlocked
 
-// ─── Dev-panel logic ──────────────────────────────────────────────────────────
-if (devPanel) devPanel.classList.toggle('hidden', !isDev);
-if (isDev) {
-  devAddIron.addEventListener('click',   () => { resources.iron.count   += 1000; updateUI(); });
-  devAddCopper.addEventListener('click', () => { resources.copper.count += 1000; updateUI(); });
-  devAddMoney.addEventListener('click',  () => { resources.money.count  += 1000; updateUI(); });
-}
-
-// ─── Initial UI setup ────────────────────────────────────────────────────────
+// ─── Initial UI setup for game panels ────────────────────────────────────────
 shopScreen.classList.add('hidden');
 overlay.classList.add('hidden');
 tabMine.classList.add('active');
@@ -126,7 +137,10 @@ shopList.addEventListener('click', e => {
   // Auto-Seller logic
   if (item.id.startsWith('auto-seller')) {
     const resId = item.category;
-    document.getElementById(`sell-timer-${resId}`).classList.remove('hidden');
+    const timerEl = document.getElementById(`sell-timer-${resId}`);
+    if (timerEl) {
+      timerEl.classList.remove('hidden');
+    }
     const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
     if (toggle) {
       toggle.checked = true;
@@ -160,7 +174,7 @@ overlay.addEventListener('click',   () => switchTab(true));
 });
 
 // ─── Unlock Copper handler ───────────────────────────────────────────────────
-unlockCopperBtn.addEventListener('click', () => {
+unlockCopperBtn?.addEventListener('click', () => {
   if (resources.money.count < 5000) {
     alert('You need $5000 to unlock Copper!');
     return;
@@ -174,11 +188,19 @@ unlockCopperBtn.addEventListener('click', () => {
 
   // Remove lock UI
   const panel = document.querySelector('.resource-panel[data-resource="copper"]');
-  panel.classList.remove('locked');
-  document.getElementById('lock-overlay-copper').remove();
+  if (panel) {
+    panel.classList.remove('locked');
+  }
+  const lockOverlay = document.getElementById('lock-overlay-copper');
+  if (lockOverlay) {
+    lockOverlay.remove();
+  }
 
   // Reveal Copper tab
-  document.getElementById('tab-resource-copper').classList.remove('locked');
+  const copperTab = document.getElementById('tab-resource-copper');
+  if (copperTab) {
+    copperTab.classList.remove('locked');
+  }
 });
 
 // ─── CORE FUNCTIONS ──────────────────────────────────────────────────────────
@@ -270,7 +292,10 @@ function startAutoSell(resId) {
   autoSellIntervals[resId] = 5000;
   nextSellTimes[resId]     = Date.now() + autoSellIntervals[resId];
 
-  document.getElementById(`sell-timer-${resId}`).classList.remove('hidden');
+  const timerEl = document.getElementById(`sell-timer-${resId}`);
+  if (timerEl) {
+    timerEl.classList.remove('hidden');
+  }
   countdownTimers[resId] = setInterval(() => updateSellCountdown(resId), 500);
   autoSellTimers[resId]  = setInterval(() => {
     const amt = Math.floor(resources[resId].count * resources[resId].sellPrice);
@@ -289,14 +314,312 @@ function stopAutoSell(resId) {
 
 function updateSellCountdown(resId) {
   const sec = Math.ceil((nextSellTimes[resId] - Date.now()) / 1000);
-  document.getElementById(`sell-countdown-${resId}`).textContent = Math.max(sec, 0);
+  const countdownEl = document.getElementById(`sell-countdown-${resId}`);
+  if (countdownEl) {
+    countdownEl.textContent = Math.max(sec, 0);
+  }
 }
 
-// Load version into footer
+// ─── VERSION LOAD ───────────────────────────────────────────────────────────
 fetch('version.txt')
   .then(r => r.text())
-  .then(txt => document.getElementById('version').textContent = txt);
+  .then(txt => {
+    const versionEl = document.getElementById('version');
+    if (versionEl) {
+      versionEl.textContent = txt;
+    }
+  })
+  .catch(() => {
+    // Version file doesn't exist, ignore
+  });
 
-// ─── INITIALIZE ─────────────────────────────────────────────────────────────
-switchResource(currentResource);
-switchTab(true);
+// ─── SAVE / LOAD HELPERS WITH ERROR HANDLING ────────────────────────────────
+function isLocalStorageAvailable() {
+  try {
+    const test = '__localStorage_test__';
+    localStorage.setItem(test, 'test');
+    localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    console.warn('localStorage is not available:', e);
+    return false;
+  }
+}
+
+function getSaveData() {
+  return {
+    iron: resources.iron.count,
+    copper: resources.copper.count,
+    money: resources.money.count,
+    copperUnlocked: copperUnlocked,
+    ironPerSecond: resources.iron.perSecond,
+    copperPerSecond: resources.copper.perSecond,
+    upgrades: shopItems.map(i => ({ 
+      id: i.id, 
+      count: i.count, 
+      price: i.price 
+    })),
+    lastSave: Date.now()
+  };
+}
+
+function saveGame() {
+  if (!isLocalStorageAvailable()) {
+    console.warn('Cannot save: localStorage unavailable');
+    return false;
+  }
+  
+  try {
+    const saveData = getSaveData();
+    localStorage.setItem('idleMinerSave', JSON.stringify(saveData));
+    console.log('Game saved successfully');
+    return true;
+  } catch (e) {
+    console.error('Failed to save game:', e);
+    return false;
+  }
+}
+
+function loadGame() {
+  if (!isLocalStorageAvailable()) {
+    console.warn('Cannot load: localStorage unavailable');
+    return false;
+  }
+  
+  try {
+    const raw = localStorage.getItem('idleMinerSave');
+    if (!raw) {
+      console.log('No save data found');
+      return false;
+    }
+    
+    const data = JSON.parse(raw);
+    
+    // Load resource counts
+    resources.iron.count = data.iron || 0;
+    resources.copper.count = data.copper || 0;
+    resources.money.count = data.money || 0;
+    
+    // Load copper unlock status
+    copperUnlocked = data.copperUnlocked || false;
+    if (copperUnlocked) {
+      unlockCopperUI();
+    }
+    
+    // Load per-second rates if saved
+    if (data.ironPerSecond !== undefined) {
+      resources.iron.perSecond = data.ironPerSecond;
+    }
+    if (data.copperPerSecond !== undefined) {
+      resources.copper.perSecond = data.copperPerSecond;
+    }
+    
+    // Load upgrades
+    if (data.upgrades && Array.isArray(data.upgrades)) {
+      data.upgrades.forEach(upgrade => {
+        const item = shopItems.find(i => i.id === upgrade.id);
+        if (item && upgrade.count > 0) {
+          // Reset item first
+          item.count = 0;
+          item.price = item.basePrice;
+          
+          // Apply upgrades one by one to ensure proper effect stacking
+          for (let i = 0; i < upgrade.count; i++) {
+            if (item.apply) {
+              item.apply();
+            }
+            item.count++;
+            item.price = Math.floor(item.basePrice * Math.pow(item.scale, item.count));
+          }
+        }
+      });
+    }
+    
+    console.log('Game loaded successfully');
+    return true;
+  } catch (e) {
+    console.error('Failed to load game:', e);
+    return false;
+  }
+}
+
+// ─── Helper function to unlock copper UI ────────────────────────────────────
+function unlockCopperUI() {
+  copperUnlocked = true;
+  mineCopperBtn.disabled = false;
+  sellCopperBtn.disabled = false;
+  
+  // Remove lock UI
+  const panel = document.querySelector('.resource-panel[data-resource="copper"]');
+  if (panel) {
+    panel.classList.remove('locked');
+  }
+  const lockOverlay = document.getElementById('lock-overlay-copper');
+  if (lockOverlay) {
+    lockOverlay.remove();
+  }
+  
+  // Reveal Copper tab
+  const copperTab = document.getElementById('tab-resource-copper');
+  if (copperTab) {
+    copperTab.classList.remove('locked');
+  }
+}
+
+// ─── NEW GAME INITIALIZER ────────────────────────────────────────────────────
+function startNewGame() {
+  // Reset all resources
+  resources.iron.count = 0;
+  resources.copper.count = 0;
+  resources.money.count = 0;
+  resources.iron.perSecond = 0;
+  resources.copper.perSecond = 0;
+  
+  // Reset copper unlock
+  copperUnlocked = false;
+  
+  // Reset all shop items
+  shopItems.forEach(item => {
+    item.count = 0;
+    item.price = item.basePrice;
+  });
+  
+  // Reset UI states
+  mineCopperBtn.disabled = true;
+  sellCopperBtn.disabled = true;
+  
+  // Re-lock copper panel and tab
+  const panel = document.querySelector('.resource-panel[data-resource="copper"]');
+  if (panel && !panel.classList.contains('locked')) {
+    panel.classList.add('locked');
+    // Re-add lock overlay if it was removed
+    if (!document.getElementById('lock-overlay-copper')) {
+      const lockOverlay = document.createElement('div');
+      lockOverlay.className = 'lock-overlay';
+      lockOverlay.id = 'lock-overlay-copper';
+      lockOverlay.innerHTML = '<button id="unlock-copper-btn">Unlock Copper ($5000)</button>';
+      panel.appendChild(lockOverlay);
+      // Re-attach event listener
+      const newUnlockBtn = document.getElementById('unlock-copper-btn');
+      if (newUnlockBtn) {
+        newUnlockBtn.addEventListener('click', () => {
+          if (resources.money.count < 5000) {
+            alert('You need $5000 to unlock Copper!');
+            return;
+          }
+          resources.money.count -= 5000;
+          unlockCopperUI();
+          updateUI();
+        });
+      }
+    }
+  }
+  
+  const copperTab = document.getElementById('tab-resource-copper');
+  if (copperTab) {
+    copperTab.classList.add('locked');
+  }
+  
+  console.log('New game started');
+}
+
+// ─── KICKOFF AFTER MENU SELECTION ────────────────────────────────────────────
+function startGame() {
+  mainMenu.style.display = 'none';
+  settingsMenu.style.display = 'none';
+  gameUI.style.display = 'flex';
+  updateUI();
+  switchResource(currentResource);
+  switchTab(true);
+}
+
+// ─── MENU BUTTON HANDLERS ───────────────────────────────────────────────────
+btnContinue.addEventListener('click', () => {
+  if (loadGame()) {
+    startGame();
+  } else {
+    alert('Failed to load save data. Starting new game.');
+    startNewGame();
+    startGame();
+  }
+});
+
+btnNewGame.addEventListener('click', () => {
+  if (isLocalStorageAvailable()) {
+    localStorage.removeItem('idleMinerSave');
+  }
+  startNewGame();
+  startGame();
+});
+
+btnSettings.addEventListener('click', () => {
+  mainMenu.style.display = 'none';
+  settingsMenu.style.display = 'flex';
+});
+
+btnBackToMenu.addEventListener('click', () => {
+  settingsMenu.style.display = 'none';
+  mainMenu.style.display = 'flex';
+});
+
+// Auto-save functionality with proper error handling
+let autoSaveInterval = null;
+
+toggleAutoSave.addEventListener('change', e => {
+  if (e.target.checked) {
+    // Enable auto-save
+    if (saveGame()) {
+      btnContinue.disabled = false;
+    }
+    autoSaveInterval = setInterval(() => {
+      saveGame();
+    }, 30000);
+    window.addEventListener('beforeunload', saveGame);
+  } else {
+    // Disable auto-save
+    if (autoSaveInterval) {
+      clearInterval(autoSaveInterval);
+      autoSaveInterval = null;
+    }
+    window.removeEventListener('beforeunload', saveGame);
+  }
+});
+
+// ─── SHOW MENU ON PAGE LOAD ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const hasSave = isLocalStorageAvailable() && !!localStorage.getItem('idleMinerSave');
+  btnContinue.disabled = !hasSave;
+  gameUI.style.display = 'none';
+  mainMenu.style.display = 'flex';
+
+  // Initialize auto-save if enabled
+  if (toggleAutoSave.checked && isLocalStorageAvailable()) {
+    autoSaveInterval = setInterval(() => {
+      saveGame();
+    }, 30000);
+    window.addEventListener('beforeunload', saveGame);
+  }
+});
+
+// ─── Save Indicator Flash ───────────────────────────────────────────────────
+function flashSaveIndicator() {
+  if (!saveIndicator) return;
+  saveIndicator.classList.remove('hidden');
+  saveIndicator.classList.add('show');
+  setTimeout(() => {
+    saveIndicator.classList.remove('show');
+    saveIndicator.classList.add('hidden');
+  }, 2000);
+}
+
+// Save & Menu button with proper error handling
+btnSaveMenu.addEventListener('click', () => {
+  if (saveGame()) {
+    btnContinue.disabled = false;
+    flashSaveIndicator();
+  } else {
+    alert('Failed to save game. Please check browser settings.');
+  }
+  gameUI.style.display = 'none';
+  mainMenu.style.display = 'flex';
+});

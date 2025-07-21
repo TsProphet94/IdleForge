@@ -32,6 +32,86 @@ body {
   --transition-fast: 0.2s ease;
   --transition-faster: 0.1s ease;
 }
+/* =====================================
+   MAIN MENU & SETTINGS OVERLAY
+   ===================================== */
+
+/* Base overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 20, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Titles */
+.overlay h1,
+.overlay h2 {
+  color: var(--color-accent);
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons inside overlays */
+.overlay button {
+  background: var(--color-primary);
+  color: var(--color-light);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: var(--shadow-medium);
+  transition: background var(--transition-fast),
+    transform var(--transition-faster);
+}
+
+/* Disabled “Continue” look */
+#btn-continue:disabled {
+  background: var(--color-muted);
+  cursor: not-allowed;
+}
+
+/* Hover state */
+.overlay button:hover:not(:disabled) {
+  background: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+/* Override the semi-transparent overlay only on the main menu */
+.overlay#main-menu {
+  /* ditch the plain rgba-fill so your image shines through */
+  background-color: transparent;
+
+  /* layer your image underneath any dark tint */
+  background-image: url("images/main/mainmenubackground.png");
+
+  /* make it cover the entire viewport */
+  background-size: cover;
+  background-position: center center;
+
+  /* optional: blend the dark tint and image for mood */
+  background-blend-mode: multiply;
+}
+
+#settings-menu label {
+  margin: 0.75rem 0;
+  color: var(--color-light);
+  font-size: 0.9rem;
+}
+
+#settings-menu input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
 
 /* ==========================================================================
    2. HEADER
@@ -567,4 +647,51 @@ footer .footer-content a {
 
 footer .footer-content a:hover {
   text-decoration: underline;
+}
+
+/* at the end of styles.css */
+#game-ui {
+  display: flex; /* matches what the script set */
+  flex-direction: column; /* stacks header/main/footer top→bottom */
+}
+
+/* —————— Save & Menu button —————— */
+#btn-save-menu {
+  background: var(--color-secondary);
+  color: var(--color-light);
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 0.5rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+#btn-save-menu:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* —————— Save indicator pop-up —————— */
+.save-indicator {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: var(--color-accent);
+  color: var(--color-dark);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-medium);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 3000;
+}
+.save-indicator.show {
+  opacity: 1;
+}
+/* reuse your `.hidden` class to reset */
+.save-indicator.hidden {
+  display: block; /* so it can fade in/out via opacity */
+  opacity: 0;
 }
