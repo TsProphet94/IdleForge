@@ -226,11 +226,28 @@ main {
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 3px solid transparent;
   transition: transform var(--transition-smooth);
+  box-shadow: var(--shadow-lg), inset 0 0 0 4px rgba(255, 255, 255, 0.04);
+}
+
+/* Coloured outlines per resource */
+.resource-panel[data-resource="iron"] {
+  border-color: #8b4513;
+}
+.resource-panel[data-resource="copper"] {
+  border-color: #b87333;
+}
+.resource-panel[data-resource="bronze"] {
+  border-color: #cd7f32;
+}
+.resource-panel[data-resource="silver"] {
+  border-color: #c0c0c0;
+}
+.resource-panel[data-resource="gold"] {
+  border-color: #ffd700;
 }
 
 .resource-panel:active {
@@ -246,18 +263,14 @@ main {
     rgba(139, 69, 19, 0.8) 100%
   );
 }
-
 .resource-panel[data-resource="iron"]::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-image: url("images/iron/iron-background.png");
   background-size: cover;
   background-position: center;
-  opacity: 0.3;
+  opacity: 0.8;
   z-index: -1;
 }
 
@@ -270,18 +283,74 @@ main {
     rgba(184, 115, 51, 0.8) 100%
   );
 }
-
 .resource-panel[data-resource="copper"]::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-image: url("images/copper/copper-background.png");
   background-size: cover;
   background-position: center;
-  opacity: 0.3;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* Bronze Panel */
+.resource-panel[data-resource="bronze"] {
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.8) 0%,
+    rgba(218, 165, 32, 0.6) 50%,
+    rgba(205, 127, 50, 0.8) 100%
+  );
+}
+.resource-panel[data-resource="bronze"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/bronze/bronze-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* Silver Panel */
+.resource-panel[data-resource="silver"] {
+  background: linear-gradient(
+    135deg,
+    rgba(192, 192, 192, 0.85) 0%,
+    rgba(220, 220, 220, 0.65) 50%,
+    rgba(192, 192, 192, 0.85) 100%
+  );
+}
+.resource-panel[data-resource="silver"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/silver/silver-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* Gold Panel */
+.resource-panel[data-resource="gold"] {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.9) 0%,
+    rgba(255, 223, 80, 0.7) 50%,
+    rgba(255, 215, 0, 0.9) 100%
+  );
+}
+.resource-panel[data-resource="gold"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/gold/gold-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
   z-index: -1;
 }
 
@@ -300,8 +369,12 @@ main {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Unified Icon Style */
 .iron-icon,
-.copper-icon {
+.copper-icon,
+.bronze-icon,
+.silver-icon,
+.gold-icon {
   width: 48px;
   height: 48px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
@@ -315,10 +388,17 @@ main {
   flex-wrap: wrap;
 }
 
+/* Unified button selectors */
 #mine-iron-btn,
 #mine-copper-btn,
+#mine-bronze-btn,
+#mine-silver-btn,
+#mine-gold-btn,
 #sell-iron-btn,
-#sell-copper-btn {
+#sell-copper-btn,
+#sell-bronze-btn,
+#sell-silver-btn,
+#sell-gold-btn {
   flex: 1;
   min-width: 120px;
   padding: var(--space-md) var(--space-lg);
@@ -335,7 +415,10 @@ main {
 
 /* Mine buttons */
 #mine-iron-btn,
-#mine-copper-btn {
+#mine-copper-btn,
+#mine-bronze-btn,
+#mine-silver-btn,
+#mine-gold-btn {
   background: linear-gradient(
     135deg,
     var(--color-primary) 0%,
@@ -347,7 +430,10 @@ main {
 
 /* Sell buttons */
 #sell-iron-btn,
-#sell-copper-btn {
+#sell-copper-btn,
+#sell-bronze-btn,
+#sell-silver-btn,
+#sell-gold-btn {
   background: linear-gradient(
     135deg,
     var(--color-secondary) 0%,
@@ -357,8 +443,12 @@ main {
   box-shadow: var(--shadow-md);
 }
 
+/* Disabled Sell Buttons */
 #sell-iron-btn:disabled,
-#sell-copper-btn:disabled {
+#sell-copper-btn:disabled,
+#sell-bronze-btn:disabled,
+#sell-silver-btn:disabled,
+#sell-gold-btn:disabled {
   background: var(--color-surface);
   color: var(--color-text-muted);
   cursor: not-allowed;
@@ -647,6 +737,90 @@ main {
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* --- Main Menu polish --- */
+.tagline {
+  margin: var(--space-sm) 0 var(--space-lg);
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.save-card {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-md);
+  width: 260px;
+  text-align: left;
+}
+
+.save-card h3 {
+  margin-bottom: var(--space-sm);
+  color: var(--color-accent);
+}
+
+.save-card p {
+  margin: 0 0 var(--space-xs);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.save-card button {
+  width: 100%;
+  margin-top: var(--space-sm);
+  min-height: 44px;
+}
+
+.ghost-btn {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-sm);
+  transition: all var(--transition-fast);
+  font-size: 0.9rem;
+}
+
+.ghost-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.changelog {
+  max-height: 160px;
+  overflow-y: auto;
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Fancy title shimmer (optional) */
+@keyframes shine {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+#main-menu h1 {
+  background: linear-gradient(90deg, #fff 0%, #ffd93d 50%, #fff 100%);
+  background-size: 400px 100%;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shine 3s linear infinite;
+}
+
 .overlay button {
   background: linear-gradient(
     135deg,
@@ -907,95 +1081,4 @@ footer .footer-content a:hover {
   #screen-shop {
     width: 400px;
   }
-}
-
-/* ==========================================================================
-   Bronze Resource Styles
-   ========================================================================== */
-
-/* Bronze Panel */
-.resource-panel[data-resource="bronze"] {
-  background: linear-gradient(
-    135deg,
-    rgba(205, 127, 50, 0.8) 0%,
-    rgba(218, 165, 32, 0.6) 50%,
-    rgba(205, 127, 50, 0.8) 100%
-  );
-}
-.resource-panel[data-resource="bronze"]::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("images/bronze/bronze-background.png");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.3;
-  z-index: -1;
-}
-
-/* Bronze Icon */
-.bronze-icon {
-  width: 48px;
-  height: 48px;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-}
-
-/* Include Bronze in Action Buttons */
-#mine-iron-btn,
-#mine-copper-btn,
-#mine-bronze-btn,
-#sell-iron-btn,
-#sell-copper-btn,
-#sell-bronze-btn {
-  flex: 1;
-  min-width: 120px;
-  padding: var(--space-md) var(--space-lg);
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all var(--transition-smooth);
-  min-height: 48px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Mine Buttons (including Bronze) */
-#mine-iron-btn,
-#mine-copper-btn,
-#mine-bronze-btn {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary) 0%,
-    var(--color-primary-dark) 100%
-  );
-  color: var(--color-text-primary);
-  box-shadow: var(--shadow-md);
-}
-
-/* Sell Buttons (including Bronze) */
-#sell-iron-btn,
-#sell-copper-btn,
-#sell-bronze-btn {
-  background: linear-gradient(
-    135deg,
-    var(--color-secondary) 0%,
-    var(--color-secondary-dark) 100%
-  );
-  color: var(--color-text-primary);
-  box-shadow: var(--shadow-md);
-}
-
-/* Disabled Sell Buttons (including Bronze) */
-#sell-iron-btn:disabled,
-#sell-copper-btn:disabled,
-#sell-bronze-btn:disabled {
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  cursor: not-allowed;
-  box-shadow: none;
 }

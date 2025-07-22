@@ -259,4 +259,179 @@ export const shopItems = [
       // auto-sell handled in script.js
     },
   },
+
+  // ——— Silver Upgrades ————————————————————————————————————————————
+  // One click upgrade, miners only, one auto-seller
+  {
+    id: "silver-click-1",
+    name: "Silver Pickaxe",
+    description: "+1 silver per click",
+    category: "silver",
+    basePrice: 25_000,
+    price: 25_000,
+    scale: 1.35,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.silver.perClick += 1;
+    },
+  },
+  {
+    id: "silver-auto-1",
+    name: "Silver Drill",
+    description: "+5 silver/sec",
+    category: "silver",
+    basePrice: 60_000,
+    price: 60_000,
+    scale: 1.45,
+    count: 0,
+    max: 8,
+    apply() {
+      resources.silver.perSecond += 5;
+    },
+  },
+  {
+    id: "silver-auto-2",
+    name: "Silver Rig",
+    description: "+20 silver/sec",
+    category: "silver",
+    basePrice: 180_000,
+    price: 180_000,
+    scale: 1.5,
+    count: 0,
+    max: 6,
+    apply() {
+      resources.silver.perSecond += 20;
+    },
+  },
+  {
+    id: "silver-auto-3",
+    name: "Silver Excavator",
+    description: "+75 silver/sec",
+    category: "silver",
+    basePrice: 550_000,
+    price: 550_000,
+    scale: 1.55,
+    count: 0,
+    max: 4,
+    apply() {
+      resources.silver.perSecond += 75;
+    },
+  },
+  {
+    id: "silver-auto-4",
+    name: "Quantum Silver Miner",
+    description: "+250 silver/sec",
+    category: "silver",
+    basePrice: 1_800_000,
+    price: 1_800_000,
+    scale: 1.6,
+    count: 0,
+    max: 2,
+    apply() {
+      resources.silver.perSecond += 250;
+    },
+  },
+  {
+    id: "auto-seller-silver",
+    name: "Auto-Seller (Silver)",
+    description: "Automatically sells silver every 5s",
+    category: "silver",
+    basePrice: 220_000,
+    price: 220_000,
+    scale: 1.8,
+    count: 0,
+    max: 1,
+    apply() {
+      // handled by startAutoSell in script.js
+    },
+  },
+
+  // ——— Gold Upgrades ————————————————————————————————————————————
+  // 1 click upgrade, auto-miners only, one auto-seller
+  // Gold sellPrice = 30 (from your note); unlock = $1,000,000 (handled elsewhere)
+  {
+    id: "gold-click-1",
+    name: "Gold Pickaxe",
+    description: "+1 gold per click",
+    category: "gold",
+    basePrice: 150_000,
+    price: 150_000,
+    scale: 1.35,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.gold.perClick += 1;
+    },
+  },
+  {
+    id: "gold-auto-1",
+    name: "Gold Drill",
+    description: "+5 gold/sec",
+    category: "gold",
+    basePrice: 400_000, // 5 * 30 = $150/sec → ~44s ROI
+    price: 400_000,
+    scale: 1.45,
+    count: 0,
+    max: 8,
+    apply() {
+      resources.gold.perSecond += 5;
+    },
+  },
+  {
+    id: "gold-auto-2",
+    name: "Gold Rig",
+    description: "+20 gold/sec",
+    category: "gold",
+    basePrice: 1_400_000, // 20 * 30 = $600/sec → ~39s ROI
+    price: 1_400_000,
+    scale: 1.5,
+    count: 0,
+    max: 6,
+    apply() {
+      resources.gold.perSecond += 20;
+    },
+  },
+  {
+    id: "gold-auto-3",
+    name: "Gold Excavator",
+    description: "+75 gold/sec",
+    category: "gold",
+    basePrice: 4_500_000, // 75 * 30 = $2,250/sec → ~33s ROI
+    price: 4_500_000,
+    scale: 1.55,
+    count: 0,
+    max: 4,
+    apply() {
+      resources.gold.perSecond += 75;
+    },
+  },
+  {
+    id: "gold-auto-4",
+    name: "Quantum Gold Miner",
+    description: "+250 gold/sec",
+    category: "gold",
+    basePrice: 15_000_000, // 250 * 30 = $7,500/sec → ~33s ROI
+    price: 15_000_000,
+    scale: 1.6,
+    count: 0,
+    max: 2,
+    apply() {
+      resources.gold.perSecond += 250;
+    },
+  },
+  {
+    id: "auto-seller-gold",
+    name: "Auto-Seller (Gold)",
+    description: "Automatically sells gold every 5s",
+    category: "gold",
+    basePrice: 2_000_000,
+    price: 2_000_000,
+    scale: 1.8,
+    count: 0,
+    max: 1,
+    apply() {
+      // handled by startAutoSell in script.js
+    },
+  },
 ];

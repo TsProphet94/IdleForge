@@ -6,16 +6,29 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Idle Miner</title>
+    <title>IdleForge</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <!-- MAIN MENU OVERLAY -->
     <div id="main-menu" class="overlay">
-      <h1>Idle Miner</h1>
-      <button id="btn-continue">Continue</button>
+      <h1>IdleForge</h1>
+      <p class="tagline">Mine. Sell. Profit.</p>
+
+      <div id="save-card" class="save-card hidden">
+        <h3>Last Save</h3>
+        <p>Money: <span id="save-money">--</span></p>
+        <p>Unlocked: <span id="save-unlocks">Iron</span></p>
+        <button id="btn-continue-card">Continue</button>
+      </div>
+
       <button id="btn-new">New Game</button>
+      <button id="btn-continue">Continue</button>
       <button id="btn-settings">Settings</button>
+      <div id="confirm-newgame" class="overlay hidden">
+        
+        </div>
+      </div>
     </div>
 
     <!-- SETTINGS PANEL -->
@@ -41,14 +54,16 @@
             alt="Cartoon pickaxe icon"
             class="logo01"
           />
-          Idle Miner
+          IdleForge
         </h1>
 
         <div id="dev-panel" class="hidden">
-          <button id="dev-add-iron">+10000 Iron</button>
-          <button id="dev-add-copper">+10000 Copper</button>
-          <button id="dev-add-bronze">+10000 Bronze</button>
-          <button id="dev-add-money">+10000 Money</button>
+          <button id="dev-add-iron">+10k Iron</button>
+          <button id="dev-add-copper">+10k Copper</button>
+          <button id="dev-add-bronze">+10k Bronze</button>
+          <button id="dev-add-silver">+10k Silver</button>
+          <button id="dev-add-gold">+10k Gold</button>
+          <button id="dev-add-money">+10k Money</button>
         </div>
 
         <nav>
@@ -126,7 +141,7 @@
                 </p>
               </div>
               <div class="lock-overlay" id="lock-overlay-copper">
-                <button id="unlock-copper-btn">Unlock Copper ($5000)</button>
+                <button id="unlock-copper-btn">Unlock Copper ($5k)</button>
               </div>
             </div>
 
@@ -159,7 +174,75 @@
                 </p>
               </div>
               <div class="lock-overlay" id="lock-overlay-bronze">
-                <button id="unlock-bronze-btn">Unlock Bronze ($25000)</button>
+                <button id="unlock-bronze-btn">Unlock Bronze ($25k)</button>
+              </div>
+            </div>
+
+            <!-- Silver Panel (Locked) -->
+            <div class="resource-panel locked" data-resource="silver">
+              <div class="resource-display">
+                <img
+                  src="images/silver/Ag.png"
+                  alt="Silver Icon"
+                  class="icon silver-icon"
+                />
+                <div class="resource-content">
+                  <p>Silver: <span id="silver-count">0</span></p>
+                  <button id="mine-silver-btn" disabled>Mine Silver</button>
+                  <button id="sell-silver-btn" disabled>Sell All Silver</button>
+                </div>
+              </div>
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate:
+                  <span id="auto-rate-silver">0</span>/s
+                </p>
+                <p id="sell-timer-silver" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-silver">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-silver" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+              <div class="lock-overlay" id="lock-overlay-silver">
+                <button id="unlock-silver-btn">Unlock Silver ($100k)</button>
+              </div>
+            </div>
+            <!-- Gold Panel (Locked) -->
+
+            <div class="resource-panel locked" data-resource="gold">
+              <div class="resource-display">
+                <img
+                  src="images/gold/au.png"
+                  alt="Gold Icon"
+                  class="icon gold-icon"
+                />
+                <div class="resource-content">
+                  <p>Gold: <span id="gold-count">0</span></p>
+                  <button id="mine-gold-btn" disabled>Mine Gold</button>
+                  <button id="sell-gold-btn" disabled>Sell All Gold</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate:
+                  <span id="auto-rate-gold">0</span>/s
+                </p>
+                <p id="sell-timer-gold" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-gold">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-gold" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-gold">
+                <button id="unlock-gold-btn">Unlock Gold ($1M)</button>
               </div>
             </div>
           </div>
@@ -186,6 +269,20 @@
             >
               Bronze
             </button>
+            <button
+              data-resource="silver"
+              id="tab-resource-silver"
+              class="resource-tab locked"
+            >
+              Silver
+            </button>
+            <button
+              data-resource="gold"
+              id="tab-resource-gold"
+              class="resource-tab locked"
+            >
+              Gold
+            </button>
           </div>
           <ul id="shop-list">
             <!-- Populated via renderShop() -->
@@ -196,7 +293,7 @@
       <footer>
         <div class="footer-content">
           <small id="version"></small>
-          <p>Made with VsCode/ChatGPT 4.1-mini-high</p>
+          <p>Made with VsCode/ChatGPT 4.1-mini-high/Claude Sonnet 4</p>
           <a
             href="https://github.com/TsProphet94/IdleForge"
             target="_blank"
