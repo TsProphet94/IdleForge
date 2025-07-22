@@ -1,697 +1,920 @@
 /* ==========================================================================
-   1. RESET & VARIABLES
+   MOBILE-FIRST IDLE MINER GAME STYLES
    ========================================================================== */
 
-/* Basic reset & box-model */
+/* Reset & Variables */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Mobile touch & overscroll behavior */
 html,
 body {
   touch-action: manipulation;
-  -ms-touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
-}
-
-:root {
-  --color-bg: #1f1f1f; /* Dark charcoal */
-  --color-dark: #141414; /* Evener darker panel bg */
-  --color-light: #f0f0f0; /* Bright text for contrast */
-  --color-primary: #d67c30; /* Copper buttons */
-  --color-secondary: #34917d; /* Teal buttons */
-  --color-accent: #ffbf00; /* Gold highlights */
-  --color-muted: #555555; /* Muted grey */
-  --color-muted-light: #888888; /* Lighter grey */
-  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --radius: 6px;
-  --transition-fast: 0.2s ease;
-  --transition-faster: 0.1s ease;
-}
-/* =====================================
-   MAIN MENU & SETTINGS OVERLAY
-   ===================================== */
-
-/* Base overlay */
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(10, 10, 20, 0.95);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-/* Titles */
-.overlay h1,
-.overlay h2 {
-  color: var(--color-accent);
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-/* Buttons inside overlays */
-.overlay button {
-  background: var(--color-primary);
-  color: var(--color-light);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
-  border-radius: var(--radius);
-  cursor: pointer;
-  box-shadow: var(--shadow-medium);
-  transition: background var(--transition-fast),
-    transform var(--transition-faster);
-}
-
-/* Disabled “Continue” look */
-#btn-continue:disabled {
-  background: var(--color-muted);
-  cursor: not-allowed;
-}
-
-/* Hover state */
-.overlay button:hover:not(:disabled) {
-  background: var(--color-secondary);
-  transform: translateY(-2px);
-}
-
-/* Override the semi-transparent overlay only on the main menu */
-.overlay#main-menu {
-  /* ditch the plain rgba-fill so your image shines through */
-  background-color: transparent;
-
-  /* layer your image underneath any dark tint */
-  background-image: url("images/main/mainmenubackground.png");
-
-  /* make it cover the entire viewport */
-  background-size: cover;
-  background-position: center center;
-
-  /* optional: blend the dark tint and image for mood */
-  background-blend-mode: multiply;
-}
-
-#settings-menu label {
-  margin: 0.75rem 0;
-  color: var(--color-light);
-  font-size: 0.9rem;
-}
-
-#settings-menu input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-
-/* ==========================================================================
-   2. HEADER
-   ========================================================================== */
-
-header {
-  position: relative;
-  z-index: 1100;
-  background-image: url("images/main/banner.jpg");
-  background-size: cover;
-  background-position: center;
-  color: var(--color-light);
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  box-shadow: var(--shadow-medium);
-}
-
-header h1 {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
-
-.logo01 {
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5rem;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-}
-
-nav button {
-  background: var(--color-muted);
-  color: var(--color-light);
-  border: none;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  margin-left: 0.5rem;
-  border-radius: 4px;
-  transition: background var(--transition-fast),
-    transform var(--transition-faster);
-}
-
-nav button.active {
-  background: var(--color-accent);
-}
-
-#money-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5em 1em;
-  background: var(--color-muted);
-  color: var(--color-light);
-  border-radius: 20px;
-  font-weight: bold;
-  pointer-events: none;
-  user-select: none;
-  margin-right: 0.5rem;
-}
-
-/* ==========================================================================
-   3. BODY & BASE ELEMENTS
-   ========================================================================== */
-
-body {
-  font-family: sans-serif;
-  background: var(--color-bg);
-  color: var(--color-light);
-}
-
-main {
-  padding: 1rem;
-}
-
-.hidden {
-  display: none;
-}
-
-button {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.1s ease-out, box-shadow 0.2s ease;
-  touch-action: manipulation;
   font-size: 16px;
 }
 
-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+:root {
+  /* Colors */
+  --color-bg: #0a0a0f;
+  --color-bg-secondary: #1a1a22;
+  --color-surface: #252533;
+  --color-surface-light: #323244;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-muted: #666677;
 
-button.ripple::after {
-  transform: translate(-50%, -50%) scale(2);
-  opacity: 1;
-  transition: transform 0.6s ease-out, opacity 0.8s ease-out;
+  /* Brand Colors */
+  --color-primary: #ff6b35;
+  --color-primary-dark: #e55a2b;
+  --color-secondary: #4ecdc4;
+  --color-secondary-dark: #45b5ad;
+  --color-accent: #ffd93d;
+  --color-accent-dark: #e6c234;
+
+  /* Status Colors */
+  --color-success: #6bcf7f;
+  --color-warning: #ffb347;
+  --color-error: #ff6b6b;
+
+  /* Effects */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(255, 107, 53, 0.3);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* ==========================================================================
-   4. FOOTER
+   BASE LAYOUT
    ========================================================================== */
 
-footer {
-  text-align: center;
-  padding: 0.5rem;
-  color: var(--color-muted-light);
-  font-size: 0.9rem;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  background: linear-gradient(
+    135deg,
+    var(--color-bg) 0%,
+    var(--color-bg-secondary) 100%
+  );
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#game-ui {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* ==========================================================================
-   5. SHOP PANEL & DRAWER
+   HEADER
+   ========================================================================== */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    var(--color-surface-light) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+}
+
+header .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+header h1 {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.logo01 {
+  width: 32px;
+  height: 32px;
+  margin-right: var(--space-sm);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Money Display */
+#money-display {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-dark) 100%
+  );
+  color: var(--color-bg);
+  border-radius: var(--radius-xl);
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: var(--shadow-md);
+  min-width: 80px;
+  justify-content: center;
+}
+
+/* Navigation */
+nav {
+  display: flex;
+  gap: var(--space-xs);
+  margin-left: var(--space-md);
+}
+
+nav button {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--color-surface-light);
+  color: var(--color-text-secondary);
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+nav button.active {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+nav button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+nav button:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   MAIN CONTENT
+   ========================================================================== */
+
+main {
+  flex: 1;
+  padding: var(--space-lg) var(--space-md);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   MINE SCREEN & RESOURCE PANELS
+   ========================================================================== */
+
+#screen-mine {
+  min-height: 100%;
+}
+
+.resources-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 100%;
+}
+
+.resource-panel {
+  position: relative;
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform var(--transition-smooth);
+}
+
+.resource-panel:active {
+  transform: scale(0.98);
+}
+
+/* Iron Panel */
+.resource-panel[data-resource="iron"] {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 69, 19, 0.8) 0%,
+    rgba(160, 82, 45, 0.6) 50%,
+    rgba(139, 69, 19, 0.8) 100%
+  );
+}
+
+.resource-panel[data-resource="iron"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("images/iron/iron-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: -1;
+}
+
+/* Copper Panel */
+.resource-panel[data-resource="copper"] {
+  background: linear-gradient(
+    135deg,
+    rgba(184, 115, 51, 0.8) 0%,
+    rgba(205, 127, 50, 0.6) 50%,
+    rgba(184, 115, 51, 0.8) 100%
+  );
+}
+
+.resource-panel[data-resource="copper"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("images/copper/copper-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: -1;
+}
+
+/* Resource Display */
+.resource-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.resource-display h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.iron-icon,
+.copper-icon {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Action Buttons */
+.resource-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+#mine-iron-btn,
+#mine-copper-btn,
+#sell-iron-btn,
+#sell-copper-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: var(--space-md) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  min-height: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mine buttons */
+#mine-iron-btn,
+#mine-copper-btn {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sell buttons */
+#sell-iron-btn,
+#sell-copper-btn {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+#sell-iron-btn:disabled,
+#sell-copper-btn:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Button hover effects */
+.resource-actions button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.resource-actions button:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Auto Status */
+.auto-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  flex-wrap: wrap;
+}
+
+.auto-status p {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  flex: 1;
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-surface);
+  transition: var(--transition-smooth);
+  border-radius: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background: var(--color-text-primary);
+  transition: var(--transition-smooth);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switch input:checked + .slider {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Locked State */
+.resource-panel.locked {
+  filter: grayscale(100%) brightness(0.7);
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 10;
+}
+
+.lock-overlay button {
+  padding: var(--space-md) var(--space-xl);
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-dark) 100%
+  );
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-smooth);
+  min-height: 48px;
+}
+
+.lock-overlay button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(255, 211, 61, 0.4);
+}
+
+/* ==========================================================================
+   SHOP PANEL
    ========================================================================== */
 
 #screen-shop {
   position: fixed;
-  top: 4rem;
+  top: 0;
   bottom: 0;
   right: 0;
-  width: 80%;
+  width: 100%;
   max-width: 400px;
-  background-image: url("images/shop-background.png");
-  background-size: cover;
-  background-position: center;
-  overflow: hidden;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(
+    135deg,
+    var(--color-bg) 0%,
+    var(--color-bg-secondary) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   transform: translateX(100%);
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-smooth);
   z-index: 1000;
-  color: var(--color-light);
+  overflow-y: auto;
+  padding: var(--space-lg);
 }
 
 #screen-shop.open {
   transform: translateX(0);
 }
 
-#screen-shop::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 0;
-}
-
-#screen-shop > * {
-  position: relative;
-  z-index: 1;
-}
-
 #overlay {
   position: fixed;
   inset: 0;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-smooth);
   z-index: 900;
 }
 
 #overlay.open {
   pointer-events: auto;
-}
-
-#shop-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-#shop-list li {
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow-light);
-}
-
-.shop-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: #28a;
-  color: var(--color-light);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.shop-btn:disabled {
-  background: var(--color-muted-light);
-  cursor: not-allowed;
+  opacity: 1;
 }
 
 .resource-tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  overflow-x: auto;
+  padding-bottom: var(--space-xs);
 }
 
 .resource-tab {
-  padding: 0.5rem 1rem;
-  background: var(--color-muted-light);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-surface);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-height: 44px;
 }
 
 .resource-tab.active {
-  background: var(--color-accent);
-  color: var(--color-light);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
 }
 
-/* ==========================================================================
-   6. MINE SCREEN & RESOURCE PANELS
-   ========================================================================== */
-
-#screen-mine {
-  position: relative;
-  background: var(--color-dark);
-  min-height: calc(100vh - 4rem);
-  overflow: hidden;
-  color: var(--color-light);
-}
-
-#screen-mine::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 0;
-}
-
-#screen-mine > * {
-  position: relative;
-  z-index: 1;
-}
-
-.resources-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 1.5rem;
-  padding: 1rem 0;
-}
-
-/* Always show all resource panels side by side */
-.resource-panel {
-  display: block;
-  align-self: flex-start;
-}
-
-/* Iron widget styling */
-.resource-panel[data-resource="iron"] {
-  position: relative;
-  width: 100%;
-  background-image: url("images/iron/iron-background.png");
-  background-size: cover;
-  background-position: center;
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-light);
-  color: var(--color-light);
-}
-
-.resource-panel[data-resource="iron"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: var(--radius);
-  z-index: 0;
-}
-
-.resource-panel[data-resource="iron"] > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* ==========================================================================
-   Copper widget styling (mirrors the Iron widget)
-   ========================================================================== */
-
-.resource-panel[data-resource="copper"] {
-  position: relative;
-  width: 100%;
-  background-image: url("images/copper/copper-background.png");
-  background-size: cover;
-  background-position: center;
-  padding: 1.5rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-light);
-  color: var(--color-light);
-}
-
-.resource-panel[data-resource="copper"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: var(--radius);
-  z-index: 0;
-}
-
-.resource-panel[data-resource="copper"] > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Common display flexbox for resource icons/content */
-.resource-display {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.iron-icon,
-.copper-icon {
-  width: 50px;
-  height: 50px;
-}
-
-/* Mine & Sell buttons */
-#mine-iron-btn,
-#sell-iron-btn,
-#mine-copper-btn,
-#sell-copper-btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: var(--radius);
-  cursor: pointer;
-  margin-top: 1rem;
-  color: var(--color-light);
-}
-
-#mine-iron-btn {
-  background: var(--color-primary);
-}
-#sell-iron-btn {
-  background: var(--color-secondary);
-  margin-left: 1rem;
-}
-#mine-copper-btn {
-  background: var(--color-primary);
-}
-#sell-copper-btn {
-  background: var(--color-secondary);
-  margin-left: 1rem;
-}
-
-#sell-iron-btn:disabled,
-#sell-copper-btn:disabled {
-  background: var(--color-muted-light);
-  cursor: not-allowed;
-}
-
-/* Auto-status inside each resource panel */
-.auto-status {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-/* Sell-timer paragraphs for iron & copper */
-[id^="sell-timer-"] {
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-/* Hide when toggled off */
-[id^="sell-timer-"].hidden {
+.resource-tab.locked {
   display: none;
 }
 
-/* Hover effects */
-nav button:hover:not(:disabled),
-.shop-btn:hover:not(:disabled),
-#mine-iron-btn:hover:not(:disabled),
-#sell-iron-btn:hover:not(:disabled),
-#mine-copper-btn:hover:not(:disabled),
-#sell-copper-btn:hover:not(:disabled) {
-  background: var(--color-accent);
-  transform: translateY(-1px);
+#shop-list {
+  list-style: none;
 }
 
-/* Ripple sell pop animation */
+#shop-list li {
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform var(--transition-fast);
+}
+
+#shop-list li:hover {
+  transform: translateY(-2px);
+}
+
+.shop-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+.shop-btn:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.shop-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   OVERLAYS & MODALS
+   ========================================================================== */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 15, 0.95) 0%,
+    rgba(26, 26, 34, 0.98) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: var(--space-xl);
+}
+
+.overlay#main-menu {
+  background-image: url("images/main/mainmenubackground.png");
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+}
+
+.overlay h1,
+.overlay h2 {
+  color: var(--color-accent);
+  margin-bottom: var(--space-xl);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.overlay button {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  border: none;
+  padding: var(--space-lg) var(--space-xl);
+  margin: var(--space-sm) 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-smooth);
+  min-width: 200px;
+  min-height: 48px;
+}
+
+.overlay button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.overlay button:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Settings */
+#settings-menu label {
+  display: flex;
+  align-items: center;
+  margin: var(--space-lg) 0;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#settings-menu input[type="checkbox"] {
+  margin-right: var(--space-md);
+  transform: scale(1.2);
+}
+
+/* ==========================================================================
+   SAVE & MENU BUTTON
+   ========================================================================== */
+
+#btn-save-menu {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  min-height: 44px;
+}
+
+#btn-save-menu:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Save Indicator */
+.save-indicator {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  background: linear-gradient(135deg, var(--color-success) 0%, #5bb569 100%);
+  color: var(--color-bg);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--transition-smooth);
+  z-index: 3000;
+}
+
+.save-indicator.show {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+/* ==========================================================================
+   ANIMATIONS & EFFECTS
+   ========================================================================== */
+
 @keyframes sell-pop {
   0% {
-    transform: scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
   100% {
-    transform: scale(2);
+    transform: translateY(-40px) scale(1.5);
     opacity: 0;
   }
 }
 
 .sell-pop {
   position: absolute;
-  top: -1rem;
-  right: 0.5rem;
-  font-size: 1.2rem;
-  color: var(--color-secondary);
-  animation: sell-pop 1s ease-out forwards;
+  top: -20px;
+  right: var(--space-lg);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-success);
+  animation: sell-pop 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   pointer-events: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Toggle switch */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 2rem;
-  height: 1rem;
-  margin-left: 0.5rem;
-  vertical-align: middle;
+/* Button ripple effect */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.slider {
+
+.button-ripple {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ccc;
-  transition: 0.2s;
-  border-radius: 1rem;
-}
-.slider:before {
-  content: "";
-  position: absolute;
-  width: 0.8rem;
-  height: 0.8rem;
-  left: 0.1rem;
-  bottom: 0.1rem;
-  background: var(--color-light);
-  transition: 0.2s;
   border-radius: 50%;
-}
-.switch input:checked + .slider {
-  background: var(--color-secondary);
-}
-.switch input:checked + .slider:before {
-  transform: translateX(1rem);
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
 }
 
-/* Copper panel locked state */
-.resource-panel.locked {
-  filter: grayscale(100%);
-  position: relative;
-}
-
-/* Overlay to cover locked panel */
-.lock-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.lock-overlay button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: var(--color-dark);
-  cursor: pointer;
-}
 /* ==========================================================================
-   Lock styling for Copper panel and tab
+   FOOTER
    ========================================================================== */
 
-/* Hide any shop tab flagged as locked */
-.resource-tab.locked {
-  display: none;
+footer {
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
 }
 
-/* Copper panel locked state (grayscale + relative positioning for overlay) */
-.resource-panel.locked {
-  filter: grayscale(100%);
-  position: relative;
-}
-
-/* Overlay to cover locked panel */
-.lock-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.lock-overlay button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--color-accent);
-  color: var(--color-dark);
-  cursor: pointer;
-}
-/* ==========================================================================
-   Footer layout
-   ========================================================================== */
 footer .footer-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 0.5rem;
+  gap: var(--space-md);
+  text-align: center;
+  flex-wrap: wrap;
 }
 
 footer .footer-content small,
 footer .footer-content p,
 footer .footer-content a {
   margin: 0;
-  color: var(--color-muted-light);
-  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 footer .footer-content a:hover {
+  color: var(--color-accent);
   text-decoration: underline;
 }
 
-/* at the end of styles.css */
-#game-ui {
-  display: flex; /* matches what the script set */
-  flex-direction: column; /* stacks header/main/footer top→bottom */
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* Small phones */
+@media (max-width: 360px) {
+  header {
+    padding: var(--space-sm);
+  }
+
+  header h1 {
+    font-size: 1.3rem;
+  }
+
+  nav {
+    gap: var(--space-xs);
+    margin-left: var(--space-sm);
+  }
+
+  nav button {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.8rem;
+  }
+
+  .resource-actions {
+    flex-direction: column;
+  }
+
+  .resource-actions button {
+    min-width: 100%;
+  }
 }
 
-/* —————— Save & Menu button —————— */
-#btn-save-menu {
-  background: var(--color-secondary);
-  color: var(--color-light);
-  border: none;
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-#btn-save-menu:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-medium);
+/* Landscape phones */
+@media (max-height: 500px) and (orientation: landscape) {
+  header {
+    position: relative;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  main {
+    padding: var(--space-md);
+  }
+
+  .resources-container {
+    gap: var(--space-md);
+  }
+
+  .resource-panel {
+    padding: var(--space-md);
+  }
 }
 
-/* —————— Save indicator pop-up —————— */
-.save-indicator {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  background: var(--color-accent);
-  color: var(--color-dark);
-  padding: 0.75rem 1.25rem;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-medium);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 3000;
+/* Tablets */
+@media (min-width: 768px) {
+  .resources-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .resource-panel {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  #screen-shop {
+    width: 50%;
+  }
 }
-.save-indicator.show {
-  opacity: 1;
-}
-/* reuse your `.hidden` class to reset */
-.save-indicator.hidden {
-  display: block; /* so it can fade in/out via opacity */
-  opacity: 0;
+
+/* Desktop */
+@media (min-width: 1024px) {
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .resources-container {
+    gap: var(--space-xl);
+  }
+
+  #screen-shop {
+    width: 400px;
+  }
 }
