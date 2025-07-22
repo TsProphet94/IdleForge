@@ -365,16 +365,6 @@ main {
   box-shadow: none;
 }
 
-/* Button hover effects */
-.resource-actions button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-}
-
-.resource-actions button:active:not(:disabled) {
-  transform: translateY(-1px);
-}
-
 /* Auto Status */
 .auto-status {
   display: flex;
@@ -917,4 +907,95 @@ footer .footer-content a:hover {
   #screen-shop {
     width: 400px;
   }
+}
+
+/* ==========================================================================
+   Bronze Resource Styles
+   ========================================================================== */
+
+/* Bronze Panel */
+.resource-panel[data-resource="bronze"] {
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.8) 0%,
+    rgba(218, 165, 32, 0.6) 50%,
+    rgba(205, 127, 50, 0.8) 100%
+  );
+}
+.resource-panel[data-resource="bronze"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("images/bronze/bronze-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: -1;
+}
+
+/* Bronze Icon */
+.bronze-icon {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Include Bronze in Action Buttons */
+#mine-iron-btn,
+#mine-copper-btn,
+#mine-bronze-btn,
+#sell-iron-btn,
+#sell-copper-btn,
+#sell-bronze-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: var(--space-md) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+  min-height: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mine Buttons (including Bronze) */
+#mine-iron-btn,
+#mine-copper-btn,
+#mine-bronze-btn {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Sell Buttons (including Bronze) */
+#sell-iron-btn,
+#sell-copper-btn,
+#sell-bronze-btn {
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+/* Disabled Sell Buttons (including Bronze) */
+#sell-iron-btn:disabled,
+#sell-copper-btn:disabled,
+#sell-bronze-btn:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
 }

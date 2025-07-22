@@ -47,6 +47,7 @@
         <div id="dev-panel" class="hidden">
           <button id="dev-add-iron">+1000 Iron</button>
           <button id="dev-add-copper">+1000 Copper</button>
+          <button id="dev-add-bronze">+1000 Bronze</button>
           <button id="dev-add-money">+1000 Money</button>
         </div>
 
@@ -128,6 +129,39 @@
                 <button id="unlock-copper-btn">Unlock Copper ($5000)</button>
               </div>
             </div>
+
+            <!-- Bronze Panel (Locked) -->
+            <div class="resource-panel locked" data-resource="bronze">
+              <div class="resource-display">
+                <img
+                  src="images/bronze/bronze.png"
+                  alt="Bronze Icon"
+                  class="icon bronze-icon"
+                />
+                <div class="resource-content">
+                  <p>Bronze: <span id="bronze-count">0</span></p>
+                  <button id="mine-bronze-btn" disabled>Mine Bronze</button>
+                  <button id="sell-bronze-btn" disabled>Sell All Bronze</button>
+                </div>
+              </div>
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate:
+                  <span id="auto-rate-bronze">0</span>/s
+                </p>
+                <p id="sell-timer-bronze" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-bronze">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-bronze" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+              <div class="lock-overlay" id="lock-overlay-bronze">
+                <button id="unlock-bronze-btn">Unlock Bronze ($25000)</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -144,6 +178,13 @@
               class="resource-tab locked"
             >
               Copper
+            </button>
+            <button
+              data-resource="bronze"
+              id="tab-resource-bronze"
+              class="resource-tab locked"
+            >
+              Bronze
             </button>
           </div>
           <ul id="shop-list">
