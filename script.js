@@ -57,21 +57,21 @@ const devAddMoney = document.getElementById("dev-add-money");
 if (devPanel) devPanel.classList.toggle("hidden", !isDev);
 if (isDev) {
   devAddIron?.addEventListener("click", () => {
-    resources.iron.count += 1000;
+    resources.iron.count += 10000;
     updateUI();
   });
   devAddCopper?.addEventListener("click", () => {
-    resources.copper.count += 1000;
+    resources.copper.count += 10000;
     updateUI();
   });
 
   devAddBronze?.addEventListener("click", () => {
-    resources.bronze.count += 1000;
+    resources.bronze.count += 10000;
     updateUI();
   });
 
   devAddMoney?.addEventListener("click", () => {
-    resources.money.count += 1000;
+    resources.money.count += 10000;
     updateUI();
   });
 }
@@ -539,6 +539,17 @@ function loadGame() {
         }
       });
     }
+    // ─── Re-init auto-sellers for any saved purchases ────────────────────────
+    shopItems
+      .filter((i) => i.id.startsWith("auto-seller") && i.count > 0)
+      .forEach((item) => {
+        const resId = item.category;
+        const timerEl = document.getElementById(`sell-timer-${resId}`);
+        if (timerEl) timerEl.classList.remove("hidden");
+        const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+        if (toggle) toggle.checked = true;
+        startAutoSell(resId);
+      });
 
     console.log("Game loaded successfully");
     return true;
@@ -729,6 +740,13 @@ function startGame() {
   settingsMenu.style.display = "none";
   gameUI.style.display = "flex";
   gameStarted = true; // Mark game as started
+  const bgMusic = document.getElementById("bg-music");
+  if (bgMusic) {
+    bgMusic.volume = 0.5; // optional: set default volume
+    bgMusic.play().catch((err) => {
+      console.warn("Background music playback failed:", err);
+    });
+  }
   updateUI();
   switchResource(currentResource);
   switchTab(true);
