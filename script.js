@@ -322,6 +322,7 @@ function attemptUnlock(res) {
   }
   spendMoney(cost);
   stats.clicks.unlock++;
+  track("resource_unlock", { resource: res, cost });
 
   if (res === "copper") unlockCopperUI();
   if (res === "bronze") unlockBronzeUI();
@@ -383,6 +384,8 @@ shopList.addEventListener("click", (e) => {
 
   spendMoney(cost);
   stats.clicks.shopBuy += n;
+  track("upgrade_buy", { item_id: item.id, qty: n, cost });
+  if (isMax) track("buy_max_click", { item_id: item.id, qty: n, cost });
 
   for (let i = 0; i < n; i++) item.apply();
 
@@ -450,6 +453,7 @@ function showScreen(which) {
       updateStatsUI();
       break;
   }
+  track("screen_view", { screen_name: which });
 }
 
 function switchResource(res) {
@@ -1036,6 +1040,7 @@ btnSaveMenu?.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const hasSave =
     isLocalStorageAvailable() && !!localStorage.getItem("idleMinerSave");
+  track("session_start", { save_exists: hasSave });
   if (btnContinue) btnContinue.disabled = !hasSave;
   if (gameUI) gameUI.style.display = "none";
   if (mainMenu) mainMenu.style.display = "flex";
@@ -1098,4 +1103,10 @@ function showAutoSaveIndicator() {
 }
 function hideAutoSaveIndicator() {
   document.getElementById("autosave-cog")?.classList.remove("show");
+}
+
+function track(eventName, params = {}) {
+  if (window.gtag) {
+    gtag("event", eventName, { ...params, version: "0.1.11" });
+  }
 }
