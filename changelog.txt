@@ -1,0 +1,21 @@
+v0.1.11 – “Bulk or Bust”
+
+Shop Overhaul
+•	Shop moved from a slide-out drawer to its own full screen. Cleaner grid, easier scrolling, way less claustrophobic.
+•	Buy Max button added.
+•	Button label trimmed: Buy Max, uprgade progress bar.
+
+Economy & Balance Pass
+•	Full rebalance of unlock costs and upgrade curves across all resources.
+•	Progression tuned for a smooth ramp, not a sheer paywall cliff.
+•	Early game still snappy; late game less trivial. Passive income properly considered.
+
+QoL & Polish
+•	Unified styling for both Buy buttons (same gradient, hover, disabled states).
+•	Dynamic labels/disable states update in-place without janky refreshes.
+•	Unlock overlays reliably rebuild after wipes/new games.
+•	New stat panel showing global game stats.
+
+Under the Hood
+•	Bulk math helpers (bulkCost, bulkAffordable, etc.) centralized and reused.
+•	Save/load, autosell timers, and stat tracking cleaned up for fewer edge-case gremlins.

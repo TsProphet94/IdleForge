@@ -2,14 +2,16 @@
 import { resources } from "../script.js";
 
 export const shopItems = [
-  // ——— Iron Upgrades —————————————————————————————————————————————
+  // ──────────────────────────────────────────────────────────────
+  // IRON
+  // ──────────────────────────────────────────────────────────────
   {
     id: "clicker-upgrade",
     name: "Tougher Pickaxe",
-    description: "+1 per click",
+    description: "+1 iron per click",
     category: "iron",
-    basePrice: 40, // ↑ was 20 → doubled to slow clicker ROI
-    price: 40,
+    basePrice: 60,
+    price: 60,
     scale: 1.15,
     count: 0,
     max: 10,
@@ -20,83 +22,85 @@ export const shopItems = [
   {
     id: "drill",
     name: "Small Drill",
-    description: "Mines 1 per second",
+    description: "+0.8 iron/sec per level",
     category: "iron",
-    basePrice: 120, // ↑ was 100 → 2 iron/sec sells for $2/sec → 120 cost → 60 s ROI
-    price: 120,
-    scale: 1.2,
+    basePrice: 60,
+    price: 60,
+    scale: 1.18,
     count: 0,
-    max: 10,
+    max: 25,
     apply() {
-      resources.iron.perSecond += 2;
+      resources.iron.perSecond += 0.8;
     },
   },
   {
     id: "jackhammer",
     name: "Jackhammer",
-    description: "Mines 2 per second",
+    description: "+1.2 iron/sec per level",
     category: "iron",
-    basePrice: 180, // ↓ was 250 → 3 iron/sec sells for $3/sec → 180 cost → 60 s ROI
-    price: 180,
-    scale: 1.25,
+    basePrice: 100,
+    price: 100,
+    scale: 1.22,
     count: 0,
-    max: 10,
+    max: 25,
     apply() {
-      resources.iron.perSecond += 3;
+      resources.iron.perSecond += 1.2;
     },
   },
   {
     id: "coring-rig",
     name: "Coring Rig",
-    description: "+5 per second",
+    description: "+2 iron/sec per level",
     category: "iron",
-    basePrice: 300, // ↓ was 600 → 5 iron/sec sells for $5/sec → 300 cost → 60 s ROI
-    price: 300,
-    scale: 1.2,
+    basePrice: 180,
+    price: 180,
+    scale: 1.24,
     count: 0,
-    max: 8,
+    max: 20,
     apply() {
-      resources.iron.perSecond += 5;
+      resources.iron.perSecond += 2;
     },
   },
   {
     id: "mining-rig",
     name: "Mining Rig",
-    description: "+10 per second",
+    description: "+5 iron/sec per level",
     category: "iron",
-    basePrice: 1200, // ↓ was 1500 → 20 iron/sec sells for $20/sec → 1200 cost → 60 s ROI
-    price: 1200,
-    scale: 1.25,
+    basePrice: 500,
+    price: 500,
+    scale: 1.28,
     count: 0,
-    max: 5,
+    max: 20,
     apply() {
-      resources.iron.perSecond += 20;
+      resources.iron.perSecond += 5;
     },
   },
   {
     id: "auto-seller",
-    name: "Auto-Seller",
-    description: "Automatically sell Iron every 5s",
+    name: "Auto-Seller (Iron)",
+    description: "Automatically sells iron every 5s",
     category: "iron",
-    basePrice: 1200, // unchanged
-    price: 1200,
+    basePrice: 3000,
+    price: 3000,
     scale: 1.3,
     count: 0,
     max: 1,
     apply() {
-      // auto-sell handled in script.js
+      /* handled in script.js */
     },
   },
 
-  // ——— Copper Upgrades (no change, already at 40 s ROI) ——————————————————
+  // ──────────────────────────────────────────────────────────────
+  // COPPER
+  // ──────────────────────────────────────────────────────────────
   {
     id: "copper-clicker",
     name: "Reinforced Chisel",
     description: "+1 copper per click",
     category: "copper",
-    basePrice: 50,
-    price: 50,
-    scale: 1.15,
+    basePrice: 120,
+    price: 120,
+    scale: 1.18,
     count: 0,
     max: 10,
     apply() {
@@ -106,83 +110,85 @@ export const shopItems = [
   {
     id: "copper-drill",
     name: "Copper Drill",
-    description: "Mines 1 copper/sec",
+    description: "+0.4 copper/sec per level",
     category: "copper",
-    basePrice: 120,
-    price: 120,
-    scale: 1.2,
+    basePrice: 130,
+    price: 130,
+    scale: 1.22,
     count: 0,
-    max: 10,
+    max: 25,
     apply() {
-      resources.copper.perSecond += 1;
+      resources.copper.perSecond += 0.4;
     },
   },
   {
     id: "automated-smelter",
     name: "Automated Smelter",
-    description: "Mines 3 copper/sec",
+    description: "+1.2 copper/sec per level",
     category: "copper",
-    basePrice: 360,
-    price: 360,
-    scale: 1.2,
+    basePrice: 470,
+    price: 470,
+    scale: 1.25,
     count: 0,
-    max: 8,
+    max: 20,
     apply() {
-      resources.copper.perSecond += 3;
+      resources.copper.perSecond += 1.2;
     },
   },
   {
     id: "copper-extractor",
     name: "Copper Extractor",
-    description: "Mines 10 copper/sec",
+    description: "+5 copper/sec per level",
     category: "copper",
-    basePrice: 1200,
-    price: 1200,
-    scale: 1.25,
+    basePrice: 2250,
+    price: 2250,
+    scale: 1.28,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
-      resources.copper.perSecond += 10;
+      resources.copper.perSecond += 5;
     },
   },
   {
     id: "hydraulic-excavator",
     name: "Hydraulic Excavator",
-    description: "Mines 25 copper/sec",
+    description: "+5 copper/sec per level",
     category: "copper",
-    basePrice: 3000,
-    price: 3000,
-    scale: 1.3,
+    basePrice: 2550,
+    price: 2550,
+    scale: 1.32,
     count: 0,
-    max: 2,
+    max: 10,
     apply() {
-      resources.copper.perSecond += 25;
+      resources.copper.perSecond += 5;
     },
   },
   {
     id: "auto-seller-copper",
-    name: "Auto Seller",
+    name: "Auto-Seller (Copper)",
     description: "Automatically sells copper every 5s",
     category: "copper",
-    basePrice: 2400,
-    price: 2400,
-    scale: 1.3,
+    basePrice: 20000,
+    price: 20000,
+    scale: 1.35,
     count: 0,
     max: 1,
     apply() {
-      // auto-sell handled in script.js
+      /* handled in script.js */
     },
   },
 
-  // ——— Bronze Upgrades ————————————————————————————————————————————
+  // ──────────────────────────────────────────────────────────────
+  // BRONZE
+  // ──────────────────────────────────────────────────────────────
   {
     id: "bronze-clicker",
     name: "Bronze Pickaxe",
     description: "+1 bronze per click",
     category: "bronze",
-    basePrice: 100, // unchanged
-    price: 100,
-    scale: 1.15,
+    basePrice: 300,
+    price: 300,
+    scale: 1.22,
     count: 0,
     max: 10,
     apply() {
@@ -192,83 +198,84 @@ export const shopItems = [
   {
     id: "bronze-drill",
     name: "Bronze Drill",
-    description: "Mines 1 bronze/sec",
+    description: "+0.4 bronze/sec per level",
     category: "bronze",
-    basePrice: 150, // ↓ was 200 → 1 bps @ $5/sec → 150 cost → 30 s ROI
-    price: 150,
-    scale: 1.2,
+    basePrice: 360,
+    price: 360,
+    scale: 1.28,
     count: 0,
-    max: 10,
+    max: 25,
     apply() {
-      resources.bronze.perSecond += 1;
+      resources.bronze.perSecond += 0.4;
     },
   },
   {
     id: "bronze-smelter",
     name: "Bronze Smelter",
-    description: "Mines 3 bronze/sec",
+    description: "+1.2 bronze/sec per level",
     category: "bronze",
-    basePrice: 450, // ↓ was 500 → 3 bps @ $15/sec → 450 cost → 30 s ROI
-    price: 450,
-    scale: 1.2,
+    basePrice: 1200,
+    price: 1200,
+    scale: 1.3,
     count: 0,
-    max: 8,
+    max: 20,
     apply() {
-      resources.bronze.perSecond += 3;
+      resources.bronze.perSecond += 1.2;
     },
   },
   {
     id: "bronze-extractor",
     name: "Bronze Extractor",
-    description: "Mines 10 bronze/sec",
+    description: "+5 bronze/sec per level",
     category: "bronze",
-    basePrice: 1500, // ↑ was 1200 → 10 bps @ $50/sec → 1500 cost → 30 s ROI
-    price: 1500,
-    scale: 1.25,
+    basePrice: 5500,
+    price: 5500,
+    scale: 1.33,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
-      resources.bronze.perSecond += 10;
+      resources.bronze.perSecond += 5;
     },
   },
   {
     id: "bronze-excavator",
     name: "Bronze Excavator",
-    description: "Mines 25 bronze/sec",
+    description: "+5 bronze/sec per level",
     category: "bronze",
-    basePrice: 3750, // ↑ was 3000 → 25 bps @ $125/sec → 3750 cost → 30 s ROI
-    price: 3750,
-    scale: 1.3,
+    basePrice: 6000,
+    price: 6000,
+    scale: 1.36,
     count: 0,
-    max: 2,
+    max: 10,
     apply() {
-      resources.bronze.perSecond += 25;
+      resources.bronze.perSecond += 5;
     },
   },
   {
     id: "auto-seller-bronze",
-    name: "Auto Seller (Bronze)",
+    name: "Auto-Seller (Bronze)",
     description: "Automatically sells bronze every 5s",
     category: "bronze",
-    basePrice: 6000, // unchanged
-    price: 6000,
-    scale: 1.3,
+    basePrice: 45000,
+    price: 45000,
+    scale: 1.4,
     count: 0,
     max: 1,
     apply() {
-      // auto-sell handled in script.js
+      /* handled in script.js */
     },
   },
 
-  // ——— Silver Upgrades ————————————————————————————————————————————
-  // One click upgrade, miners only, one auto-seller
+  // ──────────────────────────────────────────────────────────────
+  // SILVER
+  // ──────────────────────────────────────────────────────────────
   {
     id: "silver-click-1",
     name: "Silver Pickaxe",
     description: "+1 silver per click",
     category: "silver",
-    basePrice: 25_000,
-    price: 25_000,
+    basePrice: 15000,
+    price: 15000,
     scale: 1.35,
     count: 0,
     max: 10,
@@ -279,57 +286,57 @@ export const shopItems = [
   {
     id: "silver-auto-1",
     name: "Silver Drill",
-    description: "+5 silver/sec",
+    description: "+2 silver/sec per level",
     category: "silver",
-    basePrice: 60_000,
-    price: 60_000,
+    basePrice: 5200,
+    price: 5200,
     scale: 1.45,
     count: 0,
-    max: 8,
+    max: 20,
     apply() {
-      resources.silver.perSecond += 5;
+      resources.silver.perSecond += 2;
     },
   },
   {
     id: "silver-auto-2",
     name: "Silver Rig",
-    description: "+20 silver/sec",
+    description: "+6 silver/sec per level",
     category: "silver",
-    basePrice: 180_000,
-    price: 180_000,
+    basePrice: 18000,
+    price: 18000,
     scale: 1.5,
     count: 0,
-    max: 6,
+    max: 20,
     apply() {
-      resources.silver.perSecond += 20;
+      resources.silver.perSecond += 6;
     },
   },
   {
     id: "silver-auto-3",
     name: "Silver Excavator",
-    description: "+75 silver/sec",
+    description: "+20 silver/sec per level",
     category: "silver",
-    basePrice: 550_000,
-    price: 550_000,
+    basePrice: 68000,
+    price: 68000,
     scale: 1.55,
     count: 0,
-    max: 4,
+    max: 15,
     apply() {
-      resources.silver.perSecond += 75;
+      resources.silver.perSecond += 20;
     },
   },
   {
     id: "silver-auto-4",
     name: "Quantum Silver Miner",
-    description: "+250 silver/sec",
+    description: "+50 silver/sec per level",
     category: "silver",
-    basePrice: 1_800_000,
-    price: 1_800_000,
+    basePrice: 190000,
+    price: 190000,
     scale: 1.6,
     count: 0,
-    max: 2,
+    max: 10,
     apply() {
-      resources.silver.perSecond += 250;
+      resources.silver.perSecond += 50;
     },
   },
   {
@@ -337,27 +344,27 @@ export const shopItems = [
     name: "Auto-Seller (Silver)",
     description: "Automatically sells silver every 5s",
     category: "silver",
-    basePrice: 220_000,
-    price: 220_000,
+    basePrice: 500000,
+    price: 500000,
     scale: 1.8,
     count: 0,
     max: 1,
     apply() {
-      // handled by startAutoSell in script.js
+      /* handled in script.js */
     },
   },
 
-  // ——— Gold Upgrades ————————————————————————————————————————————
-  // 1 click upgrade, auto-miners only, one auto-seller
-  // Gold sellPrice = 30 (from your note); unlock = $1,000,000 (handled elsewhere)
+  // ──────────────────────────────────────────────────────────────
+  // GOLD
+  // ──────────────────────────────────────────────────────────────
   {
     id: "gold-click-1",
     name: "Gold Pickaxe",
     description: "+1 gold per click",
     category: "gold",
-    basePrice: 150_000,
-    price: 150_000,
-    scale: 1.35,
+    basePrice: 50000,
+    price: 50000,
+    scale: 1.4,
     count: 0,
     max: 10,
     apply() {
@@ -367,57 +374,57 @@ export const shopItems = [
   {
     id: "gold-auto-1",
     name: "Gold Drill",
-    description: "+5 gold/sec",
+    description: "+2 gold/sec per level",
     category: "gold",
-    basePrice: 400_000, // 5 * 30 = $150/sec → ~44s ROI
-    price: 400_000,
-    scale: 1.45,
+    basePrice: 16000,
+    price: 16000,
+    scale: 1.55,
     count: 0,
-    max: 8,
+    max: 20,
     apply() {
-      resources.gold.perSecond += 5;
+      resources.gold.perSecond += 2;
     },
   },
   {
     id: "gold-auto-2",
     name: "Gold Rig",
-    description: "+20 gold/sec",
+    description: "+6 gold/sec per level",
     category: "gold",
-    basePrice: 1_400_000, // 20 * 30 = $600/sec → ~39s ROI
-    price: 1_400_000,
-    scale: 1.5,
+    basePrice: 54000,
+    price: 54000,
+    scale: 1.6,
     count: 0,
-    max: 6,
+    max: 20,
     apply() {
-      resources.gold.perSecond += 20;
+      resources.gold.perSecond += 6;
     },
   },
   {
     id: "gold-auto-3",
     name: "Gold Excavator",
-    description: "+75 gold/sec",
+    description: "+20 gold/sec per level",
     category: "gold",
-    basePrice: 4_500_000, // 75 * 30 = $2,250/sec → ~33s ROI
-    price: 4_500_000,
-    scale: 1.55,
+    basePrice: 200000,
+    price: 200000,
+    scale: 1.65,
     count: 0,
-    max: 4,
+    max: 15,
     apply() {
-      resources.gold.perSecond += 75;
+      resources.gold.perSecond += 20;
     },
   },
   {
     id: "gold-auto-4",
     name: "Quantum Gold Miner",
-    description: "+250 gold/sec",
+    description: "+50 gold/sec per level",
     category: "gold",
-    basePrice: 15_000_000, // 250 * 30 = $7,500/sec → ~33s ROI
-    price: 15_000_000,
-    scale: 1.6,
+    basePrice: 550000,
+    price: 550000,
+    scale: 1.7,
     count: 0,
-    max: 2,
+    max: 10,
     apply() {
-      resources.gold.perSecond += 250;
+      resources.gold.perSecond += 50;
     },
   },
   {
@@ -425,13 +432,13 @@ export const shopItems = [
     name: "Auto-Seller (Gold)",
     description: "Automatically sells gold every 5s",
     category: "gold",
-    basePrice: 2_000_000,
-    price: 2_000_000,
-    scale: 1.8,
+    basePrice: 1200000,
+    price: 1200000,
+    scale: 1.85,
     count: 0,
     max: 1,
     apply() {
-      // handled by startAutoSell in script.js
+      /* handled in script.js */
     },
   },
 ];

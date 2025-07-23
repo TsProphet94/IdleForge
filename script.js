@@ -1,5 +1,6 @@
-// script.js — Iron, Copper, Bronze, Silver, Gold + autosell, save/load, menu
+// script.js — IdleForge core + GLOBAL TRACKERS + STATS TAB + FULL-SCREEN SHOP + MICRO-UPGRADES + BUY MAX (>=2 only, no cost shown)
 
+/* eslint-disable no-undef */
 import iron from "./resources/iron.js";
 import copper from "./resources/copper.js";
 import bronze from "./resources/bronze.js";
@@ -7,7 +8,9 @@ import silver from "./resources/silver.js";
 import gold from "./resources/gold.js";
 import { shopItems } from "./shop/items.js";
 
-// ─── Data Model ────────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   DATA MODEL
+──────────────────────────────────────────────────────────────────────────── */
 export const resources = {
   iron,
   copper,
@@ -16,8 +19,28 @@ export const resources = {
   gold,
   money: { id: "money", count: 0 },
 };
+const RES_IDS = ["iron", "copper", "bronze", "silver", "gold"];
 
-// ─── UI ELEMENTS ────────────────────────────────────────────────────────────
+/** Lifetime/global stats */
+export const stats = {
+  mined: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0 },
+  sold: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0 },
+  earnedMoney: 0,
+  spentMoney: 0,
+  clicks: { mine: 0, sell: 0, shopBuy: 0, unlock: 0 },
+};
+
+/* Unlock costs (new curve) */
+const UNLOCK_COST = {
+  copper: 20000,
+  bronze: 150000,
+  silver: 1000000,
+  gold: 8000000,
+};
+
+/* ────────────────────────────────────────────────────────────────────────────
+   UI ELEMENTS
+──────────────────────────────────────────────────────────────────────────── */
 const ironCountEl = document.getElementById("iron-count");
 const copperCountEl = document.getElementById("copper-count");
 const bronzeCountEl = document.getElementById("bronze-count");
@@ -27,16 +50,18 @@ const moneyCountEl = document.getElementById("money-count");
 
 const shopList = document.getElementById("shop-list");
 const resourceTabs = document.querySelectorAll(".resource-tab");
+
 const tabMine = document.getElementById("tab-mine");
 const tabShop = document.getElementById("tab-shop");
-const shopScreen = document.getElementById("screen-shop");
-const overlay = document.getElementById("overlay");
+const tabStats = document.getElementById("tab-stats");
 
-const unlockCopperBtn = document.getElementById("unlock-copper-btn");
-const unlockBronzeBtn = document.getElementById("unlock-bronze-btn");
-const unlockSilverBtn = document.getElementById("unlock-silver-btn");
-const unlockGoldBtn = document.getElementById("unlock-gold-btn");
+const screenMine = document.getElementById("screen-mine");
+const screenShop = document.getElementById("screen-shop");
+const screenStats = document.getElementById("screen-stats");
 
+const overlay = document.getElementById("overlay") || null;
+
+/* Mine / Sell buttons */
 const mineIronBtn = document.getElementById("mine-iron-btn");
 const sellIronBtn = document.getElementById("sell-iron-btn");
 const mineCopperBtn = document.getElementById("mine-copper-btn");
@@ -48,7 +73,7 @@ const sellSilverBtn = document.getElementById("sell-silver-btn");
 const mineGoldBtn = document.getElementById("mine-gold-btn");
 const sellGoldBtn = document.getElementById("sell-gold-btn");
 
-// ─── MENU & SAVE/LOAD ELEMENTS ──────────────────────────────────────────────
+/* Menus / Save */
 const mainMenu = document.getElementById("main-menu");
 const settingsMenu = document.getElementById("settings-menu");
 const gameUI = document.getElementById("game-ui");
@@ -60,7 +85,7 @@ const toggleAutoSave = document.getElementById("toggle-auto-save");
 const btnSaveMenu = document.getElementById("btn-save-menu");
 const saveIndicator = document.getElementById("save-indicator");
 
-// ─── Dev-panel (optional) ───────────────────────────────────────────────────
+/* Dev tools */
 const isDev = false;
 const devPanel = document.getElementById("dev-panel");
 const devAddIron = document.getElementById("dev-add-iron");
@@ -73,51 +98,56 @@ const devAddMoney = document.getElementById("dev-add-money");
 if (devPanel) devPanel.classList.toggle("hidden", !isDev);
 if (isDev) {
   devAddIron?.addEventListener("click", () => {
-    resources.iron.count += 10000;
+    addOre("iron", 10000);
     updateUI();
   });
   devAddCopper?.addEventListener("click", () => {
-    resources.copper.count += 10000;
+    addOre("copper", 10000);
     updateUI();
   });
   devAddBronze?.addEventListener("click", () => {
-    resources.bronze.count += 10000;
+    addOre("bronze", 10000);
     updateUI();
   });
   devAddSilver?.addEventListener("click", () => {
-    resources.silver.count += 10000;
+    addOre("silver", 10000);
     updateUI();
   });
   devAddGold?.addEventListener("click", () => {
-    resources.gold.count += 10000;
+    addOre("gold", 10000);
     updateUI();
   });
   devAddMoney?.addEventListener("click", () => {
-    resources.money.count += 10000;
+    addMoney(10000);
     updateUI();
   });
 }
 
-// ─── Auto-sell state ────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTO-SELL STATE
+──────────────────────────────────────────────────────────────────────────── */
 const autoSellTimers = {};
 const countdownTimers = {};
 const nextSellTimes = {};
 const autoSellIntervals = {};
 
-// ─── State ──────────────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   GAME STATE
+──────────────────────────────────────────────────────────────────────────── */
 let currentResource = "iron";
 let copperUnlocked = false;
 let bronzeUnlocked = false;
 let silverUnlocked = false;
 let goldUnlocked = false;
 
-// ─── Auto-save state ────────────────────────────────────────────────────────
 let autoSaveInterval = null;
 let gameStarted = false;
 
-// ─── Initial UI setup ───────────────────────────────────────────────────────
-shopScreen.classList.add("hidden");
-overlay.classList.add("hidden");
+/* ────────────────────────────────────────────────────────────────────────────
+   INITIAL UI
+──────────────────────────────────────────────────────────────────────────── */
+screenShop.classList.add("hidden");
+if (overlay) overlay.classList.add("hidden");
 tabMine.classList.add("active");
 
 mineCopperBtn.disabled = sellCopperBtn.disabled = true;
@@ -125,8 +155,11 @@ mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
 mineSilverBtn.disabled = sellSilverBtn.disabled = true;
 mineGoldBtn.disabled = sellGoldBtn.disabled = true;
 
-// ─── Number Formatter ───────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   HELPERS
+──────────────────────────────────────────────────────────────────────────── */
 function fmt(num) {
+  if (num > 0 && num < 10) return num.toPrecision(2);
   if (num < 1_000) return Math.floor(num).toString();
   if (num < 1_000_000)
     return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
@@ -136,101 +169,228 @@ function fmt(num) {
     return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "b";
   return (num / 1_000_000_000_000).toFixed(1).replace(/\.0$/, "") + "t";
 }
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = fmt(value || 0);
+}
+function isUnlocked(resId) {
+  switch (resId) {
+    case "iron":
+      return true;
+    case "copper":
+      return copperUnlocked;
+    case "bronze":
+      return bronzeUnlocked;
+    case "silver":
+      return silverUnlocked;
+    case "gold":
+      return goldUnlocked;
+    default:
+      return false;
+  }
+}
 
-// ─── Mining & Selling ───────────────────────────────────────────────────────
-mineIronBtn.addEventListener("click", () => {
-  resources.iron.count += resources.iron.perClick;
-  updateUI();
-});
-sellIronBtn.addEventListener("click", () => {
-  const amt = Math.floor(resources.iron.count * resources.iron.sellPrice);
-  resources.money.count += amt;
-  resources.iron.count = 0;
-  updateUI();
-  createSellPop("iron");
-});
+/** Add ore & track mined */
+function addOre(resId, amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  resources[resId].count += amount;
+  stats.mined[resId] += amount;
+}
+/** Add money gained */
+function addMoney(amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  resources.money.count += amount;
+  stats.earnedMoney += amount;
+}
+/** Spend money */
+function spendMoney(amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  resources.money.count -= amount;
+  stats.spentMoney += amount;
+}
 
-mineCopperBtn.addEventListener("click", () => {
-  if (!copperUnlocked) return;
-  resources.copper.count += resources.copper.perClick;
+/** Sell all */
+function sellAll(resId) {
+  if (!isUnlocked(resId)) return 0;
+  const qty = resources[resId].count;
+  if (qty <= 0) return 0;
+  const cash = Math.floor(qty * resources[resId].sellPrice);
+  addMoney(cash);
+  stats.sold[resId] += qty;
+  resources[resId].count = 0;
+  stats.clicks.sell++;
+  createSellPop(resId);
   updateUI();
-});
-sellCopperBtn.addEventListener("click", () => {
-  if (!copperUnlocked) return;
-  const amt = Math.floor(resources.copper.count * resources.copper.sellPrice);
-  resources.money.count += amt;
-  resources.copper.count = 0;
+  return cash;
+}
+/** Manual mine */
+function mineResource(resId) {
+  if (!isUnlocked(resId)) return;
+  const gain = resources[resId].perClick;
+  addOre(resId, gain);
+  stats.clicks.mine++;
   updateUI();
-  createSellPop("copper");
-});
+}
 
-mineBronzeBtn.addEventListener("click", () => {
-  if (!bronzeUnlocked) return;
-  resources.bronze.count += resources.bronze.perClick;
-  updateUI();
-});
-sellBronzeBtn.addEventListener("click", () => {
-  if (!bronzeUnlocked) return;
-  const amt = Math.floor(resources.bronze.count * resources.bronze.sellPrice);
-  resources.money.count += amt;
-  resources.bronze.count = 0;
-  updateUI();
-  createSellPop("bronze");
-});
+/* ────────────────────────────────────────────────────────────────────────────
+   BULK BUY HELPERS
+──────────────────────────────────────────────────────────────────────────── */
+function bulkCost(item, n) {
+  const a = item.basePrice * Math.pow(item.scale, item.count);
+  if (item.scale === 1) return Math.floor(a * n);
+  return Math.floor((a * (Math.pow(item.scale, n) - 1)) / (item.scale - 1));
+}
+function bulkAffordable(item, money) {
+  const a = item.basePrice * Math.pow(item.scale, item.count);
+  if (item.scale === 1) {
+    return Math.max(0, Math.min(item.max - item.count, Math.floor(money / a)));
+  }
+  const n = Math.floor(
+    Math.log(1 + (money * (item.scale - 1)) / a) / Math.log(item.scale)
+  );
+  return Math.max(0, Math.min(n, item.max - item.count));
+}
+function buyMaxCount(item) {
+  return bulkAffordable(item, resources.money.count);
+}
+// Keeping this in case you want to show cost somewhere else later
+function buyMaxCost(item) {
+  const n = buyMaxCount(item);
+  return n > 0 ? bulkCost(item, n) : 0;
+}
 
-mineSilverBtn.addEventListener("click", () => {
-  if (!silverUnlocked) return;
-  resources.silver.count += resources.silver.perClick;
-  updateUI();
-});
-sellSilverBtn.addEventListener("click", () => {
-  if (!silverUnlocked) return;
-  const amt = Math.floor(resources.silver.count * resources.silver.sellPrice);
-  resources.money.count += amt;
-  resources.silver.count = 0;
-  updateUI();
-  createSellPop("silver");
-});
+/* ────────────────────────────────────────────────────────────────────────────
+   STATS UI
+──────────────────────────────────────────────────────────────────────────── */
+function updateStatsUI() {
+  setText("stat-earned", stats.earnedMoney);
+  setText("stat-spent", stats.spentMoney);
+  setText("stat-net", stats.earnedMoney - stats.spentMoney);
 
-mineGoldBtn.addEventListener("click", () => {
-  if (!goldUnlocked) return;
-  resources.gold.count += resources.gold.perClick;
-  updateUI();
-});
-sellGoldBtn.addEventListener("click", () => {
-  if (!goldUnlocked) return;
-  const amt = Math.floor(resources.gold.count * resources.gold.sellPrice);
-  resources.money.count += amt;
-  resources.gold.count = 0;
-  updateUI();
-  createSellPop("gold");
-});
+  RES_IDS.forEach((res) => {
+    setText(`stat-mined-${res}`, stats.mined[res]);
+    setText(`stat-sold-${res}`, stats.sold[res]);
+  });
 
-// ─── Auto-mine loop ─────────────────────────────────────────────────────────
+  setText("stat-click-mine", stats.clicks.mine);
+  setText("stat-click-sell", stats.clicks.sell);
+  setText("stat-click-shop", stats.clicks.shopBuy);
+  setText("stat-click-unlock", stats.clicks.unlock);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   BUTTON LISTENERS
+──────────────────────────────────────────────────────────────────────────── */
+mineIronBtn.addEventListener("click", () => mineResource("iron"));
+sellIronBtn.addEventListener("click", () => sellAll("iron"));
+mineCopperBtn.addEventListener("click", () => mineResource("copper"));
+sellCopperBtn.addEventListener("click", () => sellAll("copper"));
+mineBronzeBtn.addEventListener("click", () => mineResource("bronze"));
+sellBronzeBtn.addEventListener("click", () => sellAll("bronze"));
+mineSilverBtn.addEventListener("click", () => mineResource("silver"));
+sellSilverBtn.addEventListener("click", () => sellAll("silver"));
+mineGoldBtn.addEventListener("click", () => mineResource("gold"));
+sellGoldBtn.addEventListener("click", () => sellAll("gold"));
+
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTO-MINE LOOP
+──────────────────────────────────────────────────────────────────────────── */
 setInterval(() => {
-  resources.iron.count += resources.iron.perSecond / 10;
-  if (copperUnlocked) resources.copper.count += resources.copper.perSecond / 10;
-  if (bronzeUnlocked) resources.bronze.count += resources.bronze.perSecond / 10;
-  if (silverUnlocked) resources.silver.count += resources.silver.perSecond / 10;
-  if (goldUnlocked) resources.gold.count += resources.gold.perSecond / 10;
+  // 10 ticks/sec
+  RES_IDS.forEach((id) => {
+    if (!isUnlocked(id)) return;
+    const gain = resources[id].perSecond / 10;
+    if (gain > 0) addOre(id, gain);
+  });
 
   updateUI();
-  if (shopScreen.classList.contains("open")) updateShopButtons();
+
+  if (!screenStats.classList.contains("hidden")) updateStatsUI();
+  if (!screenShop.classList.contains("hidden")) updateShopButtons();
 }, 100);
 
-// ─── Shop purchase handler ──────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   UNLOCK LOGIC (FIXED)
+──────────────────────────────────────────────────────────────────────────── */
+function attemptUnlock(res) {
+  const cost = UNLOCK_COST[res];
+  if (resources.money.count < cost) {
+    alert(
+      `You need $${fmt(cost)} to unlock ${res[0].toUpperCase() + res.slice(1)}!`
+    );
+    return;
+  }
+  spendMoney(cost);
+  stats.clicks.unlock++;
+
+  if (res === "copper") unlockCopperUI();
+  if (res === "bronze") unlockBronzeUI();
+  if (res === "silver") unlockSilverUI();
+  if (res === "gold") unlockGoldUI();
+
+  updateUI();
+  updateStatsUI();
+}
+
+/** Always recreate overlay/button for a locked resource */
+function relockResource(res) {
+  const panel = document.querySelector(
+    `.resource-panel[data-resource="${res}"]`
+  );
+  if (!panel) return;
+
+  panel.classList.add("locked");
+
+  const old = document.getElementById(`lock-overlay-${res}`);
+  if (old) old.remove();
+
+  const lockOverlay = document.createElement("div");
+  lockOverlay.className = "lock-overlay";
+  lockOverlay.id = `lock-overlay-${res}`;
+  lockOverlay.innerHTML = `
+    <button id="unlock-${res}-btn">
+      Unlock ${res[0].toUpperCase() + res.slice(1)} ($${fmt(UNLOCK_COST[res])})
+    </button>
+  `;
+  panel.appendChild(lockOverlay);
+
+  document
+    .getElementById(`unlock-${res}-btn`)
+    .addEventListener("click", () => attemptUnlock(res));
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   SHOP
+──────────────────────────────────────────────────────────────────────────── */
+// Click handler supports Buy 1 & Buy Max
 shopList.addEventListener("click", (e) => {
-  if (!e.target.matches(".shop-btn")) return;
-  const item = shopItems.find((i) => i.id === e.target.id);
+  const isMax = e.target.classList.contains("shop-btn-max");
+  const isBuy = e.target.classList.contains("shop-btn") && !isMax;
+  if (!isMax && !isBuy) return;
+
+  const id = e.target.dataset.itemId || e.target.id;
+  const item = shopItems.find((i) => i.id === id);
   if (!item) return;
 
-  resources.money.count -= item.price;
-  item.apply();
-  item.count++;
+  let n = 1;
+  if (isMax) {
+    n = buyMaxCount(item);
+    if (n <= 0) return;
+  }
+
+  const cost = isMax ? bulkCost(item, n) : item.price;
+  if (resources.money.count < cost) return;
+
+  spendMoney(cost);
+  stats.clicks.shopBuy += n;
+
+  for (let i = 0; i < n; i++) item.apply();
+
+  item.count += n;
   item.price = Math.floor(item.basePrice * Math.pow(item.scale, item.count));
 
   updateUI();
-  updateShopButtons();
+  renderShop();
 
   if (item.id.startsWith("auto-seller")) {
     const resId = item.category;
@@ -243,88 +403,52 @@ shopList.addEventListener("click", (e) => {
   }
 });
 
-// ─── Resource tab switching ─────────────────────────────────────────────────
+/* Resource filter tabs inside shop */
 resourceTabs.forEach((tab) => {
   tab.addEventListener("click", () => {
-    currentResource = tab.dataset.resource;
+    const res = tab.dataset.resource;
+    if (!RES_IDS.includes(res)) return;
+
+    if (!isUnlocked(res)) {
+      attemptUnlock(res);
+      return;
+    }
+
+    currentResource = res;
     resourceTabs.forEach((t) => t.classList.toggle("active", t === tab));
     switchResource(currentResource);
   });
 });
 
-// ─── Shop drawer toggling ───────────────────────────────────────────────────
-tabMine.addEventListener("click", () => switchTab(true));
-tabShop.addEventListener("click", () => switchTab(false));
-overlay.addEventListener("click", () => switchTab(true));
+/* TOP NAV TABS */
+tabMine.addEventListener("click", () => showScreen("mine"));
+tabShop.addEventListener("click", () => showScreen("shop"));
+tabStats.addEventListener("click", () => showScreen("stats"));
 
-// ─── Auto-sell toggles per resource ─────────────────────────────────────────
-["iron", "copper", "bronze", "silver", "gold"].forEach((resId) => {
-  const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
-  if (toggle) {
-    toggle.addEventListener("change", () => {
-      toggle.checked ? startAutoSell(resId) : stopAutoSell(resId);
-    });
-  }
-});
+function showScreen(which) {
+  tabMine.classList.remove("active");
+  tabShop.classList.remove("active");
+  tabStats.classList.remove("active");
 
-// ─── Unlock Handlers ───────────────────────────────────────────────────────
-unlockCopperBtn?.addEventListener("click", () => {
-  if (resources.money.count < 5000) {
-    alert("You need $5000 to unlock Copper!");
-    return;
-  }
-  resources.money.count -= 5000;
-  unlockCopperUI();
-  updateUI();
-});
+  screenMine.classList.add("hidden");
+  screenShop.classList.add("hidden");
+  screenStats.classList.add("hidden");
 
-unlockBronzeBtn?.addEventListener("click", () => {
-  if (resources.money.count < 25000) {
-    alert("You need $25000 to unlock Bronze!");
-    return;
-  }
-  resources.money.count -= 25000;
-  unlockBronzeUI();
-  updateUI();
-});
-
-unlockSilverBtn?.addEventListener("click", () => {
-  if (resources.money.count < 100000) {
-    alert("You need $100,000 to unlock Silver!");
-    return;
-  }
-  resources.money.count -= 100000;
-  unlockSilverUI();
-  updateUI();
-});
-
-unlockGoldBtn?.addEventListener("click", () => {
-  if (resources.money.count < 1_000_000) {
-    alert("You need $1,000,000 to unlock Gold!");
-    return;
-  }
-  resources.money.count -= 1_000_000;
-  unlockGoldUI();
-  updateUI();
-});
-
-// ─── CORE FUNCTIONS ─────────────────────────────────────────────────────────
-function switchTab(showMine) {
-  if (showMine) {
-    shopScreen.classList.remove("open");
-    shopScreen.classList.add("hidden");
-    overlay.classList.remove("open");
-    overlay.classList.add("hidden");
-    tabMine.classList.add("active");
-    tabShop.classList.remove("active");
-  } else {
-    shopScreen.classList.remove("hidden");
-    shopScreen.classList.add("open");
-    overlay.classList.remove("hidden");
-    overlay.classList.add("open");
-    tabShop.classList.add("active");
-    tabMine.classList.remove("active");
-    renderShop();
+  switch (which) {
+    case "mine":
+      tabMine.classList.add("active");
+      screenMine.classList.remove("hidden");
+      break;
+    case "shop":
+      tabShop.classList.add("active");
+      screenShop.classList.remove("hidden");
+      renderShop();
+      break;
+    case "stats":
+      tabStats.classList.add("active");
+      screenStats.classList.remove("hidden");
+      updateStatsUI();
+      break;
   }
 }
 
@@ -338,40 +462,119 @@ function switchResource(res) {
   updateUI();
 }
 
+/** Update only dynamic bits in existing cards (price, button, bar) */
 function updateShopButtons() {
   shopItems
     .filter((item) => item.category === currentResource)
     .forEach((item) => {
-      const btn = document.getElementById(item.id);
-      if (!btn) return;
-      const canAfford = resources.money.count >= item.price;
-      btn.disabled = !canAfford || item.count >= item.max;
-      btn.textContent =
-        item.count >= item.max
-          ? `${item.name} (Max)`
-          : `${item.name} ($${fmt(item.price)}) [${item.count}/${item.max}]`;
+      const buyBtn = document.querySelector(
+        `.shop-btn[data-item-id="${item.id}"]:not(.shop-btn-max)`
+      );
+      if (buyBtn) {
+        const canAfford = resources.money.count >= item.price;
+        buyBtn.disabled = !canAfford || item.count >= item.max;
+        buyBtn.textContent = item.count >= item.max ? "Maxed" : "Buy";
+      }
+
+      const maxBtn = document.querySelector(
+        `.shop-btn-max[data-item-id="${item.id}"]`
+      );
+      if (maxBtn) {
+        const maxN = buyMaxCount(item);
+        const locked = item.count >= item.max;
+        maxBtn.disabled = locked || maxN < 2;
+        maxBtn.textContent = locked
+          ? "Maxed"
+          : maxN >= 2
+          ? `Buy Max (${maxN})`
+          : "Buy Max";
+      }
+
+      const priceEl = document.getElementById(`price-${item.id}`);
+      if (priceEl) priceEl.textContent = `$${fmt(item.price)}`;
+      const ownedEl = document.getElementById(`owned-${item.id}`);
+      if (ownedEl) ownedEl.textContent = `${item.count}/${item.max}`;
+      const barEl = document.getElementById(`bar-${item.id}`);
+      if (barEl) barEl.style.width = (item.count / item.max) * 100 + "%";
     });
 }
 
+/** Build the shop list with descriptions */
 function renderShop() {
+  if (!shopList) return;
+
+  const items = shopItems.filter((i) => i.category === currentResource);
+  if (!items.length) {
+    shopList.innerHTML = `<li class="shop-empty">No upgrades for "${currentResource}"</li>`;
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+
+  items.forEach((item) => {
+    const li = document.createElement("li");
+    li.className = "shop-card";
+    li.dataset.itemId = item.id;
+
+    const pct = (item.count / item.max) * 100;
+
+    li.innerHTML = `
+      <div class="shop-item-head">
+        <span class="shop-item-name">${item.name}</span>
+        <span class="shop-item-price" id="price-${item.id}">$${fmt(
+      item.price
+    )}</span>
+      </div>
+
+      <p class="shop-item-desc">${item.description || ""}</p>
+
+      <div class="shop-bar">
+        <div class="shop-bar-fill" id="bar-${
+          item.id
+        }" style="width:${pct}%;"></div>
+      </div>
+
+      <div class="shop-item-meta">
+        <span id="owned-${item.id}">${item.count}/${item.max}</span>
+        <span class="cat">${item.category}</span>
+      </div>
+    `;
+
+    const btnRow = document.createElement("div");
+    btnRow.className = "shop-btn-row";
+
+    const btn = document.createElement("button");
+    btn.className = "shop-btn";
+    btn.dataset.itemId = item.id;
+    btn.textContent = item.count >= item.max ? "Maxed" : "Buy";
+    btn.disabled = resources.money.count < item.price || item.count >= item.max;
+
+    const btnMax = document.createElement("button");
+    btnMax.className = "shop-btn shop-btn-max";
+    btnMax.dataset.itemId = item.id;
+    const maxN = buyMaxCount(item);
+    const locked = item.count >= item.max;
+    btnMax.disabled = locked || maxN < 2;
+    btnMax.textContent = locked
+      ? "Maxed"
+      : maxN >= 2
+      ? `Buy Max (${maxN})`
+      : "Buy Max";
+
+    btnRow.appendChild(btn);
+    btnRow.appendChild(btnMax);
+    li.appendChild(btnRow);
+
+    frag.appendChild(li);
+  });
+
   shopList.innerHTML = "";
-  shopItems
-    .filter((i) => i.category === currentResource)
-    .forEach((item) => {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
-      btn.id = item.id;
-      btn.className = "shop-btn";
-      btn.textContent = `${item.name} ($${fmt(item.price)}) [${item.count}/${
-        item.max
-      }]`;
-      btn.disabled =
-        resources.money.count < item.price || item.count >= item.max;
-      li.appendChild(btn);
-      shopList.appendChild(li);
-    });
+  shopList.appendChild(frag);
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   GENERAL UI UPDATE
+──────────────────────────────────────────────────────────────────────────── */
 function updateUI() {
   ironCountEl.textContent = fmt(resources.iron.count);
   copperCountEl.textContent = fmt(resources.copper.count);
@@ -386,25 +589,19 @@ function updateUI() {
   sellSilverBtn.disabled = resources.silver.count <= 0;
   sellGoldBtn.disabled = resources.gold.count <= 0;
 
-  document.getElementById("auto-rate-iron").textContent = fmt(
-    resources.iron.perSecond
-  );
-  document.getElementById("auto-rate-copper").textContent = fmt(
-    resources.copper.perSecond
-  );
-  document.getElementById("auto-rate-bronze").textContent = fmt(
-    resources.bronze.perSecond
-  );
-  document.getElementById("auto-rate-silver").textContent = fmt(
-    resources.silver.perSecond
-  );
-  document.getElementById("auto-rate-gold").textContent = fmt(
-    resources.gold.perSecond
-  );
+  setText("auto-rate-iron", resources.iron.perSecond);
+  setText("auto-rate-copper", resources.copper.perSecond);
+  setText("auto-rate-bronze", resources.bronze.perSecond);
+  setText("auto-rate-silver", resources.silver.perSecond);
+  setText("auto-rate-gold", resources.gold.perSecond);
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   EFFECTS
+──────────────────────────────────────────────────────────────────────────── */
 function createSellPop(resourceId) {
   const btn = document.getElementById(`sell-${resourceId}-btn`);
+  if (!btn) return;
   const pop = document.createElement("span");
   pop.className = "sell-pop";
   pop.textContent = "$";
@@ -412,6 +609,9 @@ function createSellPop(resourceId) {
   pop.addEventListener("animationend", () => pop.remove());
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTO-SELL
+──────────────────────────────────────────────────────────────────────────── */
 function startAutoSell(resId) {
   stopAutoSell(resId);
   const seller = shopItems.find(
@@ -425,27 +625,23 @@ function startAutoSell(resId) {
   document.getElementById(`sell-timer-${resId}`)?.classList.remove("hidden");
   countdownTimers[resId] = setInterval(() => updateSellCountdown(resId), 500);
   autoSellTimers[resId] = setInterval(() => {
-    const amt = Math.floor(resources[resId].count * resources[resId].sellPrice);
-    resources.money.count += amt;
-    resources[resId].count = 0;
-    updateUI();
-    createSellPop(resId);
+    sellAll(resId);
     nextSellTimes[resId] = Date.now() + autoSellIntervals[resId];
   }, autoSellIntervals[resId]);
 }
-
 function stopAutoSell(resId) {
   clearInterval(autoSellTimers[resId]);
   clearInterval(countdownTimers[resId]);
 }
-
 function updateSellCountdown(resId) {
   const sec = Math.ceil((nextSellTimes[resId] - Date.now()) / 1000);
   const countdownEl = document.getElementById(`sell-countdown-${resId}`);
   if (countdownEl) countdownEl.textContent = Math.max(sec, 0);
 }
 
-// ─── VERSION LOAD ───────────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   VERSION LOAD
+──────────────────────────────────────────────────────────────────────────── */
 fetch("version.txt")
   .then((r) => r.text())
   .then((txt) => {
@@ -454,7 +650,55 @@ fetch("version.txt")
   })
   .catch(() => {});
 
-// ─── SAVE / LOAD HELPERS ────────────────────────────────────────────────────
+function changelogToHTML(txt) {
+  const lines = txt.split(/\r?\n/);
+  let html = "";
+  let openUl = false;
+  lines.forEach((l) => {
+    if (/^\s*-\s+/.test(l)) {
+      if (!openUl) {
+        html += "<ul>";
+        openUl = true;
+      }
+      html += "<li>" + l.replace(/^\s*-\s+/, "") + "</li>";
+    } else if (/^\s*\*\*(.+?)\*\*\s*$/.test(l)) {
+      if (openUl) {
+        html += "</ul>";
+        openUl = false;
+      }
+      html += "<h4>" + l.replace(/^\s*\*\*(.+?)\*\*\s*$/, "$1") + "</h4>";
+    } else if (l.trim() === "") {
+      if (openUl) {
+        html += "</ul>";
+        openUl = false;
+      }
+      html += "<br/>";
+    } else {
+      if (openUl) {
+        html += "</ul>";
+        openUl = false;
+      }
+      html += "<p>" + l + "</p>";
+    }
+  });
+  if (openUl) html += "</ul>";
+  return html;
+}
+
+fetch("changelog.txt")
+  .then((r) => r.text())
+  .then((txt) => {
+    const box = document.getElementById("changelog");
+    if (box) box.innerHTML = changelogToHTML(txt);
+  })
+  .catch(() => {
+    const box = document.getElementById("changelog");
+    if (box) box.textContent = "Could not load changelog.";
+  });
+
+/* ────────────────────────────────────────────────────────────────────────────
+   SAVE / LOAD
+──────────────────────────────────────────────────────────────────────────── */
 function isLocalStorageAvailable() {
   try {
     const test = "__localStorage_test__";
@@ -493,6 +737,8 @@ function getSaveData() {
       price: i.price,
     })),
 
+    stats,
+
     lastSave: Date.now(),
   };
 }
@@ -516,7 +762,6 @@ function saveGame() {
 
 function loadGame() {
   if (!isLocalStorageAvailable()) return false;
-
   try {
     const raw = localStorage.getItem("idleMinerSave");
     if (!raw) return false;
@@ -529,15 +774,18 @@ function loadGame() {
     resources.gold.count = data.gold || 0;
     resources.money.count = data.money || 0;
 
-    copperUnlocked = data.copperUnlocked || false;
-    bronzeUnlocked = data.bronzeUnlocked || false;
-    silverUnlocked = data.silverUnlocked || false;
-    goldUnlocked = data.goldUnlocked || false;
-
+    copperUnlocked = !!data.copperUnlocked;
+    bronzeUnlocked = !!data.bronzeUnlocked;
+    silverUnlocked = !!data.silverUnlocked;
+    goldUnlocked = !!data.goldUnlocked;
     if (copperUnlocked) unlockCopperUI();
+    else relockResource("copper");
     if (bronzeUnlocked) unlockBronzeUI();
+    else relockResource("bronze");
     if (silverUnlocked) unlockSilverUI();
+    else relockResource("silver");
     if (goldUnlocked) unlockGoldUI();
+    else relockResource("gold");
 
     if (data.ironPerSecond !== undefined)
       resources.iron.perSecond = data.ironPerSecond;
@@ -550,19 +798,27 @@ function loadGame() {
     if (data.goldPerSecond !== undefined)
       resources.gold.perSecond = data.goldPerSecond;
 
-    if (data.upgrades && Array.isArray(data.upgrades)) {
+    if (Array.isArray(data.upgrades)) {
       data.upgrades.forEach((u) => {
         const item = shopItems.find((i) => i.id === u.id);
         if (item && u.count >= 0) {
           item.count = u.count;
           item.price =
-            u.price ||
+            u.price ??
             Math.floor(item.basePrice * Math.pow(item.scale, item.count));
         }
       });
     }
 
-    // Re-init auto-sellers
+    if (data.stats) {
+      stats.earnedMoney = data.stats.earnedMoney ?? stats.earnedMoney;
+      stats.spentMoney = data.stats.spentMoney ?? stats.spentMoney;
+      Object.assign(stats.mined, data.stats.mined || {});
+      Object.assign(stats.sold, data.stats.sold || {});
+      Object.assign(stats.clicks, data.stats.clicks || {});
+    }
+
+    // re-init autosellers
     shopItems
       .filter((i) => i.id.startsWith("auto-seller") && i.count > 0)
       .forEach((item) => {
@@ -576,6 +832,7 @@ function loadGame() {
       });
 
     console.log("Game loaded successfully");
+    updateStatsUI();
     return true;
   } catch (e) {
     console.error("Failed to load game:", e);
@@ -583,44 +840,39 @@ function loadGame() {
   }
 }
 
-// ─── Unlock UI helpers ─────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   UNLOCK UI HELPERS
+──────────────────────────────────────────────────────────────────────────── */
 function unlockCopperUI() {
   copperUnlocked = true;
   mineCopperBtn.disabled = sellCopperBtn.disabled = false;
-
   document
     .querySelector('.resource-panel[data-resource="copper"]')
     ?.classList.remove("locked");
   document.getElementById("lock-overlay-copper")?.remove();
   document.getElementById("tab-resource-copper")?.classList.remove("locked");
 }
-
 function unlockBronzeUI() {
   bronzeUnlocked = true;
   mineBronzeBtn.disabled = sellBronzeBtn.disabled = false;
-
   document
     .querySelector('.resource-panel[data-resource="bronze"]')
     ?.classList.remove("locked");
   document.getElementById("lock-overlay-bronze")?.remove();
   document.getElementById("tab-resource-bronze")?.classList.remove("locked");
 }
-
 function unlockSilverUI() {
   silverUnlocked = true;
   mineSilverBtn.disabled = sellSilverBtn.disabled = false;
-
   document
     .querySelector('.resource-panel[data-resource="silver"]')
     ?.classList.remove("locked");
   document.getElementById("lock-overlay-silver")?.remove();
   document.getElementById("tab-resource-silver")?.classList.remove("locked");
 }
-
 function unlockGoldUI() {
   goldUnlocked = true;
   mineGoldBtn.disabled = sellGoldBtn.disabled = false;
-
   document
     .querySelector('.resource-panel[data-resource="gold"]')
     ?.classList.remove("locked");
@@ -628,30 +880,22 @@ function unlockGoldUI() {
   document.getElementById("tab-resource-gold")?.classList.remove("locked");
 }
 
-// ─── NEW GAME INITIALIZER ──────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   NEW GAME
+──────────────────────────────────────────────────────────────────────────── */
 function startNewGame() {
-  ["iron", "copper", "bronze", "silver", "gold"].forEach((resId) => {
+  RES_IDS.forEach((resId) => {
     stopAutoSell(resId);
     document.getElementById(`sell-timer-${resId}`)?.classList.add("hidden");
     const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
     if (toggle) toggle.checked = false;
   });
 
-  resources.iron.count =
-    resources.copper.count =
-    resources.bronze.count =
-    resources.silver.count =
-    resources.gold.count =
-      0;
-
+  RES_IDS.forEach((r) => {
+    resources[r].count = 0;
+    resources[r].perSecond = 0;
+  });
   resources.money.count = 0;
-
-  resources.iron.perSecond =
-    resources.copper.perSecond =
-    resources.bronze.perSecond =
-    resources.silver.perSecond =
-    resources.gold.perSecond =
-      0;
 
   copperUnlocked = bronzeUnlocked = silverUnlocked = goldUnlocked = false;
 
@@ -659,6 +903,12 @@ function startNewGame() {
     item.count = 0;
     item.price = item.basePrice;
   });
+
+  Object.keys(stats.mined).forEach((k) => (stats.mined[k] = 0));
+  Object.keys(stats.sold).forEach((k) => (stats.sold[k] = 0));
+  stats.earnedMoney = 0;
+  stats.spentMoney = 0;
+  stats.clicks = { mine: 0, sell: 0, shopBuy: 0, unlock: 0 };
 
   if (isLocalStorageAvailable()) localStorage.removeItem("idleMinerSave");
 
@@ -668,63 +918,26 @@ function startNewGame() {
   mineGoldBtn.disabled = sellGoldBtn.disabled = true;
 
   currentResource = "iron";
-  resourceTabs.forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.resource === "iron");
-  });
+  resourceTabs.forEach((tab) =>
+    tab.classList.toggle("active", tab.dataset.resource === "iron")
+  );
 
-  relockResource("copper", 5000);
-  relockResource("bronze", 25000);
-  relockResource("silver", 100000);
-  relockResource("gold", 1_000_000);
-
+  relockResource("copper");
+  relockResource("bronze");
+  relockResource("silver");
+  relockResource("gold");
   document.getElementById("tab-resource-copper")?.classList.add("locked");
 
   updateUI();
   renderShop();
+  updateStatsUI();
 
   console.log("New game started - all data wiped");
 }
 
-function relockResource(res, cost) {
-  const panel = document.querySelector(
-    `.resource-panel[data-resource="${res}"]`
-  );
-  if (panel && !panel.classList.contains("locked")) {
-    panel.classList.add("locked");
-    const overlayId = `lock-overlay-${res}`;
-    if (!document.getElementById(overlayId)) {
-      const lockOverlay = document.createElement("div");
-      lockOverlay.className = "lock-overlay";
-      lockOverlay.id = overlayId;
-      lockOverlay.innerHTML = `<button id="unlock-${res}-btn">Unlock ${
-        res.charAt(0).toUpperCase() + res.slice(1)
-      } ($${fmt(cost)})</button>`;
-      panel.appendChild(lockOverlay);
-
-      const newUnlockBtn = document.getElementById(`unlock-${res}-btn`);
-      if (newUnlockBtn) {
-        newUnlockBtn.addEventListener("click", () => {
-          if (resources.money.count < cost) {
-            alert(
-              `You need $${fmt(cost)} to unlock ${
-                res.charAt(0).toUpperCase() + res.slice(1)
-              }!`
-            );
-            return;
-          }
-          resources.money.count -= cost;
-          if (res === "copper") unlockCopperUI();
-          if (res === "bronze") unlockBronzeUI();
-          if (res === "silver") unlockSilverUI();
-          if (res === "gold") unlockGoldUI();
-          updateUI();
-        });
-      }
-    }
-  }
-}
-
-// ─── KICKOFF AFTER MENU SELECTION ───────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   START GAME
+──────────────────────────────────────────────────────────────────────────── */
 function startGame() {
   mainMenu.style.display = "none";
   settingsMenu.style.display = "none";
@@ -740,24 +953,24 @@ function startGame() {
   }
 
   updateUI();
+  updateStatsUI();
   switchResource(currentResource);
-  switchTab(true);
+  showScreen("mine");
 
   if (toggleAutoSave?.checked) startAutoSave();
 }
 
-// ─── AUTOSAVE FUNCTIONS ────────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTOSAVE
+──────────────────────────────────────────────────────────────────────────── */
 function startAutoSave() {
   stopAutoSave();
   if (!isLocalStorageAvailable()) return;
-
   autoSaveInterval = setInterval(() => {
     if (gameStarted) saveGame();
   }, 60000);
-
   window.addEventListener("beforeunload", saveGame);
 }
-
 function stopAutoSave() {
   if (autoSaveInterval) {
     clearInterval(autoSaveInterval);
@@ -766,8 +979,10 @@ function stopAutoSave() {
   window.removeEventListener("beforeunload", saveGame);
 }
 
-// ─── MENU BUTTON HANDLERS ──────────────────────────────────────────────────
-btnContinue.addEventListener("click", () => {
+/* ────────────────────────────────────────────────────────────────────────────
+   MENU BUTTONS
+──────────────────────────────────────────────────────────────────────────── */
+btnContinue?.addEventListener("click", () => {
   if (loadGame()) startGame();
   else {
     alert("Failed to load save data. Starting new game.");
@@ -776,35 +991,48 @@ btnContinue.addEventListener("click", () => {
   }
 });
 
-btnNewGame.addEventListener("click", () => {
+btnNewGame?.addEventListener("click", () => {
   startNewGame();
   startGame();
 });
 
-btnSettings.addEventListener("click", () => {
+btnSettings?.addEventListener("click", () => {
   mainMenu.style.display = "none";
   settingsMenu.style.display = "flex";
 });
 
-btnBackToMenu.addEventListener("click", () => {
+btnBackToMenu?.addEventListener("click", () => {
   settingsMenu.style.display = "none";
   mainMenu.style.display = "flex";
 });
 
-if (toggleAutoSave) {
-  toggleAutoSave.addEventListener("change", (e) => {
-    if (e.target.checked) {
-      if (gameStarted) {
-        startAutoSave();
-        if (saveGame() && btnContinue) btnContinue.disabled = false;
-      }
-    } else {
-      stopAutoSave();
+toggleAutoSave?.addEventListener("change", (e) => {
+  if (e.target.checked) {
+    if (gameStarted) {
+      startAutoSave();
+      if (saveGame() && btnContinue) btnContinue.disabled = false;
     }
-  });
-}
+  } else {
+    stopAutoSave();
+  }
+});
 
-// ─── SHOW MENU ON PAGE LOAD ────────────────────────────────────────────────
+btnSaveMenu?.addEventListener("click", () => {
+  if (saveGame()) {
+    if (btnContinue) btnContinue.disabled = false;
+    flashSaveIndicator();
+  } else {
+    alert("Failed to save game. Please check browser settings.");
+  }
+  if (gameUI) gameUI.style.display = "none";
+  if (mainMenu) mainMenu.style.display = "flex";
+  gameStarted = false;
+  stopAutoSave();
+});
+
+/* ────────────────────────────────────────────────────────────────────────────
+   ON LOAD
+──────────────────────────────────────────────────────────────────────────── */
 document.addEventListener("DOMContentLoaded", () => {
   const hasSave =
     isLocalStorageAvailable() && !!localStorage.getItem("idleMinerSave");
@@ -812,9 +1040,19 @@ document.addEventListener("DOMContentLoaded", () => {
   if (gameUI) gameUI.style.display = "none";
   if (mainMenu) mainMenu.style.display = "flex";
   gameStarted = false;
+
+  if (!hasSave) {
+    // fresh boot: relock everything above iron
+    relockResource("copper");
+    relockResource("bronze");
+    relockResource("silver");
+    relockResource("gold");
+  }
 });
 
-// ─── Save Indicator Flash ──────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   SAVE INDICATORS
+──────────────────────────────────────────────────────────────────────────── */
 function flashSaveIndicator() {
   if (!saveIndicator) return;
   saveIndicator.classList.remove("hidden");
@@ -825,7 +1063,6 @@ function flashSaveIndicator() {
   }, 2000);
 }
 
-// ─── AutoSave Cog Indicator ────────────────────────────────────────────────
 function showAutoSaveIndicator() {
   let cogIndicator = document.getElementById("autosave-cog");
   if (!cogIndicator) {
@@ -859,23 +1096,6 @@ function showAutoSaveIndicator() {
   }
   cogIndicator.classList.add("show");
 }
-
 function hideAutoSaveIndicator() {
   document.getElementById("autosave-cog")?.classList.remove("show");
-}
-
-// ─── Save & Menu button ────────────────────────────────────────────────────
-if (btnSaveMenu) {
-  btnSaveMenu.addEventListener("click", () => {
-    if (saveGame()) {
-      if (btnContinue) btnContinue.disabled = false;
-      flashSaveIndicator();
-    } else {
-      alert("Failed to save game. Please check browser settings.");
-    }
-    if (gameUI) gameUI.style.display = "none";
-    if (mainMenu) mainMenu.style.display = "flex";
-    gameStarted = false;
-    stopAutoSave();
-  });
 }

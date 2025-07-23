@@ -25,10 +25,15 @@
       <button id="btn-new">New Game</button>
       <button id="btn-continue">Continue</button>
       <button id="btn-settings">Settings</button>
-      <div id="confirm-newgame" class="overlay hidden">
-        
+      <section id="whats-new">
+        <h3>What’s New (<span id="version"></span>)</h3>
+        <div id="changelog" class="changelog">
+          <p>Loading…</p>
         </div>
-      </div>
+      </section>
+
+      <!-- Confirm new game modal shell -->
+      <div id="confirm-newgame" class="overlay hidden"></div>
     </div>
 
     <!-- SETTINGS PANEL -->
@@ -45,7 +50,7 @@
       <button id="btn-back-to-menu">Back</button>
     </div>
 
-    <!-- GAME UI (hidden until menu choice) -->
+    <!-- GAME UI -->
     <div id="game-ui" style="display: none">
       <header>
         <h1 class="logo">
@@ -72,18 +77,25 @@
           </div>
           <button id="tab-mine" class="active">Mine</button>
           <button id="tab-shop">Shop</button>
+          <button id="tab-stats">Stats</button>
           <button id="btn-save-menu">Menu</button>
         </nav>
+
+        <!-- Collapsed resource bar (optional) -->
+        <!-- <div id="resourceBar" class="resource-bar" aria-label="Collapsed resources"></div> -->
       </header>
 
-      <div id="overlay" class="hidden"></div>
-
       <main>
-        <!-- Mine Screen -->
+        <!-- ===================== MINE SCREEN ===================== -->
         <section id="screen-mine" class="screen-panel panel">
           <div class="resources-container">
             <!-- Iron Panel -->
-            <div class="resource-panel" data-resource="iron">
+            <div class="resource-panel" data-resource="iron" id="iron-box">
+              <div class="resource-header">
+                <h2>Iron</h2>
+                <!-- <button class="collapse-btn" data-res="iron" aria-label="Collapse Iron">▼</button> -->
+              </div>
+
               <div class="resource-display">
                 <img
                   src="images/iron/fe.png"
@@ -96,14 +108,11 @@
                   <button id="sell-iron-btn" disabled>Sell All Iron</button>
                 </div>
               </div>
+
               <div class="auto-status">
-                <p>
-                  Auto-mining rate:
-                  <span id="auto-rate-iron">0</span>/s
-                </p>
+                <p>Auto-mining rate: <span id="auto-rate-iron">0</span>/s</p>
                 <p id="sell-timer-iron" class="hidden">
-                  Next auto-sell in
-                  <span id="sell-countdown-iron">--</span>s
+                  Next auto-sell in <span id="sell-countdown-iron">--</span>s
                   <label class="switch">
                     <input type="checkbox" id="auto-sell-toggle-iron" />
                     <span class="slider round"></span>
@@ -112,8 +121,17 @@
               </div>
             </div>
 
-            <!-- Copper Panel (Locked) -->
-            <div class="resource-panel locked" data-resource="copper">
+            <!-- Copper Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="copper"
+              id="copper-box"
+            >
+              <div class="resource-header">
+                <h2>Copper</h2>
+                <!-- <button class="collapse-btn" data-res="copper" aria-label="Collapse Copper">▼</button> -->
+              </div>
+
               <div class="resource-display">
                 <img
                   src="images/copper/cu.png"
@@ -126,27 +144,34 @@
                   <button id="sell-copper-btn" disabled>Sell All Copper</button>
                 </div>
               </div>
+
               <div class="auto-status">
-                <p>
-                  Auto-mining rate:
-                  <span id="auto-rate-copper">0</span>/s
-                </p>
+                <p>Auto-mining rate: <span id="auto-rate-copper">0</span>/s</p>
                 <p id="sell-timer-copper" class="hidden">
-                  Next auto-sell in
-                  <span id="sell-countdown-copper">--</span>s
+                  Next auto-sell in <span id="sell-countdown-copper">--</span>s
                   <label class="switch">
                     <input type="checkbox" id="auto-sell-toggle-copper" />
                     <span class="slider round"></span>
                   </label>
                 </p>
               </div>
+
               <div class="lock-overlay" id="lock-overlay-copper">
                 <button id="unlock-copper-btn">Unlock Copper ($5k)</button>
               </div>
             </div>
 
-            <!-- Bronze Panel (Locked) -->
-            <div class="resource-panel locked" data-resource="bronze">
+            <!-- Bronze Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="bronze"
+              id="bronze-box"
+            >
+              <div class="resource-header">
+                <h2>Bronze</h2>
+                <!-- <button class="collapse-btn" data-res="bronze" aria-label="Collapse Bronze">▼</button> -->
+              </div>
+
               <div class="resource-display">
                 <img
                   src="images/bronze/bronze.png"
@@ -159,27 +184,34 @@
                   <button id="sell-bronze-btn" disabled>Sell All Bronze</button>
                 </div>
               </div>
+
               <div class="auto-status">
-                <p>
-                  Auto-mining rate:
-                  <span id="auto-rate-bronze">0</span>/s
-                </p>
+                <p>Auto-mining rate: <span id="auto-rate-bronze">0</span>/s</p>
                 <p id="sell-timer-bronze" class="hidden">
-                  Next auto-sell in
-                  <span id="sell-countdown-bronze">--</span>s
+                  Next auto-sell in <span id="sell-countdown-bronze">--</span>s
                   <label class="switch">
                     <input type="checkbox" id="auto-sell-toggle-bronze" />
                     <span class="slider round"></span>
                   </label>
                 </p>
               </div>
+
               <div class="lock-overlay" id="lock-overlay-bronze">
                 <button id="unlock-bronze-btn">Unlock Bronze ($25k)</button>
               </div>
             </div>
 
-            <!-- Silver Panel (Locked) -->
-            <div class="resource-panel locked" data-resource="silver">
+            <!-- Silver Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="silver"
+              id="silver-box"
+            >
+              <div class="resource-header">
+                <h2>Silver</h2>
+                <!-- <button class="collapse-btn" data-res="silver" aria-label="Collapse Silver">▼</button> -->
+              </div>
+
               <div class="resource-display">
                 <img
                   src="images/silver/Ag.png"
@@ -192,27 +224,34 @@
                   <button id="sell-silver-btn" disabled>Sell All Silver</button>
                 </div>
               </div>
+
               <div class="auto-status">
-                <p>
-                  Auto-mining rate:
-                  <span id="auto-rate-silver">0</span>/s
-                </p>
+                <p>Auto-mining rate: <span id="auto-rate-silver">0</span>/s</p>
                 <p id="sell-timer-silver" class="hidden">
-                  Next auto-sell in
-                  <span id="sell-countdown-silver">--</span>s
+                  Next auto-sell in <span id="sell-countdown-silver">--</span>s
                   <label class="switch">
                     <input type="checkbox" id="auto-sell-toggle-silver" />
                     <span class="slider round"></span>
                   </label>
                 </p>
               </div>
+
               <div class="lock-overlay" id="lock-overlay-silver">
                 <button id="unlock-silver-btn">Unlock Silver ($100k)</button>
               </div>
             </div>
-            <!-- Gold Panel (Locked) -->
 
-            <div class="resource-panel locked" data-resource="gold">
+            <!-- Gold Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="gold"
+              id="gold-box"
+            >
+              <div class="resource-header">
+                <h2>Gold</h2>
+                <!-- <button class="collapse-btn" data-res="gold" aria-label="Collapse Gold">▼</button> -->
+              </div>
+
               <div class="resource-display">
                 <img
                   src="images/gold/au.png"
@@ -227,13 +266,9 @@
               </div>
 
               <div class="auto-status">
-                <p>
-                  Auto-mining rate:
-                  <span id="auto-rate-gold">0</span>/s
-                </p>
+                <p>Auto-mining rate: <span id="auto-rate-gold">0</span>/s</p>
                 <p id="sell-timer-gold" class="hidden">
-                  Next auto-sell in
-                  <span id="sell-countdown-gold">--</span>s
+                  Next auto-sell in <span id="sell-countdown-gold">--</span>s
                   <label class="switch">
                     <input type="checkbox" id="auto-sell-toggle-gold" />
                     <span class="slider round"></span>
@@ -248,9 +283,11 @@
           </div>
         </section>
 
-        <!-- Shop Screen -->
+        <!-- ===================== SHOP SCREEN (FULL TAB) ===================== -->
         <section id="screen-shop" class="screen-panel panel hidden">
           <h2>Shop</h2>
+
+          <!-- Resource filter tabs (inside the shop screen) -->
           <div id="resource-tabs" class="resource-tabs">
             <button data-resource="iron" class="resource-tab active">
               Iron
@@ -284,9 +321,53 @@
               Gold
             </button>
           </div>
+
           <ul id="shop-list">
             <!-- Populated via renderShop() -->
           </ul>
+        </section>
+
+        <!-- ===================== STATS SCREEN ===================== -->
+        <section id="screen-stats" class="screen-panel panel hidden">
+          <h2>Stats</h2>
+
+          <div class="stats-group">
+            <h3>Money</h3>
+            <p>Total earned: $<span id="stat-earned">0</span></p>
+            <p>Total spent: $<span id="stat-spent">0</span></p>
+            <p>Total Net worth: $<span id="stat-net">0</span></p>
+          </div>
+
+          <div class="stats-group">
+            <h3>Resources Mined</h3>
+            <ul class="stats-list">
+              <li>Iron: <span id="stat-mined-iron">0</span></li>
+              <li>Copper: <span id="stat-mined-copper">0</span></li>
+              <li>Bronze: <span id="stat-mined-bronze">0</span></li>
+              <li>Silver: <span id="stat-mined-silver">0</span></li>
+              <li>Gold: <span id="stat-mined-gold">0</span></li>
+            </ul>
+          </div>
+
+          <div class="stats-group">
+            <h3>Resources Sold</h3>
+            <ul class="stats-list">
+              <li>Iron: <span id="stat-sold-iron">0</span></li>
+              <li>Copper: <span id="stat-sold-copper">0</span></li>
+              <li>Bronze: <span id="stat-sold-bronze">0</span></li>
+              <li>Silver: <span id="stat-sold-silver">0</span></li>
+              <li>Gold: <span id="stat-sold-gold">0</span></li>
+            </ul>
+          </div>
+
+          <div class="stats-group">
+            <h3>Clicks</h3>
+            <ul class="stats-list">
+              <li>Mine clicks: <span id="stat-click-mine">0</span></li>
+              <li>Sell clicks: <span id="stat-click-sell">0</span></li>
+              <li>Shop purchases: <span id="stat-click-shop">0</span></li>
+            </ul>
+          </div>
         </section>
       </main>
 
@@ -298,14 +379,26 @@
             href="https://github.com/TsProphet94/IdleForge"
             target="_blank"
             rel="noopener noreferrer"
+            >GitHub</a
           >
-            GitHub
-          </a>
         </div>
       </footer>
     </div>
     <!-- end #game-ui -->
+
+    <!-- Toast save indicator -->
     <div id="save-indicator" class="save-indicator hidden">✔ Game Saved!</div>
+
+    <!-- Template for collapsed chips (if you’re using the collapse feature) -->
+    <template id="resource-chip-template">
+      <div class="res-chip" data-res="">
+        <span class="icon">⛏️</span>
+        <span class="qty">0</span>
+        <span class="rate">0/s</span>
+        <button class="mini-btn mine" title="Mine">M</button>
+        <button class="mini-btn sell" title="Sell">S</button>
+      </div>
+    </template>
 
     <script type="module" src="script.js"></script>
   </body>
