@@ -1,4 +1,4 @@
-v0.1.11 – “Bulk or Bust”
+v0.1.13 – “Bulk or Bust”
 
 Shop Overhaul
 •	Shop moved from a slide-out drawer to its own full screen. Cleaner grid, easier scrolling, way less claustrophobic.
