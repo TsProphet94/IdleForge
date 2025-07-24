@@ -1,3 +1,16 @@
+v0.1.18- Milestone Rewards, Platimum, Rebalance!
+
+•   New milestone rewards added for each resource, giving extra goals and bonuses as you progress.
+•   New resource: Platinum! Unlock, mine, and upgrade this high-value late-game metal.
+•   Major balance update: All resource sell prices increased for smoother progression. Upgrade base prices and scaling reduced across all resources—upgrades are now more affordable and rewarding. Late-game unlock costs and platinum/gold progression tuned for less grind and more satisfying ramp.
+•   New Main Menu Background!
+•   Passive income and per-click upgrades now scale better with resource value.
+•   Early, mid, and late game progression rebalanced for a fair challenge and less paywall cliff.
+•   Fixed new game logic, ensuring (mine per click) is reset to 1.
+•   Fixed autoseller toggle logic.
+
+--------------------------------------
+
 v0.1.17– Gold icon fix 
 
 --------------------------------------

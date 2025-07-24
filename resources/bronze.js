@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 5, // $ per bronze
+  sellPrice: 7, // $ per bronze
   category: "bronze",
 };

@@ -10,9 +10,9 @@ export const shopItems = [
     name: "Tougher Pickaxe",
     description: "+1 iron per click",
     category: "iron",
-    basePrice: 60,
-    price: 60,
-    scale: 1.15,
+    basePrice: 40,
+    price: 40,
+    scale: 1.1,
     count: 0,
     max: 10,
     apply() {
@@ -24,11 +24,11 @@ export const shopItems = [
     name: "Small Drill",
     description: "+0.8 iron/sec per level",
     category: "iron",
-    basePrice: 60,
-    price: 60,
-    scale: 1.18,
+    basePrice: 45,
+    price: 45,
+    scale: 1.12,
     count: 0,
-    max: 25,
+    max: 50,
     apply() {
       resources.iron.perSecond += 0.8;
     },
@@ -38,11 +38,11 @@ export const shopItems = [
     name: "Jackhammer",
     description: "+1.2 iron/sec per level",
     category: "iron",
-    basePrice: 100,
-    price: 100,
-    scale: 1.22,
+    basePrice: 70,
+    price: 70,
+    scale: 1.15,
     count: 0,
-    max: 25,
+    max: 50,
     apply() {
       resources.iron.perSecond += 1.2;
     },
@@ -52,11 +52,11 @@ export const shopItems = [
     name: "Coring Rig",
     description: "+2 iron/sec per level",
     category: "iron",
-    basePrice: 180,
-    price: 180,
-    scale: 1.24,
+    basePrice: 120,
+    price: 120,
+    scale: 1.18,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.iron.perSecond += 2;
     },
@@ -66,11 +66,11 @@ export const shopItems = [
     name: "Mining Rig",
     description: "+5 iron/sec per level",
     category: "iron",
-    basePrice: 500,
-    price: 500,
-    scale: 1.28,
+    basePrice: 350,
+    price: 350,
+    scale: 1.22,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.iron.perSecond += 5;
     },
@@ -80,9 +80,9 @@ export const shopItems = [
     name: "Auto-Seller (Iron)",
     description: "Automatically sells iron every 5s",
     category: "iron",
-    basePrice: 3000,
-    price: 3000,
-    scale: 1.3,
+    basePrice: 2000,
+    price: 2000,
+    scale: 1.18,
     count: 0,
     max: 1,
     apply() {
@@ -116,7 +116,7 @@ export const shopItems = [
     price: 130,
     scale: 1.22,
     count: 0,
-    max: 25,
+    max: 50,
     apply() {
       resources.copper.perSecond += 0.4;
     },
@@ -130,7 +130,7 @@ export const shopItems = [
     price: 470,
     scale: 1.25,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.copper.perSecond += 1.2;
     },
@@ -144,7 +144,7 @@ export const shopItems = [
     price: 2250,
     scale: 1.28,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.copper.perSecond += 5;
     },
@@ -158,7 +158,7 @@ export const shopItems = [
     price: 2550,
     scale: 1.32,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
       resources.copper.perSecond += 5;
     },
@@ -204,7 +204,7 @@ export const shopItems = [
     price: 360,
     scale: 1.28,
     count: 0,
-    max: 25,
+    max: 50,
     apply() {
       resources.bronze.perSecond += 0.4;
     },
@@ -218,7 +218,7 @@ export const shopItems = [
     price: 1200,
     scale: 1.3,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.bronze.perSecond += 1.2;
     },
@@ -232,7 +232,7 @@ export const shopItems = [
     price: 5500,
     scale: 1.33,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.bronze.perSecond += 5;
     },
@@ -246,7 +246,7 @@ export const shopItems = [
     price: 6000,
     scale: 1.36,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
       resources.bronze.perSecond += 5;
     },
@@ -292,7 +292,7 @@ export const shopItems = [
     price: 5200,
     scale: 1.45,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.silver.perSecond += 2;
     },
@@ -306,7 +306,7 @@ export const shopItems = [
     price: 18000,
     scale: 1.5,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.silver.perSecond += 6;
     },
@@ -320,7 +320,7 @@ export const shopItems = [
     price: 68000,
     scale: 1.55,
     count: 0,
-    max: 15,
+    max: 30,
     apply() {
       resources.silver.perSecond += 20;
     },
@@ -334,7 +334,7 @@ export const shopItems = [
     price: 190000,
     scale: 1.6,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
       resources.silver.perSecond += 50;
     },
@@ -362,9 +362,9 @@ export const shopItems = [
     name: "Gold Pickaxe",
     description: "+1 gold per click",
     category: "gold",
-    basePrice: 50000,
-    price: 50000,
-    scale: 1.4,
+    basePrice: 35000,
+    price: 35000,
+    scale: 1.25,
     count: 0,
     max: 10,
     apply() {
@@ -376,11 +376,11 @@ export const shopItems = [
     name: "Gold Drill",
     description: "+2 gold/sec per level",
     category: "gold",
-    basePrice: 16000,
-    price: 16000,
-    scale: 1.55,
+    basePrice: 12000,
+    price: 12000,
+    scale: 1.3,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.gold.perSecond += 2;
     },
@@ -390,11 +390,11 @@ export const shopItems = [
     name: "Gold Rig",
     description: "+6 gold/sec per level",
     category: "gold",
-    basePrice: 54000,
-    price: 54000,
-    scale: 1.6,
+    basePrice: 40000,
+    price: 40000,
+    scale: 1.35,
     count: 0,
-    max: 20,
+    max: 40,
     apply() {
       resources.gold.perSecond += 6;
     },
@@ -404,11 +404,11 @@ export const shopItems = [
     name: "Gold Excavator",
     description: "+20 gold/sec per level",
     category: "gold",
-    basePrice: 200000,
-    price: 200000,
-    scale: 1.65,
+    basePrice: 150000,
+    price: 150000,
+    scale: 1.4,
     count: 0,
-    max: 15,
+    max: 30,
     apply() {
       resources.gold.perSecond += 20;
     },
@@ -418,11 +418,11 @@ export const shopItems = [
     name: "Quantum Gold Miner",
     description: "+50 gold/sec per level",
     category: "gold",
-    basePrice: 550000,
-    price: 550000,
-    scale: 1.7,
+    basePrice: 400000,
+    price: 400000,
+    scale: 1.45,
     count: 0,
-    max: 10,
+    max: 20,
     apply() {
       resources.gold.perSecond += 50;
     },
@@ -432,9 +432,97 @@ export const shopItems = [
     name: "Auto-Seller (Gold)",
     description: "Automatically sells gold every 5s",
     category: "gold",
-    basePrice: 1200000,
+    basePrice: 900000,
     price: 1200000,
     scale: 1.85,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // PLATINUM
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "platinum-clicker",
+    name: "Platinum Pickaxe",
+    description: "+1 platinum per click",
+    category: "platinum",
+    basePrice: 8000,
+    price: 8000,
+    scale: 1.35,
+    count: 0,
+    max: 20,
+    apply() {
+      resources.platinum.perClick += 1;
+    },
+  },
+  {
+    id: "platinum-miner-1",
+    name: "Basic Platinum Miner",
+    description: "+2 platinum/sec",
+    category: "platinum",
+    basePrice: 10000,
+    price: 10000,
+    scale: 1.4,
+    count: 0,
+    max: 20,
+    apply() {
+      resources.platinum.perSecond += 2;
+    },
+  },
+  {
+    id: "platinum-miner-2",
+    name: "Advanced Platinum Miner",
+    description: "+5 platinum/sec",
+    category: "platinum",
+    basePrice: 25000,
+    price: 25000,
+    scale: 1.45,
+    count: 0,
+    max: 20,
+    apply() {
+      resources.platinum.perSecond += 5;
+    },
+  },
+  {
+    id: "platinum-miner-3",
+    name: "Elite Platinum Miner",
+    description: "+15 platinum/sec",
+    category: "platinum",
+    basePrice: 70000,
+    price: 70000,
+    scale: 1.5,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.platinum.perSecond += 15;
+    },
+  },
+  {
+    id: "platinum-miner-4",
+    name: "Industrial Platinum Miner",
+    description: "+50 platinum/sec",
+    category: "platinum",
+    basePrice: 200000,
+    price: 200000,
+    scale: 1.55,
+    count: 0,
+    max: 5,
+    apply() {
+      resources.platinum.perSecond += 50;
+    },
+  },
+  {
+    id: "auto-seller-platinum",
+    name: "Auto-Seller (Platinum)",
+    description: "Automatically sells platinum every 5s",
+    category: "platinum",
+    basePrice: 700000,
+    price: 700000,
+    scale: 1.6,
     count: 0,
     max: 1,
     apply() {

@@ -439,6 +439,9 @@ main {
 .resource-panel[data-resource="gold"] {
   border-color: #ffd700;
 }
+.resource-panel[data-resource="platinum"] {
+  border-color: #e5e4e2;
+}
 
 .resource-panel:active {
   transform: scale(0.98);
@@ -529,11 +532,30 @@ main {
     rgba(255, 215, 0, 0.9) 100%
   );
 }
+
 .resource-panel[data-resource="gold"]::before {
   content: "";
   position: absolute;
   inset: 0;
   background-image: url("images/gold/gold-background.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.8;
+  z-index: -1;
+}
+.resource-panel[data-resource="platinum"] {
+  background: linear-gradient(
+    135deg,
+    rgba(229, 228, 226, 0.9) 0%,
+    rgba(240, 240, 240, 0.7) 50%,
+    rgba(229, 228, 226, 0.9) 100%
+  );
+}
+.resource-panel[data-resource="platinum"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/platinum/platinum-background.png");
   background-size: cover;
   background-position: center;
   opacity: 0.8;
@@ -559,7 +581,8 @@ main {
 .copper-icon,
 .bronze-icon,
 .silver-icon,
-.gold-icon {
+.gold-icon,
+.platinum-icon {
   width: 48px;
   height: 48px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
@@ -579,11 +602,13 @@ main {
 #mine-bronze-btn,
 #mine-silver-btn,
 #mine-gold-btn,
+#mine-platinum-btn,
 #sell-iron-btn,
 #sell-copper-btn,
 #sell-bronze-btn,
 #sell-silver-btn,
-#sell-gold-btn {
+#sell-gold-btn,
+#sell-platinum-btn {
   flex: 1;
   min-width: 120px;
   padding: var(--space-md) var(--space-lg);
@@ -603,7 +628,8 @@ main {
 #mine-copper-btn,
 #mine-bronze-btn,
 #mine-silver-btn,
-#mine-gold-btn {
+#mine-gold-btn,
+#mine-platinum-btn {
   background: var(--grad-primary);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-md);
@@ -614,7 +640,8 @@ main {
 #sell-copper-btn,
 #sell-bronze-btn,
 #sell-silver-btn,
-#sell-gold-btn {
+#sell-gold-btn,
+#sell-platinum-btn {
   background: var(--grad-secondary);
   color: var(--color-text-primary);
   box-shadow: var(--shadow-md);
@@ -625,7 +652,8 @@ main {
 #sell-copper-btn:disabled,
 #sell-bronze-btn:disabled,
 #sell-silver-btn:disabled,
-#sell-gold-btn:disabled {
+#sell-gold-btn:disabled,
+#sell-platinum-btn:disabled {
   background: var(--color-surface);
   color: var(--color-text-muted);
   cursor: not-allowed;

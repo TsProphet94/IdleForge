@@ -6,6 +6,7 @@ import copper from "./resources/copper.js";
 import bronze from "./resources/bronze.js";
 import silver from "./resources/silver.js";
 import gold from "./resources/gold.js";
+import platinum from "./resources/platinum.js"; // New resource
 import { shopItems } from "./shop/items.js";
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -17,14 +18,15 @@ export const resources = {
   bronze,
   silver,
   gold,
+  platinum, // New resource
   money: { id: "money", count: 0 },
 };
-const RES_IDS = ["iron", "copper", "bronze", "silver", "gold"];
+const RES_IDS = ["iron", "copper", "bronze", "silver", "gold", "platinum"]; // New resource
 
 /** Lifetime/global stats */
 export const stats = {
-  mined: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0 },
-  sold: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0 },
+  mined: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0, platinum: 0 },
+  sold: { iron: 0, copper: 0, bronze: 0, silver: 0, gold: 0, platinum: 0 },
   earnedMoney: 0,
   spentMoney: 0,
   clicks: { mine: 0, sell: 0, shopBuy: 0, unlock: 0 },
@@ -36,6 +38,7 @@ const UNLOCK_COST = {
   bronze: 150000,
   silver: 1000000,
   gold: 8000000,
+  platinum: 20000000, // New resource unlock cost
 };
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -46,6 +49,7 @@ const copperCountEl = document.getElementById("copper-count");
 const bronzeCountEl = document.getElementById("bronze-count");
 const silverCountEl = document.getElementById("silver-count");
 const goldCountEl = document.getElementById("gold-count");
+const platinumCountEl = document.getElementById("platinum-count"); // New resource
 const moneyCountEl = document.getElementById("money-count");
 
 const shopList = document.getElementById("shop-list");
@@ -72,6 +76,8 @@ const mineSilverBtn = document.getElementById("mine-silver-btn");
 const sellSilverBtn = document.getElementById("sell-silver-btn");
 const mineGoldBtn = document.getElementById("mine-gold-btn");
 const sellGoldBtn = document.getElementById("sell-gold-btn");
+const minePlatinumBtn = document.getElementById("mine-platinum-btn"); // New resource
+const sellPlatinumBtn = document.getElementById("sell-platinum-btn"); // New resource
 
 /* Menus / Save */
 const mainMenu = document.getElementById("main-menu");
@@ -93,6 +99,7 @@ const devAddCopper = document.getElementById("dev-add-copper");
 const devAddBronze = document.getElementById("dev-add-bronze");
 const devAddSilver = document.getElementById("dev-add-silver");
 const devAddGold = document.getElementById("dev-add-gold");
+const devAddPlatinum = document.getElementById("dev-add-platinum"); // New resource
 const devAddMoney = document.getElementById("dev-add-money");
 
 if (devPanel) devPanel.classList.toggle("hidden", !isDev);
@@ -117,8 +124,12 @@ if (isDev) {
     addOre("gold", 10000);
     updateUI();
   });
+  devAddPlatinum?.addEventListener("click", () => {
+    addOre("platinum", 10000);
+    updateUI();
+  });
   devAddMoney?.addEventListener("click", () => {
-    addMoney(10000);
+    addMoney(1000000);
     updateUI();
   });
 }
@@ -139,6 +150,7 @@ let copperUnlocked = false;
 let bronzeUnlocked = false;
 let silverUnlocked = false;
 let goldUnlocked = false;
+let platinumUnlocked = false; // New resource
 
 let autoSaveInterval = null;
 let gameStarted = false;
@@ -154,6 +166,7 @@ mineCopperBtn.disabled = sellCopperBtn.disabled = true;
 mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
 mineSilverBtn.disabled = sellSilverBtn.disabled = true;
 mineGoldBtn.disabled = sellGoldBtn.disabled = true;
+minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
 
 /* ────────────────────────────────────────────────────────────────────────────
    HELPERS
@@ -185,6 +198,8 @@ function isUnlocked(resId) {
       return silverUnlocked;
     case "gold":
       return goldUnlocked;
+    case "platinum":
+      return platinumUnlocked; // New resource
     default:
       return false;
   }
@@ -277,12 +292,44 @@ function updateStatsUI() {
   setText("stat-click-shop", stats.clicks.shopBuy);
   setText("stat-click-unlock", stats.clicks.unlock);
 
+  // Apply any newly reached milestones before showing list
+  applyMilestoneRewards();
   updateMilestoneList();
 }
 
 // Milestone logic
 const MILESTONE_THRESHOLDS = [100, 1000, 10000, 100000, 1000000];
 const MILESTONE_LABELS = ["100", "1K", "10K", "100K", "1M"];
+
+// Multipliers for each milestone tier
+const MILESTONE_MULTIPLIERS = [1.2, 1.5, 2, 3, 5];
+
+// Track which rewards have been applied per resource & tier
+export const milestoneRewardsApplied = RES_IDS.reduce((acc, res) => {
+  acc[res] = MILESTONE_THRESHOLDS.map(() => false);
+  return acc;
+}, {});
+// Current multiplier factor for each resource
+export const milestoneMultipliers = RES_IDS.reduce((acc, res) => {
+  acc[res] = 1;
+  return acc;
+}, {});
+
+/** Grant autominer rate boosts when milestones are reached */
+function applyMilestoneRewards() {
+  RES_IDS.forEach((res) => {
+    // Determine the highest milestone achieved for this resource
+    let topMultiplier = 1;
+    for (let i = MILESTONE_THRESHOLDS.length - 1; i >= 0; i--) {
+      if (stats.mined[res] >= MILESTONE_THRESHOLDS[i]) {
+        topMultiplier = MILESTONE_MULTIPLIERS[i];
+        break;
+      }
+    }
+    // Apply only the highest-tier multiplier
+    milestoneMultipliers[res] = topMultiplier;
+  });
+}
 
 const milestoneList = document.getElementById("milestone-list");
 
@@ -292,6 +339,14 @@ function updateMilestoneList() {
   RES_IDS.forEach((res) => {
     if (!isUnlocked(res)) return;
     const mined = stats.mined[res] || 0;
+    // Find the highest achieved milestone index for this resource
+    let currentMilestoneIdx = -1;
+    for (let i = MILESTONE_THRESHOLDS.length - 1; i >= 0; i--) {
+      if (mined >= MILESTONE_THRESHOLDS[i]) {
+        currentMilestoneIdx = i;
+        break;
+      }
+    }
     // Create a container for each resource
     const section = document.createElement("div");
     section.className = "milestone-resource-section";
@@ -330,10 +385,24 @@ function updateMilestoneList() {
         // Milestone content
         const content = document.createElement("div");
         content.className = "milestone-content";
+        let indicator = "";
+        // Show multiplier indicator for the current active milestone
+        if (i === currentMilestoneIdx && currentMilestoneIdx !== -1) {
+          indicator = `<span class=\"milestone-multiplier-indicator\" style=\"margin-left:0.7em;color:#ffd93d;font-weight:700;\">${MILESTONE_MULTIPLIERS[i]}x minerate</span>`;
+        }
+        // Show next milestone reward for the next milestone (if not achieved and is the next milestone)
+        let nextIndicator = "";
+        if (
+          !achieved &&
+          i === currentMilestoneIdx + 1 &&
+          i < MILESTONE_MULTIPLIERS.length
+        ) {
+          nextIndicator = `<span class=\"milestone-next-indicator\" style=\"margin-left:0.7em;color:#b3b3b3;font-weight:600;\">${MILESTONE_MULTIPLIERS[i]}x minerate</span>`;
+        }
         content.innerHTML = `
           <span class=\"milestone-badge\">${MILESTONE_LABELS[i]}</span> ${
           res.charAt(0).toUpperCase() + res.slice(1)
-        } mined: <strong>${threshold.toLocaleString()}</strong>
+        } mined: <strong>${threshold.toLocaleString()}</strong> ${indicator} ${nextIndicator}
         `;
         li.appendChild(content);
         ul.appendChild(li);
@@ -379,6 +448,8 @@ mineSilverBtn.addEventListener("click", () => mineResource("silver"));
 sellSilverBtn.addEventListener("click", () => sellAll("silver"));
 mineGoldBtn.addEventListener("click", () => mineResource("gold"));
 sellGoldBtn.addEventListener("click", () => sellAll("gold"));
+minePlatinumBtn.addEventListener("click", () => mineResource("platinum")); // New resource
+sellPlatinumBtn.addEventListener("click", () => sellAll("platinum")); // New resource
 
 /* ────────────────────────────────────────────────────────────────────────────
    AUTO-MINE LOOP
@@ -387,7 +458,7 @@ setInterval(() => {
   // 10 ticks/sec
   RES_IDS.forEach((id) => {
     if (!isUnlocked(id)) return;
-    const gain = resources[id].perSecond / 10;
+    const gain = (resources[id].perSecond * milestoneMultipliers[id]) / 10;
     if (gain > 0) addOre(id, gain);
   });
 
@@ -415,6 +486,7 @@ function attemptUnlock(res) {
   if (res === "bronze") unlockBronzeUI();
   if (res === "silver") unlockSilverUI();
   if (res === "gold") unlockGoldUI();
+  if (res === "platinum") unlockPlatinumUI(); // New resource
 
   updateUI();
   updateStatsUI();
@@ -479,6 +551,11 @@ shopList.addEventListener("click", (e) => {
 
   updateUI();
   renderShop();
+  // Apply milestone rewards on shop purchase
+  applyMilestoneRewards();
+  // Refresh UI & stats so new autominer rates show immediately
+  updateUI();
+  updateStatsUI();
 
   if (item.id.startsWith("auto-seller")) {
     const resId = item.category;
@@ -675,6 +752,24 @@ function renderShop() {
 
   shopList.innerHTML = "";
   shopList.appendChild(frag);
+  // Attach auto-sell toggle listeners after shop is rendered
+  RES_IDS.forEach((resId) => {
+    const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+    if (toggle) {
+      toggle.removeEventListener(
+        "change",
+        toggle._autoSellHandler || (() => {})
+      );
+      toggle._autoSellHandler = function (e) {
+        if (e.target.checked) {
+          startAutoSell(resId);
+        } else {
+          stopAutoSell(resId);
+        }
+      };
+      toggle.addEventListener("change", toggle._autoSellHandler);
+    }
+  });
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -686,6 +781,7 @@ function updateUI() {
   bronzeCountEl.textContent = fmt(resources.bronze.count);
   silverCountEl.textContent = fmt(resources.silver.count);
   goldCountEl.textContent = fmt(resources.gold.count);
+  platinumCountEl.textContent = fmt(resources.platinum.count || 0); // New resource
 
   // Animate money counter box if it increases
   if (!updateUI.lastMoney) updateUI.lastMoney = resources.money.count;
@@ -706,12 +802,32 @@ function updateUI() {
   sellBronzeBtn.disabled = resources.bronze.count <= 0;
   sellSilverBtn.disabled = resources.silver.count <= 0;
   sellGoldBtn.disabled = resources.gold.count <= 0;
+  sellPlatinumBtn.disabled = resources.platinum.count <= 0; // New resource
 
-  setText("auto-rate-iron", resources.iron.perSecond);
-  setText("auto-rate-copper", resources.copper.perSecond);
-  setText("auto-rate-bronze", resources.bronze.perSecond);
-  setText("auto-rate-silver", resources.silver.perSecond);
-  setText("auto-rate-gold", resources.gold.perSecond);
+  setText(
+    "auto-rate-iron",
+    resources.iron.perSecond * milestoneMultipliers.iron
+  );
+  setText(
+    "auto-rate-copper",
+    resources.copper.perSecond * milestoneMultipliers.copper
+  );
+  setText(
+    "auto-rate-bronze",
+    resources.bronze.perSecond * milestoneMultipliers.bronze
+  );
+  setText(
+    "auto-rate-silver",
+    resources.silver.perSecond * milestoneMultipliers.silver
+  );
+  setText(
+    "auto-rate-gold",
+    resources.gold.perSecond * milestoneMultipliers.gold
+  );
+  setText(
+    "auto-rate-platinum",
+    resources.platinum.perSecond * milestoneMultipliers.platinum
+  ); // New resource
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -836,18 +952,21 @@ function getSaveData() {
     bronze: resources.bronze.count,
     silver: resources.silver.count,
     gold: resources.gold.count,
+    platinum: resources.platinum.count, // New resource
     money: resources.money.count,
 
     copperUnlocked,
     bronzeUnlocked,
     silverUnlocked,
     goldUnlocked,
+    platinumUnlocked, // New resource
 
     ironPerSecond: resources.iron.perSecond,
     copperPerSecond: resources.copper.perSecond,
     bronzePerSecond: resources.bronze.perSecond,
     silverPerSecond: resources.silver.perSecond,
     goldPerSecond: resources.gold.perSecond,
+    platinumPerSecond: resources.platinum.perSecond, // New resource
 
     upgrades: shopItems.map((i) => ({
       id: i.id,
@@ -889,12 +1008,14 @@ function loadGame() {
     resources.bronze.count = data.bronze || 0;
     resources.silver.count = data.silver || 0;
     resources.gold.count = data.gold || 0;
+    resources.platinum.count = data.platinum || 0; // New resource
     resources.money.count = data.money || 0;
 
     copperUnlocked = !!data.copperUnlocked;
     bronzeUnlocked = !!data.bronzeUnlocked;
     silverUnlocked = !!data.silverUnlocked;
     goldUnlocked = !!data.goldUnlocked;
+    platinumUnlocked = !!data.platinumUnlocked; // New resource
     if (copperUnlocked) unlockCopperUI();
     else relockResource("copper");
     if (bronzeUnlocked) unlockBronzeUI();
@@ -903,6 +1024,8 @@ function loadGame() {
     else relockResource("silver");
     if (goldUnlocked) unlockGoldUI();
     else relockResource("gold");
+    if (platinumUnlocked) unlockPlatinumUI(); // New resource
+    else relockResource("platinum"); // New resource
 
     if (data.ironPerSecond !== undefined)
       resources.iron.perSecond = data.ironPerSecond;
@@ -914,6 +1037,8 @@ function loadGame() {
       resources.silver.perSecond = data.silverPerSecond;
     if (data.goldPerSecond !== undefined)
       resources.gold.perSecond = data.goldPerSecond;
+    if (data.platinumPerSecond !== undefined)
+      resources.platinum.perSecond = data.platinumPerSecond; // New resource
 
     if (Array.isArray(data.upgrades)) {
       data.upgrades.forEach((u) => {
@@ -996,55 +1121,117 @@ function unlockGoldUI() {
   document.getElementById("lock-overlay-gold")?.remove();
   document.getElementById("tab-resource-gold")?.classList.remove("locked");
 }
+function unlockPlatinumUI() {
+  platinumUnlocked = true;
+  minePlatinumBtn.disabled = sellPlatinumBtn.disabled = false;
+  document
+    .querySelector('.resource-panel[data-resource="platinum"]')
+    ?.classList.remove("locked");
+  document.getElementById("lock-overlay-platinum")?.remove();
+  document.getElementById("tab-resource-platinum")?.classList.remove("locked");
+}
 
 /* ────────────────────────────────────────────────────────────────────────────
    NEW GAME
 ──────────────────────────────────────────────────────────────────────────── */
 function startNewGame() {
+  // Stop and clear all auto-sell and countdown timers
   RES_IDS.forEach((resId) => {
     stopAutoSell(resId);
+    clearInterval(autoSellTimers[resId]);
+    clearInterval(countdownTimers[resId]);
+    autoSellTimers[resId] = null;
+    countdownTimers[resId] = null;
+    nextSellTimes[resId] = null;
     document.getElementById(`sell-timer-${resId}`)?.classList.add("hidden");
     const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
     if (toggle) toggle.checked = false;
+    // Reset countdown display
+    const countdownEl = document.getElementById(`sell-countdown-${resId}`);
+    if (countdownEl) countdownEl.textContent = "";
   });
 
+  // Reset all resource values and manual mining perClick
   RES_IDS.forEach((r) => {
     resources[r].count = 0;
     resources[r].perSecond = 0;
+    if (typeof resources[r].perClick !== "undefined") resources[r].perClick = 1;
   });
   resources.money.count = 0;
 
-  copperUnlocked = bronzeUnlocked = silverUnlocked = goldUnlocked = false;
+  // Reset unlocks
+  copperUnlocked = false;
+  bronzeUnlocked = false;
+  silverUnlocked = false;
+  goldUnlocked = false;
+  platinumUnlocked = false; // New resource
 
+  // Reset shop items
   shopItems.forEach((item) => {
     item.count = 0;
     item.price = item.basePrice;
   });
 
+  // Reset stats
   Object.keys(stats.mined).forEach((k) => (stats.mined[k] = 0));
   Object.keys(stats.sold).forEach((k) => (stats.sold[k] = 0));
   stats.earnedMoney = 0;
   stats.spentMoney = 0;
   stats.clicks = { mine: 0, sell: 0, shopBuy: 0, unlock: 0 };
 
+  // Remove save
   if (isLocalStorageAvailable()) localStorage.removeItem("idleMinerSave");
 
+  // Reset UI buttons
   mineCopperBtn.disabled = sellCopperBtn.disabled = true;
   mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
   mineSilverBtn.disabled = sellSilverBtn.disabled = true;
   mineGoldBtn.disabled = sellGoldBtn.disabled = true;
+  minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
 
+  // Reset current resource and tabs
   currentResource = "iron";
   resourceTabs.forEach((tab) =>
     tab.classList.toggle("active", tab.dataset.resource === "iron")
   );
 
+  // Relock all resources above iron
   relockResource("copper");
   relockResource("bronze");
   relockResource("silver");
   relockResource("gold");
+  relockResource("platinum"); // New resource
   document.getElementById("tab-resource-copper")?.classList.add("locked");
 
+  // Hide overlays, modals, and popups
+  if (overlay) overlay.classList.add("hidden");
+  if (typeof confirmModal !== "undefined" && confirmModal)
+    confirmModal.classList.add("hidden");
+  // Remove all sell-pop elements
+  document.querySelectorAll(".sell-pop").forEach((el) => el.remove());
+  // Hide autosave indicator
+  hideAutoSaveIndicator();
+
+  // Reset scroll positions
+  mineScrollY = 0;
+  shopScrollY = 0;
+  window.scrollTo(0, 0);
+
+  // Reset UI screens
+  if (screenShop) screenShop.classList.add("hidden");
+  if (screenStats) screenStats.classList.add("hidden");
+  if (screenMine) screenMine.classList.remove("hidden");
+  tabMine.classList.add("active");
+  tabShop.classList.remove("active");
+  tabStats.classList.remove("active");
+
+  // Stop autosave
+  stopAutoSave();
+
+  // Reset money animation state
+  if (typeof updateUI.lastMoney !== "undefined") updateUI.lastMoney = 0;
+
+  // Update all UI
   updateUI();
   renderShop();
   updateStatsUI();
@@ -1185,6 +1372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     relockResource("bronze");
     relockResource("silver");
     relockResource("gold");
+    relockResource("platinum"); // New resource
   }
 });
 

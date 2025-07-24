@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 30, // $ per gold
+  sellPrice: 40, // $ per gold
   category: "Gold",
 };

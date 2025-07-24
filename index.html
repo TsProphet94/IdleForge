@@ -85,7 +85,7 @@
           <button id="dev-add-bronze">+10k Bronze</button>
           <button id="dev-add-silver">+10k Silver</button>
           <button id="dev-add-gold">+10k Gold</button>
-          <button id="dev-add-money">+10k Money</button>
+          <button id="dev-add-money">+1M Money</button>
         </div>
 
         <nav>
@@ -297,6 +297,51 @@
                 <button id="unlock-gold-btn">Unlock Gold ($8M)</button>
               </div>
             </div>
+
+            <!-- Platinum Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="platinum"
+              id="platinum-box"
+            >
+              <div class="resource-header">
+                <h2>Platinum</h2>
+                <!-- <button class="collapse-btn" data-res="platinum" aria-label="Collapse Platinum">▼</button> -->
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/platinum/pt.png"
+                  alt="Platinum Icon"
+                  class="icon platinum-icon"
+                />
+                <div class="resource-content">
+                  <p>Platinum: <span id="platinum-count">0</span></p>
+                  <button id="mine-platinum-btn" disabled>Mine Platinum</button>
+                  <button id="sell-platinum-btn" disabled>
+                    Sell All Platinum
+                  </button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate: <span id="auto-rate-platinum">0</span>/s
+                </p>
+                <p id="sell-timer-platinum" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-platinum">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-platinum" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-platinum">
+                <button id="unlock-platinum-btn">Unlock Platinum ($20M)</button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -336,6 +381,13 @@
               class="resource-tab locked"
             >
               Gold
+            </button>
+            <button
+              data-resource="platinum"
+              id="tab-resource-platinum"
+              class="resource-tab locked"
+            >
+              Platinum
             </button>
           </div>
 
