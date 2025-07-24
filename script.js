@@ -92,7 +92,7 @@ const btnSaveMenu = document.getElementById("btn-save-menu");
 const saveIndicator = document.getElementById("save-indicator");
 
 /* Dev tools */
-const isDev = false;
+const isDev = true;
 const devPanel = document.getElementById("dev-panel");
 const devAddIron = document.getElementById("dev-add-iron");
 const devAddCopper = document.getElementById("dev-add-copper");
@@ -782,6 +782,19 @@ function updateUI() {
   silverCountEl.textContent = fmt(resources.silver.count);
   goldCountEl.textContent = fmt(resources.gold.count);
   platinumCountEl.textContent = fmt(resources.platinum.count || 0); // New resource
+
+  // Update resource price tags (show only if unlocked)
+  RES_IDS.forEach((res) => {
+    const pricetag = document.getElementById(`pricetag-${res}`);
+    if (pricetag) {
+      if (isUnlocked(res)) {
+        pricetag.style.display = "inline-block";
+        pricetag.textContent = `$${fmt(resources[res].sellPrice)}`;
+      } else {
+        pricetag.style.display = "none";
+      }
+    }
+  });
 
   // Animate money counter box if it increases
   if (!updateUI.lastMoney) updateUI.lastMoney = resources.money.count;
