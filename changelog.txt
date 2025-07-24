@@ -1,3 +1,13 @@
+v0.1.14– Milestone Tab & UI Enhancements
+
+•   New Milestone Tab! Each resource now has its own clearly separated section with labeled headings, making it easier to track your progress at a glance.
+
+•   Fix: Switching between Shop and Mine tabs now preserves their individual scroll positions. No more jarring scroll jumps!
+
+•	Improvements: Minor code cleanup and streamlined UI logic for better maintainability and responsiveness. New animations on shop and money counters.
+
+---------------------------------------
+
 v0.1.13 – “Bulk or Bust”
 
 Shop Overhaul

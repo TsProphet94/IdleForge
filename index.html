@@ -25,6 +25,23 @@
       <button id="btn-new">New Game</button>
       <button id="btn-continue">Continue</button>
       <button id="btn-settings">Settings</button>
+
+      <!-- Confirm new game modal -->
+      <div id="confirm-newgame-modal" class="overlay hidden confirm-modal">
+        <div class="confirm-modal-box">
+          <h2>Start New Game?</h2>
+          <p>
+            Are you sure you want to start a new game? <br />This will erase all
+            your current progress.
+          </p>
+          <button id="confirm-newgame-yes" class="confirm-btn confirm-btn-yes">
+            Yes, Start New Game
+          </button>
+          <button id="confirm-newgame-no" class="confirm-btn confirm-btn-no">
+            Cancel
+          </button>
+        </div>
+      </div>
       <section id="whats-new">
         <h3>What’s New (<span id="version"></span>)</h3>
         <div id="changelog" class="changelog">
@@ -41,7 +58,7 @@
       <h2>Settings</h2>
       <label>
         <input type="checkbox" id="toggle-auto-save" checked />
-        Auto-Save Every 10s
+        Auto-Save Every 60s
       </label>
       <label>
         <input type="checkbox" id="toggle-sound" />
@@ -157,7 +174,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-copper">
-                <button id="unlock-copper-btn">Unlock Copper ($5k)</button>
+                <button id="unlock-copper-btn">Unlock Copper ($20k)</button>
               </div>
             </div>
 
@@ -197,7 +214,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-bronze">
-                <button id="unlock-bronze-btn">Unlock Bronze ($25k)</button>
+                <button id="unlock-bronze-btn">Unlock Bronze ($150k)</button>
               </div>
             </div>
 
@@ -237,7 +254,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-silver">
-                <button id="unlock-silver-btn">Unlock Silver ($100k)</button>
+                <button id="unlock-silver-btn">Unlock Silver ($1M)</button>
               </div>
             </div>
 
@@ -277,7 +294,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-gold">
-                <button id="unlock-gold-btn">Unlock Gold ($1M)</button>
+                <button id="unlock-gold-btn">Unlock Gold ($8M)</button>
               </div>
             </div>
           </div>
@@ -330,50 +347,61 @@
         <!-- ===================== STATS SCREEN ===================== -->
         <section id="screen-stats" class="screen-panel panel hidden">
           <h2>Stats</h2>
-
-          <div class="stats-group">
-            <h3>Money</h3>
-            <p>Total earned: $<span id="stat-earned">0</span></p>
-            <p>Total spent: $<span id="stat-spent">0</span></p>
-            <p>Total Net worth: $<span id="stat-net">0</span></p>
+          <div class="stats-tabs">
+            <button class="stats-tab-btn active" data-tab="main">Stats</button>
+            <button class="stats-tab-btn" data-tab="milestones">
+              Milestones
+            </button>
           </div>
-
-          <div class="stats-group">
-            <h3>Resources Mined</h3>
-            <ul class="stats-list">
-              <li>Iron: <span id="stat-mined-iron">0</span></li>
-              <li>Copper: <span id="stat-mined-copper">0</span></li>
-              <li>Bronze: <span id="stat-mined-bronze">0</span></li>
-              <li>Silver: <span id="stat-mined-silver">0</span></li>
-              <li>Gold: <span id="stat-mined-gold">0</span></li>
-            </ul>
+          <div id="stats-main-tab">
+            <div class="stats-group">
+              <h3>Money</h3>
+              <p>Total earned: $<span id="stat-earned">0</span></p>
+              <p>Total spent: $<span id="stat-spent">0</span></p>
+              <p>Total Net worth: $<span id="stat-net">0</span></p>
+            </div>
+            <div class="stats-group">
+              <h3>Resources Mined</h3>
+              <ul class="stats-list">
+                <li>Iron: <span id="stat-mined-iron">0</span></li>
+                <li>Copper: <span id="stat-mined-copper">0</span></li>
+                <li>Bronze: <span id="stat-mined-bronze">0</span></li>
+                <li>Silver: <span id="stat-mined-silver">0</span></li>
+                <li>Gold: <span id="stat-mined-gold">0</span></li>
+              </ul>
+            </div>
+            <div class="stats-group">
+              <h3>Resources Sold</h3>
+              <ul class="stats-list">
+                <li>Iron: <span id="stat-sold-iron">0</span></li>
+                <li>Copper: <span id="stat-sold-copper">0</span></li>
+                <li>Bronze: <span id="stat-sold-bronze">0</span></li>
+                <li>Silver: <span id="stat-sold-silver">0</span></li>
+                <li>Gold: <span id="stat-sold-gold">0</span></li>
+              </ul>
+            </div>
+            <div class="stats-group">
+              <h3>Clicks</h3>
+              <ul class="stats-list">
+                <li>Mine clicks: <span id="stat-click-mine">0</span></li>
+                <li>Sell clicks: <span id="stat-click-sell">0</span></li>
+                <li>Shop purchases: <span id="stat-click-shop">0</span></li>
+              </ul>
+            </div>
           </div>
-
-          <div class="stats-group">
-            <h3>Resources Sold</h3>
-            <ul class="stats-list">
-              <li>Iron: <span id="stat-sold-iron">0</span></li>
-              <li>Copper: <span id="stat-sold-copper">0</span></li>
-              <li>Bronze: <span id="stat-sold-bronze">0</span></li>
-              <li>Silver: <span id="stat-sold-silver">0</span></li>
-              <li>Gold: <span id="stat-sold-gold">0</span></li>
-            </ul>
-          </div>
-
-          <div class="stats-group">
-            <h3>Clicks</h3>
-            <ul class="stats-list">
-              <li>Mine clicks: <span id="stat-click-mine">0</span></li>
-              <li>Sell clicks: <span id="stat-click-sell">0</span></li>
-              <li>Shop purchases: <span id="stat-click-shop">0</span></li>
-            </ul>
+          <div id="stats-milestones-tab" class="hidden">
+            <div class="stats-group">
+              <h3>Mining Milestones</h3>
+              <ul class="stats-list" id="milestone-list">
+                <!-- Populated by script.js -->
+              </ul>
+            </div>
           </div>
         </section>
       </main>
 
       <footer>
         <div class="footer-content">
-          <small id="version"></small>
           <p>Made with VsCode/ChatGPT 4.1-mini-high/Claude Sonnet 4</p>
           <a
             href="https://github.com/TsProphet94/IdleForge"
@@ -384,22 +412,6 @@
         </div>
       </footer>
     </div>
-    <!-- end #game-ui -->
-
-    <!-- Toast save indicator -->
-    <div id="save-indicator" class="save-indicator hidden">✔ Game Saved!</div>
-
-    <!-- Template for collapsed chips (if you’re using the collapse feature) -->
-    <template id="resource-chip-template">
-      <div class="res-chip" data-res="">
-        <span class="icon">⛏️</span>
-        <span class="qty">0</span>
-        <span class="rate">0/s</span>
-        <button class="mini-btn mine" title="Mine">M</button>
-        <button class="mini-btn sell" title="Sell">S</button>
-      </div>
-    </template>
-
     <script type="module" src="script.js"></script>
   </body>
 </html>

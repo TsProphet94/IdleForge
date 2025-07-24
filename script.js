@@ -260,7 +260,7 @@ function buyMaxCost(item) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   STATS UI
+   STATS UI & MILESTONES
 ──────────────────────────────────────────────────────────────────────────── */
 function updateStatsUI() {
   setText("stat-earned", stats.earnedMoney);
@@ -276,7 +276,95 @@ function updateStatsUI() {
   setText("stat-click-sell", stats.clicks.sell);
   setText("stat-click-shop", stats.clicks.shopBuy);
   setText("stat-click-unlock", stats.clicks.unlock);
+
+  updateMilestoneList();
 }
+
+// Milestone logic
+const MILESTONE_THRESHOLDS = [100, 1000, 10000, 100000, 1000000];
+const MILESTONE_LABELS = ["100", "1K", "10K", "100K", "1M"];
+
+const milestoneList = document.getElementById("milestone-list");
+
+function updateMilestoneList() {
+  if (!milestoneList) return;
+  milestoneList.innerHTML = "";
+  RES_IDS.forEach((res) => {
+    if (!isUnlocked(res)) return;
+    const mined = stats.mined[res] || 0;
+    // Create a container for each resource
+    const section = document.createElement("div");
+    section.className = "milestone-resource-section";
+    section.innerHTML = `<h4 class=\"milestone-resource-title\">${
+      res.charAt(0).toUpperCase() + res.slice(1)
+    }</h4>`;
+    const ul = document.createElement("ul");
+    ul.className = "milestone-resource-list";
+    let nextShown = false;
+    MILESTONE_THRESHOLDS.forEach((threshold, i) => {
+      const achieved = mined >= threshold;
+      // Calculate progress for this milestone
+      let progress = 0;
+      if (achieved) {
+        progress = 1;
+      } else if (i === 0) {
+        progress = Math.max(0, Math.min(1, mined / threshold));
+      } else {
+        const prev = MILESTONE_THRESHOLDS[i - 1];
+        progress = Math.max(
+          0,
+          Math.min(1, (mined - prev) / (threshold - prev))
+        );
+      }
+      if (achieved || (!nextShown && !achieved)) {
+        const li = document.createElement("li");
+        li.className = achieved ? "milestone-achieved" : "";
+        // Progress bar background
+        const bar = document.createElement("div");
+        bar.className = "milestone-progress-bar";
+        const fill = document.createElement("div");
+        fill.className = "milestone-progress-fill";
+        fill.style.width = progress * 100 + "%";
+        bar.appendChild(fill);
+        li.appendChild(bar);
+        // Milestone content
+        const content = document.createElement("div");
+        content.className = "milestone-content";
+        content.innerHTML = `
+          <span class=\"milestone-badge\">${MILESTONE_LABELS[i]}</span> ${
+          res.charAt(0).toUpperCase() + res.slice(1)
+        } mined: <strong>${threshold.toLocaleString()}</strong>
+        `;
+        li.appendChild(content);
+        ul.appendChild(li);
+        if (!achieved) nextShown = true;
+      }
+    });
+    section.appendChild(ul);
+    milestoneList.appendChild(section);
+  });
+}
+
+// Stats tab switching
+document.addEventListener("DOMContentLoaded", () => {
+  const tabBtns = document.querySelectorAll(".stats-tab-btn");
+  const mainTab = document.getElementById("stats-main-tab");
+  const milestonesTab = document.getElementById("stats-milestones-tab");
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      tabBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      if (btn.dataset.tab === "main") {
+        mainTab.classList.remove("hidden");
+        milestonesTab.classList.add("hidden");
+      } else {
+        mainTab.classList.add("hidden");
+        milestonesTab.classList.remove("hidden");
+        updateMilestoneList();
+      }
+    });
+  });
+});
 
 /* ────────────────────────────────────────────────────────────────────────────
    BUTTON LISTENERS
@@ -425,7 +513,19 @@ tabMine.addEventListener("click", () => showScreen("mine"));
 tabShop.addEventListener("click", () => showScreen("shop"));
 tabStats.addEventListener("click", () => showScreen("stats"));
 
+// Track scroll positions for mine and shop screens (using window scroll if screens are not independently scrollable)
+let mineScrollY = 0;
+let shopScrollY = 0;
+
 function showScreen(which) {
+  // Save scroll position for the current screen
+  if (!screenMine.classList.contains("hidden")) {
+    mineScrollY = window.scrollY;
+  }
+  if (!screenShop.classList.contains("hidden")) {
+    shopScrollY = window.scrollY;
+  }
+
   tabMine.classList.remove("active");
   tabShop.classList.remove("active");
   tabStats.classList.remove("active");
@@ -438,11 +538,15 @@ function showScreen(which) {
     case "mine":
       tabMine.classList.add("active");
       screenMine.classList.remove("hidden");
+      // Restore mine scroll position
+      setTimeout(() => window.scrollTo(0, mineScrollY), 0);
       break;
     case "shop":
       tabShop.classList.add("active");
       screenShop.classList.remove("hidden");
       renderShop();
+      // Restore shop scroll position
+      setTimeout(() => window.scrollTo(0, shopScrollY), 0);
       break;
     case "stats":
       tabStats.classList.add("active");
@@ -582,7 +686,20 @@ function updateUI() {
   bronzeCountEl.textContent = fmt(resources.bronze.count);
   silverCountEl.textContent = fmt(resources.silver.count);
   goldCountEl.textContent = fmt(resources.gold.count);
-  moneyCountEl.textContent = `$${fmt(resources.money.count)}`;
+
+  // Animate money counter box if it increases
+  if (!updateUI.lastMoney) updateUI.lastMoney = resources.money.count;
+  const prevMoney = updateUI.lastMoney;
+  const newMoney = resources.money.count;
+  moneyCountEl.textContent = `$${fmt(newMoney)}`;
+  const moneyBox = document.getElementById("money-display");
+  if (newMoney > prevMoney && moneyBox) {
+    moneyBox.classList.remove("money-bounce");
+    // Force reflow to restart animation
+    void moneyBox.offsetWidth;
+    moneyBox.classList.add("money-bounce");
+  }
+  updateUI.lastMoney = newMoney;
 
   sellIronBtn.disabled = resources.iron.count <= 0;
   sellCopperBtn.disabled = resources.copper.count <= 0;
@@ -749,7 +866,6 @@ function saveGame() {
   try {
     localStorage.setItem("idleMinerSave", JSON.stringify(getSaveData()));
     console.log("Game saved at", new Date().toLocaleTimeString());
-    flashSaveIndicator();
     if (gameStarted && toggleAutoSave?.checked) {
       showAutoSaveIndicator();
       setTimeout(hideAutoSaveIndicator, 1000);
@@ -992,9 +1108,30 @@ btnContinue?.addEventListener("click", () => {
   }
 });
 
-btnNewGame?.addEventListener("click", () => {
+// New Game confirmation modal logic
+const confirmModal = document.getElementById("confirm-newgame-modal");
+const btnNewGameModal = document.getElementById("btn-new");
+const btnConfirmYes = document.getElementById("confirm-newgame-yes");
+const btnConfirmNo = document.getElementById("confirm-newgame-no");
+
+btnNewGameModal?.addEventListener("click", (e) => {
+  if (confirmModal) {
+    confirmModal.classList.remove("hidden");
+  } else {
+    // fallback: just start new game
+    startNewGame();
+    startGame();
+  }
+});
+
+btnConfirmYes?.addEventListener("click", () => {
+  if (confirmModal) confirmModal.classList.add("hidden");
   startNewGame();
   startGame();
+});
+
+btnConfirmNo?.addEventListener("click", () => {
+  if (confirmModal) confirmModal.classList.add("hidden");
 });
 
 btnSettings?.addEventListener("click", () => {
@@ -1021,7 +1158,6 @@ toggleAutoSave?.addEventListener("change", (e) => {
 btnSaveMenu?.addEventListener("click", () => {
   if (saveGame()) {
     if (btnContinue) btnContinue.disabled = false;
-    flashSaveIndicator();
   } else {
     alert("Failed to save game. Please check browser settings.");
   }
@@ -1055,15 +1191,6 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ────────────────────────────────────────────────────────────────────────────
    SAVE INDICATORS
 ──────────────────────────────────────────────────────────────────────────── */
-function flashSaveIndicator() {
-  if (!saveIndicator) return;
-  saveIndicator.classList.remove("hidden");
-  saveIndicator.classList.add("show");
-  setTimeout(() => {
-    saveIndicator.classList.remove("show");
-    saveIndicator.classList.add("hidden");
-  }, 2000);
-}
 
 function showAutoSaveIndicator() {
   let cogIndicator = document.getElementById("autosave-cog");

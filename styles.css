@@ -1,4 +1,187 @@
 /* ==========================================================================
+   STATS PANEL TABS & MILESTONES
+   ========================================================================== */
+.stats-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.stats-tab-btn {
+  background: var(--color-surface-light);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.stats-tab-btn.active {
+  background: var(--grad-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-glow);
+}
+#stats-milestones-tab .stats-group {
+  max-width: 420px;
+  margin: 0 auto;
+}
+#milestone-list {
+  margin-top: 1rem;
+}
+/* Milestone List Styles */
+#milestone-list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 0.2rem;
+  overflow: hidden;
+  min-height: 2.2em;
+}
+#milestone-list li.milestone-achieved {
+  color: var(--color-success);
+  font-weight: 700;
+  background: rgba(107, 207, 127, 0.08);
+}
+
+/* Milestone progress bar background */
+.milestone-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.milestone-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-success) 0%,
+    var(--color-accent) 100%
+  );
+  opacity: 0.25;
+  border-radius: var(--radius-sm);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.milestone-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+#milestone-list li .milestone-badge {
+  background: var(--grad-accent);
+  color: var(--color-bg);
+  font-size: 0.85em;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2em 0.9em;
+  margin-right: 0.5em;
+  box-shadow: var(--shadow-sm);
+}
+
+/* End milestone progress bar styles */
+/* ==========================================================================
+   CONFIRM NEW GAME MODAL
+   ========================================================================== */
+.confirm-modal {
+  z-index: 3000;
+  background: rgba(10, 10, 15, 0.97);
+}
+.confirm-modal-box {
+  background: var(--color-surface);
+  padding: 2rem 2.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 340px;
+  text-align: center;
+  margin: 0 auto;
+}
+.confirm-modal-box h2 {
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.confirm-modal-box p {
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+.confirm-btn {
+  font-weight: 600;
+  padding: 0.7rem 2.2rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 1rem;
+  margin: 0 0.5rem 0 0;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.confirm-btn-yes {
+  background: var(--grad-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+.confirm-btn-yes:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+.confirm-btn-no {
+  background: var(--color-surface-light);
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+.confirm-btn-no:hover {
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+/* Money counter bounce animation */
+/* Money counter bounce and pop animation */
+/* Subtle money counter bounce and pop animation */
+/* Subtle money counter bounce and pop animation on the money box */
+#money-display.money-bounce {
+  animation: money-bounce 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes money-bounce {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+  20% {
+    transform: scale(1.07) rotate(-1deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 2px 8px 0 var(--color-accent);
+  }
+  40% {
+    transform: scale(0.98) rotate(0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 1px 4px 0 var(--color-accent);
+  }
+  60% {
+    transform: scale(1.03) rotate(-0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 2px 8px 0 var(--color-accent);
+  }
+  80% {
+    transform: scale(0.99) rotate(0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 1px 4px 0 var(--color-accent);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+}
+/* ==========================================================================
    MOBILE-FIRST IDLE MINER GAME STYLES
    ========================================================================== */
 
@@ -879,27 +1062,6 @@ main {
 #btn-save-menu:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
-}
-
-/* Save Indicator */
-.save-indicator {
-  position: fixed;
-  bottom: var(--space-lg);
-  right: var(--space-lg);
-  background: linear-gradient(135deg, var(--color-success) 0%, #5bb569 100%);
-  color: var(--color-bg);
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  font-weight: 600;
-  opacity: 0;
-  pointer-events: none;
-  transition: all var(--transition-smooth);
-  z-index: 3000;
-}
-.save-indicator.show {
-  opacity: 1;
-  transform: translateY(-10px);
 }
 
 /* ==========================================================================
