@@ -1,3 +1,7 @@
+v0.1.15– Gold icon fix 
+
+--------------------------------------
+
 v0.1.14– Milestone Tab & UI Enhancements
 
 •   New Milestone Tab! Each resource now has its own clearly separated section with labeled headings, making it easier to track your progress at a glance.
