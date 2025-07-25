@@ -92,7 +92,7 @@ const btnSaveMenu = document.getElementById("btn-save-menu");
 const saveIndicator = document.getElementById("save-indicator");
 
 /* Dev tools */
-const isDev = true;
+const isDev = false;
 const devPanel = document.getElementById("dev-panel");
 const devAddIron = document.getElementById("dev-add-iron");
 const devAddCopper = document.getElementById("dev-add-copper");

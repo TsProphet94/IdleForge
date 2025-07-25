@@ -1,4 +1,4 @@
-v0.1.19- Milestone Rewards, Platimum, Rebalance!
+v0.1.20- Milestone Rewards, Platimum, Rebalance!
 
 •   New milestone rewards added for each resource, giving extra goals and bonuses as you progress.
 •   New resource: Platinum! Unlock, mine, and upgrade this high-value late-game metal.
