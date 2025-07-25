@@ -292,6 +292,35 @@ function updateStatsUI() {
   setText("stat-click-shop", stats.clicks.shopBuy);
   setText("stat-click-unlock", stats.clicks.unlock);
 
+  // Highscore calculation: sum of earned money, mined resources, and milestones
+  const minedTotal = RES_IDS.reduce(
+    (sum, res) => sum + (stats.mined[res] || 0),
+    0
+  );
+  const milestoneScore = RES_IDS.reduce((sum, res) => {
+    let idx = 0;
+    for (let i = MILESTONE_THRESHOLDS.length - 1; i >= 0; i--) {
+      if ((stats.mined[res] || 0) >= MILESTONE_THRESHOLDS[i]) {
+        idx = i + 1;
+        break;
+      }
+    }
+    return sum + idx * 1000;
+  }, 0);
+  const score = Math.floor(stats.earnedMoney + minedTotal * 2 + milestoneScore);
+  // Save and display highscore
+  let highscore = 0;
+  try {
+    highscore = parseInt(localStorage.getItem("idleMinerHighscore") || "0", 10);
+  } catch {}
+  if (score > highscore) {
+    highscore = score;
+    try {
+      localStorage.setItem("idleMinerHighscore", highscore);
+    } catch {}
+  }
+  setText("stat-highscore", highscore);
+
   // Apply any newly reached milestones before showing list
   applyMilestoneRewards();
   updateMilestoneList();
@@ -1192,8 +1221,11 @@ function startNewGame() {
   stats.spentMoney = 0;
   stats.clicks = { mine: 0, sell: 0, shopBuy: 0, unlock: 0 };
 
-  // Remove save
-  if (isLocalStorageAvailable()) localStorage.removeItem("idleMinerSave");
+  // Remove save and highscore
+  if (isLocalStorageAvailable()) {
+    localStorage.removeItem("idleMinerSave");
+    localStorage.removeItem("idleMinerHighscore");
+  }
 
   // Reset UI buttons
   mineCopperBtn.disabled = sellCopperBtn.disabled = true;

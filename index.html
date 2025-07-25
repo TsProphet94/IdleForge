@@ -12,7 +12,12 @@
   <body>
     <!-- MAIN MENU OVERLAY -->
     <div id="main-menu" class="overlay">
-      <h1>IdleForge</h1>
+      <img
+        src="images/main/main-logo.png"
+        alt="IdleForge Main Logo"
+        class="main-menu-logo"
+        style="max-width: 340px; width: 90%; margin: 0 auto; display: block"
+      />
       <p class="tagline">Mine. Sell. Profit.</p>
 
       <div id="save-card" class="save-card hidden">
@@ -436,6 +441,10 @@
             </button>
           </div>
           <div id="stats-main-tab">
+            <div class="stats-group" style="margin-bottom: 1.5em">
+              <h3>Highscore</h3>
+              <p>Your best score: <span id="stat-highscore">0</span></p>
+            </div>
             <div class="stats-group">
               <h3>Money</h3>
               <p>Total earned: $<span id="stat-earned">0</span></p>
