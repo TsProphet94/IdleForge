@@ -1,3 +1,18 @@
+v0.1.26 – Mobile Header Fix & Progressive Web App!
+
+•   FIXED: Mobile header layout issue where menu button was cut off on iPhone screens - completely restructured header with two-row responsive design.
+•   NEW: Progressive Web App (PWA) support! IdleForge can now be installed as a mobile app directly from your browser.
+•   NEW: Complete PWA manifest with proper app icons, theme colors, and display settings for native app experience.
+•   NEW: Service worker implementation for offline functionality and faster loading through intelligent caching.
+•   NEW: PWA app icons in multiple sizes (192x192, 512x512) for perfect display across all devices and platforms.
+•   IMPROVED: Enhanced mobile navigation with better touch targets and improved header spacing for small screens.
+•   IMPROVED: Optimized caching strategy for all game assets including compressed images for lightning-fast offline play.
+•   TECHNICAL: Added comprehensive PWA meta tags for proper mobile app integration and installation prompts.
+•   TECHNICAL: Implemented background sync and cache-first strategies for seamless offline gaming experience.
+•   DEPLOYMENT: Cleaned production codebase removing all development scripts and files for optimized GitHub Pages deployment.
+
+--------------------------------------
+
 v0.1.25 – New Resources, Offline Rewards & UI Polish!
 
 •   NEW: Nickel resource! A mid-tier metal that bridges the gap between Bronze and Silver in the progression chain.

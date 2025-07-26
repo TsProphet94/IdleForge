@@ -12,6 +12,17 @@
       content="black-translucent"
     />
     <meta name="format-detection" content="telephone=no" />
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#16213e" />
+    <meta name="apple-mobile-web-app-title" content="IdleForge" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta
+      name="description"
+      content="An incremental mining game where you build your mining empire"
+    />
+
     <title>IdleForge</title>
     <link
       rel="stylesheet"
@@ -1117,5 +1128,21 @@
       </footer>
     </div>
     <script type="module" src="script.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
+            })
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
