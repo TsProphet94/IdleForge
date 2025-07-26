@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 470, // $ per titanium (2.5x platinum)
+  sellPrice: 4688, // $ per titanium - Scaled progression (2.5x platinum)
   category: "Titanium",
 };

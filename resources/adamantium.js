@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 1175, // $ per adamantium (2.5x titanium)
+  sellPrice: 11719, // $ per adamantium - Scaled progression (endgame premium) (2.5x titanium)
   category: "Adamantium",
 };

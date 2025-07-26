@@ -1,3 +1,24 @@
+v0.1.23 – New Resources, Offline Rewards & UI Polish!
+
+•   NEW: Nickel resource! A mid-tier metal that bridges the gap between Bronze and Silver in the progression chain.
+•   NEW: Cobalt resource! A valuable blue metal that unlocks between Silver and Gold for enhanced late-game progression.
+•   NEW: Palladium resource! A rare precious metal that sits between Gold and Platinum, adding depth to end-game mining.
+•   NEW: Offline Rewards System! Earn 10% of your mining rate while away from the game (minimum 1 minute offline, maximum 3 hours of rewards).
+•   NEW:"Welcome Back" modal shows exactly what you earned while offline, including breakdown by resource and total money gained.
+•   FIXED: Locked resource panels now properly maintain their collapsed state when loading a saved game - no more unwanted expansion!
+•   IMPROVED: Complete Shop Panel redesign with professional header, emoji resource tab icons, and helpful footer tips for better navigation.
+•   IMPROVED: Enhanced Stats Panel with organized grid layout, featured highscore display, comprehensive financial summary, and integrated milestone tracking.
+•   IMPROVED: All three main panels (Shop, Stats, Milestones) now feature card-based design with improved visual hierarchy and mobile responsiveness.
+•   IMPROVED: Enhanced font styling with Rubik font family for better readability and modern gaming aesthetic.
+•   IMPROVED: Smart unlock system that expands panels only for fresh unlocks, preserving player UI preferences on game load.
+•   OPTIMIZED: Dramatically reduced image file sizes! All resource background images compressed from 2.7-3.3MB down to ~650KB each (75-80% size reduction).
+•   OPTIMIZED: Faster page loading times and reduced bandwidth usage thanks to image compression improvements.
+•   TECHNICAL: Added comprehensive CSS styling system for enhanced panel layouts with responsive design and hover effects.
+•   TECHNICAL: Added lastActive timestamp tracking for accurate offline time calculation.
+•   TECHNICAL: Optimized resource price integration for offline rewards calculation.
+
+--------------------------------------
+
 v0.1.22 – Theme Options & New Resources!
 
 •   New theme options added! Customize your mining experience with different visual styles.

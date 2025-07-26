@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 12, // $ per bronze (2.4x copper, rounded for simplicity)
+  sellPrice: 20, // $ per bronze - Scaled progression
   category: "bronze",
 };

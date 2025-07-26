@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 2, // $ per iron
+  sellPrice: 1, // $ per iron - Base value
   category: "iron",
 };

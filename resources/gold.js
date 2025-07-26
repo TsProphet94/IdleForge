@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 75, // $ per gold (2.5x silver)
+  sellPrice: 300, // $ per gold - Scaled progression
   category: "Gold",
 };

@@ -80,9 +80,12 @@ if (themeSelect) {
 /* eslint-disable no-undef */
 import iron from "./resources/iron.js";
 import copper from "./resources/copper.js";
+import nickel from "./resources/nickel.js";
 import bronze from "./resources/bronze.js";
 import silver from "./resources/silver.js";
+import cobalt from "./resources/cobalt.js";
 import gold from "./resources/gold.js";
+import palladium from "./resources/palladium.js";
 import platinum from "./resources/platinum.js"; // New resource
 import titanium from "./resources/titanium.js";
 import adamantium from "./resources/adamantium.js";
@@ -94,9 +97,12 @@ import { shopItems } from "./shop/items.js";
 export const resources = {
   iron,
   copper,
+  nickel,
   bronze,
   silver,
+  cobalt,
   gold,
+  palladium,
   platinum, // New resource
   titanium,
   adamantium,
@@ -105,9 +111,12 @@ export const resources = {
 const RES_IDS = [
   "iron",
   "copper",
+  "nickel",
   "bronze",
   "silver",
+  "cobalt",
   "gold",
+  "palladium",
   "platinum",
   "titanium",
   "adamantium",
@@ -118,9 +127,12 @@ export const stats = {
   mined: {
     iron: 0,
     copper: 0,
+    nickel: 0,
     bronze: 0,
     silver: 0,
+    cobalt: 0,
     gold: 0,
+    palladium: 0,
     platinum: 0,
     titanium: 0,
     adamantium: 0,
@@ -128,9 +140,12 @@ export const stats = {
   sold: {
     iron: 0,
     copper: 0,
+    nickel: 0,
     bronze: 0,
     silver: 0,
+    cobalt: 0,
     gold: 0,
+    palladium: 0,
     platinum: 0,
     titanium: 0,
     adamantium: 0,
@@ -140,15 +155,18 @@ export const stats = {
   clicks: { mine: 0, sell: 0, shopBuy: 0, unlock: 0 },
 };
 
-/* Unlock costs (balanced 5x progression) */
+/* Unlock costs (balanced for 5-hour progression) */
 const UNLOCK_COST = {
-  copper: 20000,
-  bronze: 100000,
-  silver: 500000,
-  gold: 2500000,
-  platinum: 12500000,
-  titanium: 62500000,
-  adamantium: 312500000,
+  copper: 50000, // Base
+  nickel: 200000, // 4x copper (early game)
+  bronze: 800000, // 4x nickel (early game)
+  silver: 3200000, // 4x bronze (early game)
+  cobalt: 19200000, // 6x silver (mid game start)
+  gold: 115200000, // 6x cobalt (mid game)
+  palladium: 691200000, // 6x gold (mid game)
+  platinum: 7603200000, // 11x palladium (late game start)
+  titanium: 83635200000, // 11x platinum (late game)
+  adamantium: 920187200000, // 11x titanium (late game)
 };
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -156,9 +174,12 @@ const UNLOCK_COST = {
 ──────────────────────────────────────────────────────────────────────────── */
 const ironCountEl = document.getElementById("iron-count");
 const copperCountEl = document.getElementById("copper-count");
+const nickelCountEl = document.getElementById("nickel-count");
 const bronzeCountEl = document.getElementById("bronze-count");
 const silverCountEl = document.getElementById("silver-count");
+const cobaltCountEl = document.getElementById("cobalt-count");
 const goldCountEl = document.getElementById("gold-count");
+const palladiumCountEl = document.getElementById("palladium-count");
 const platinumCountEl = document.getElementById("platinum-count"); // New resource
 const titaniumCountEl = document.getElementById("titanium-count");
 const adamantiumCountEl = document.getElementById("adamantium-count");
@@ -182,12 +203,18 @@ const mineIronBtn = document.getElementById("mine-iron-btn");
 const sellIronBtn = document.getElementById("sell-iron-btn");
 const mineCopperBtn = document.getElementById("mine-copper-btn");
 const sellCopperBtn = document.getElementById("sell-copper-btn");
+const mineNickelBtn = document.getElementById("mine-nickel-btn");
+const sellNickelBtn = document.getElementById("sell-nickel-btn");
 const mineBronzeBtn = document.getElementById("mine-bronze-btn");
 const sellBronzeBtn = document.getElementById("sell-bronze-btn");
 const mineSilverBtn = document.getElementById("mine-silver-btn");
 const sellSilverBtn = document.getElementById("sell-silver-btn");
+const mineCobaltBtn = document.getElementById("mine-cobalt-btn");
+const sellCobaltBtn = document.getElementById("sell-cobalt-btn");
 const mineGoldBtn = document.getElementById("mine-gold-btn");
 const sellGoldBtn = document.getElementById("sell-gold-btn");
+const minePalladiumBtn = document.getElementById("mine-palladium-btn");
+const sellPalladiumBtn = document.getElementById("sell-palladium-btn");
 const minePlatinumBtn = document.getElementById("mine-platinum-btn"); // New resource
 const sellPlatinumBtn = document.getElementById("sell-platinum-btn"); // New resource
 const mineTitaniumBtn = document.getElementById("mine-titanium-btn");
@@ -212,9 +239,12 @@ const isDev = false;
 const devPanel = document.getElementById("dev-panel");
 const devAddIron = document.getElementById("dev-add-iron");
 const devAddCopper = document.getElementById("dev-add-copper");
+const devAddNickel = document.getElementById("dev-add-nickel");
 const devAddBronze = document.getElementById("dev-add-bronze");
 const devAddSilver = document.getElementById("dev-add-silver");
+const devAddCobalt = document.getElementById("dev-add-cobalt");
 const devAddGold = document.getElementById("dev-add-gold");
+const devAddPalladium = document.getElementById("dev-add-palladium");
 const devAddPlatinum = document.getElementById("dev-add-platinum"); // New resource
 const devAddTitanium = document.getElementById("dev-add-titanium");
 const devAddAdamantium = document.getElementById("dev-add-adamantium");
@@ -230,6 +260,10 @@ if (isDev) {
     addOre("copper", 10000);
     updateUI();
   });
+  devAddNickel?.addEventListener("click", () => {
+    addOre("nickel", 10000);
+    updateUI();
+  });
   devAddBronze?.addEventListener("click", () => {
     addOre("bronze", 10000);
     updateUI();
@@ -238,8 +272,16 @@ if (isDev) {
     addOre("silver", 10000);
     updateUI();
   });
+  devAddCobalt?.addEventListener("click", () => {
+    addOre("cobalt", 10000);
+    updateUI();
+  });
   devAddGold?.addEventListener("click", () => {
     addOre("gold", 10000);
+    updateUI();
+  });
+  devAddPalladium?.addEventListener("click", () => {
+    addOre("palladium", 10000);
     updateUI();
   });
   devAddPlatinum?.addEventListener("click", () => {
@@ -273,9 +315,12 @@ const autoSellIntervals = {};
 ──────────────────────────────────────────────────────────────────────────── */
 let currentResource = "iron";
 let copperUnlocked = false;
+let nickelUnlocked = false;
 let bronzeUnlocked = false;
 let silverUnlocked = false;
+let cobaltUnlocked = false;
 let goldUnlocked = false;
+let palladiumUnlocked = false;
 let platinumUnlocked = false; // New resource
 let titaniumUnlocked = false;
 let adamantiumUnlocked = false;
@@ -291,9 +336,12 @@ if (overlay) overlay.classList.add("hidden");
 tabMine.classList.add("active");
 
 mineCopperBtn.disabled = sellCopperBtn.disabled = true;
+mineNickelBtn.disabled = sellNickelBtn.disabled = true;
 mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
 mineSilverBtn.disabled = sellSilverBtn.disabled = true;
+mineCobaltBtn.disabled = sellCobaltBtn.disabled = true;
 mineGoldBtn.disabled = sellGoldBtn.disabled = true;
+minePalladiumBtn.disabled = sellPalladiumBtn.disabled = true;
 minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
 mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = true;
 mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = true;
@@ -322,12 +370,18 @@ function isUnlocked(resId) {
       return true;
     case "copper":
       return copperUnlocked;
+    case "nickel":
+      return nickelUnlocked;
     case "bronze":
       return bronzeUnlocked;
     case "silver":
       return silverUnlocked;
+    case "cobalt":
+      return cobaltUnlocked;
     case "gold":
       return goldUnlocked;
+    case "palladium":
+      return palladiumUnlocked;
     case "platinum":
       return platinumUnlocked; // New resource
     case "titanium":
@@ -605,12 +659,18 @@ mineIronBtn.addEventListener("click", () => mineResource("iron"));
 sellIronBtn.addEventListener("click", () => sellAll("iron"));
 mineCopperBtn.addEventListener("click", () => mineResource("copper"));
 sellCopperBtn.addEventListener("click", () => sellAll("copper"));
+mineNickelBtn.addEventListener("click", () => mineResource("nickel"));
+sellNickelBtn.addEventListener("click", () => sellAll("nickel"));
 mineBronzeBtn.addEventListener("click", () => mineResource("bronze"));
 sellBronzeBtn.addEventListener("click", () => sellAll("bronze"));
 mineSilverBtn.addEventListener("click", () => mineResource("silver"));
 sellSilverBtn.addEventListener("click", () => sellAll("silver"));
+mineCobaltBtn.addEventListener("click", () => mineResource("cobalt"));
+sellCobaltBtn.addEventListener("click", () => sellAll("cobalt"));
 mineGoldBtn.addEventListener("click", () => mineResource("gold"));
 sellGoldBtn.addEventListener("click", () => sellAll("gold"));
+minePalladiumBtn.addEventListener("click", () => mineResource("palladium"));
+sellPalladiumBtn.addEventListener("click", () => sellAll("palladium"));
 minePlatinumBtn.addEventListener("click", () => mineResource("platinum")); // New resource
 sellPlatinumBtn.addEventListener("click", () => sellAll("platinum")); // New resource
 mineTitaniumBtn.addEventListener("click", () => mineResource("titanium"));
@@ -650,9 +710,12 @@ function attemptUnlock(res) {
   stats.clicks.unlock++;
 
   if (res === "copper") unlockCopperUI();
+  if (res === "nickel") unlockNickelUI();
   if (res === "bronze") unlockBronzeUI();
   if (res === "silver") unlockSilverUI();
+  if (res === "cobalt") unlockCobaltUI();
   if (res === "gold") unlockGoldUI();
+  if (res === "palladium") unlockPalladiumUI();
   if (res === "platinum") unlockPlatinumUI(); // New resource
   if (res === "titanium") unlockTitaniumUI();
   if (res === "adamantium") unlockAdamantiumUI();
@@ -669,6 +732,7 @@ function relockResource(res) {
   if (!panel) return;
 
   panel.classList.add("locked");
+  panel.classList.add("collapsed");
 
   const old = document.getElementById(`lock-overlay-${res}`);
   if (old) old.remove();
@@ -726,7 +790,7 @@ shopList.addEventListener("click", (e) => {
   updateUI();
   updateStatsUI();
 
-  if (item.id.startsWith("auto-seller")) {
+  if (item.id.endsWith("-autoseller")) {
     const resId = item.category;
     document.getElementById(`sell-timer-${resId}`)?.classList.remove("hidden");
     const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
@@ -947,9 +1011,12 @@ function renderShop() {
 function updateUI() {
   ironCountEl.textContent = fmt(resources.iron.count);
   copperCountEl.textContent = fmt(resources.copper.count);
+  nickelCountEl.textContent = fmt(resources.nickel.count || 0);
   bronzeCountEl.textContent = fmt(resources.bronze.count);
   silverCountEl.textContent = fmt(resources.silver.count);
+  cobaltCountEl.textContent = fmt(resources.cobalt.count || 0);
   goldCountEl.textContent = fmt(resources.gold.count);
+  palladiumCountEl.textContent = fmt(resources.palladium.count || 0);
   platinumCountEl.textContent = fmt(resources.platinum.count || 0); // New resource
   titaniumCountEl.textContent = fmt(resources.titanium.count || 0);
   adamantiumCountEl.textContent = fmt(resources.adamantium.count || 0);
@@ -983,9 +1050,12 @@ function updateUI() {
 
   sellIronBtn.disabled = resources.iron.count <= 0;
   sellCopperBtn.disabled = resources.copper.count <= 0;
+  sellNickelBtn.disabled = resources.nickel.count <= 0;
   sellBronzeBtn.disabled = resources.bronze.count <= 0;
   sellSilverBtn.disabled = resources.silver.count <= 0;
+  sellCobaltBtn.disabled = resources.cobalt.count <= 0;
   sellGoldBtn.disabled = resources.gold.count <= 0;
+  sellPalladiumBtn.disabled = resources.palladium.count <= 0;
   sellPlatinumBtn.disabled = resources.platinum.count <= 0; // New resource
   sellTitaniumBtn.disabled = resources.titanium.count <= 0;
   sellAdamantiumBtn.disabled = resources.adamantium.count <= 0;
@@ -1010,6 +1080,15 @@ function updateUI() {
     collapsedAutoCopper.textContent = fmt(rate) + "/s";
   }
   setText(
+    "auto-rate-nickel",
+    resources.nickel.perSecond * milestoneMultipliers.nickel
+  );
+  const collapsedAutoNickel = document.getElementById("collapsed-auto-nickel");
+  if (collapsedAutoNickel) {
+    const rate = resources.nickel.perSecond * milestoneMultipliers.nickel || 0;
+    collapsedAutoNickel.textContent = fmt(rate) + "/s";
+  }
+  setText(
     "auto-rate-bronze",
     resources.bronze.perSecond * milestoneMultipliers.bronze
   );
@@ -1028,6 +1107,15 @@ function updateUI() {
     collapsedAutoSilver.textContent = fmt(rate) + "/s";
   }
   setText(
+    "auto-rate-cobalt",
+    resources.cobalt.perSecond * milestoneMultipliers.cobalt
+  );
+  const collapsedAutoCobalt = document.getElementById("collapsed-auto-cobalt");
+  if (collapsedAutoCobalt) {
+    const rate = resources.cobalt.perSecond * milestoneMultipliers.cobalt || 0;
+    collapsedAutoCobalt.textContent = fmt(rate) + "/s";
+  }
+  setText(
     "auto-rate-gold",
     resources.gold.perSecond * milestoneMultipliers.gold
   );
@@ -1035,6 +1123,18 @@ function updateUI() {
   if (collapsedAutoGold) {
     const rate = resources.gold.perSecond * milestoneMultipliers.gold || 0;
     collapsedAutoGold.textContent = fmt(rate) + "/s";
+  }
+  setText(
+    "auto-rate-palladium",
+    resources.palladium.perSecond * milestoneMultipliers.palladium
+  );
+  const collapsedAutoPalladium = document.getElementById(
+    "collapsed-auto-palladium"
+  );
+  if (collapsedAutoPalladium) {
+    const rate =
+      resources.palladium.perSecond * milestoneMultipliers.palladium || 0;
+    collapsedAutoPalladium.textContent = fmt(rate) + "/s";
   }
   setText(
     "auto-rate-platinum",
@@ -1093,7 +1193,7 @@ function createSellPop(resourceId) {
 function startAutoSell(resId) {
   stopAutoSell(resId);
   const seller = shopItems.find(
-    (i) => i.category === resId && i.id.startsWith("auto-seller")
+    (i) => i.category === resId && i.id.endsWith("-autoseller")
   );
   if (!seller || seller.count === 0) return;
 
@@ -1204,27 +1304,36 @@ function getSaveData() {
   return {
     iron: resources.iron.count,
     copper: resources.copper.count,
+    nickel: resources.nickel.count,
     bronze: resources.bronze.count,
     silver: resources.silver.count,
+    cobalt: resources.cobalt.count,
     gold: resources.gold.count,
+    palladium: resources.palladium.count,
     platinum: resources.platinum.count, // New resource
     titanium: resources.titanium.count,
     adamantium: resources.adamantium.count,
     money: resources.money.count,
 
     copperUnlocked,
+    nickelUnlocked,
     bronzeUnlocked,
     silverUnlocked,
+    cobaltUnlocked,
     goldUnlocked,
+    palladiumUnlocked,
     platinumUnlocked, // New resource
     titaniumUnlocked,
     adamantiumUnlocked,
 
     ironPerSecond: resources.iron.perSecond,
     copperPerSecond: resources.copper.perSecond,
+    nickelPerSecond: resources.nickel.perSecond,
     bronzePerSecond: resources.bronze.perSecond,
     silverPerSecond: resources.silver.perSecond,
+    cobaltPerSecond: resources.cobalt.perSecond,
     goldPerSecond: resources.gold.perSecond,
+    palladiumPerSecond: resources.palladium.perSecond,
     platinumPerSecond: resources.platinum.perSecond, // New resource
     titaniumPerSecond: resources.titanium.perSecond,
     adamantiumPerSecond: resources.adamantium.perSecond,
@@ -1240,8 +1349,146 @@ function getSaveData() {
     collapseStates,
 
     lastSave: Date.now(),
+    lastActive: Date.now(), // Track when player was last active
   };
 }
+
+// Offline rewards system - gives 10% of online mining rate
+function calculateOfflineRewards(saveData) {
+  const now = Date.now();
+  const lastActive = saveData.lastActive || saveData.lastSave || now;
+  const offlineTime = (now - lastActive) / 1000; // Convert to seconds
+
+  // Only give offline rewards if player was offline for at least 1 minute
+  // and maximum 3 hours of offline rewards
+  const minOfflineTime = 60; // 1 minute
+  const maxOfflineTime = 3 * 60 * 60; // 3 hours
+
+  if (offlineTime < minOfflineTime) return;
+
+  const rewardTime = Math.min(offlineTime, maxOfflineTime);
+  const offlineMultiplier = 0.1; // 10% of online rate
+
+  const offlineRewards = {};
+  let totalMoneyEarned = 0;
+  let hasRewards = false;
+
+  // Calculate offline mining for each unlocked resource
+  RES_IDS.forEach((resId) => {
+    const wasUnlocked = saveData[`${resId}Unlocked`];
+    if (resId === "iron" || wasUnlocked) {
+      const perSecond = saveData[`${resId}PerSecond`] || 0;
+      const milestoneMultiplier = milestoneMultipliers[resId] || 1;
+      const totalRate = perSecond * milestoneMultiplier * offlineMultiplier;
+
+      if (totalRate > 0) {
+        const mined = totalRate * rewardTime;
+        const price = getResourceSellPrice(resId);
+        const moneyFromResource = mined * price;
+
+        offlineRewards[resId] = {
+          mined: mined,
+          money: moneyFromResource,
+        };
+
+        totalMoneyEarned += moneyFromResource;
+        hasRewards = true;
+
+        // Add the mined resources to player's inventory
+        addOre(resId, mined);
+      }
+    }
+  });
+
+  if (hasRewards) {
+    // Add the money earned
+    addMoney(totalMoneyEarned);
+
+    // Show offline rewards modal
+    showOfflineRewardsModal(rewardTime, offlineRewards, totalMoneyEarned);
+  }
+}
+
+// Get resource sell price (imported from resource files)
+function getResourceSellPrice(resId) {
+  switch (resId) {
+    case "iron":
+      return iron.sellPrice;
+    case "copper":
+      return copper.sellPrice;
+    case "nickel":
+      return nickel.sellPrice;
+    case "bronze":
+      return bronze.sellPrice;
+    case "silver":
+      return silver.sellPrice;
+    case "cobalt":
+      return cobalt.sellPrice;
+    case "gold":
+      return gold.sellPrice;
+    case "palladium":
+      return palladium.sellPrice;
+    case "platinum":
+      return platinum.sellPrice;
+    case "titanium":
+      return titanium.sellPrice;
+    case "adamantium":
+      return adamantium.sellPrice;
+    default:
+      return 1;
+  }
+}
+
+// Show offline rewards modal
+function showOfflineRewardsModal(timeAway, rewards, totalMoney) {
+  const modal = document.createElement("div");
+  modal.className = "offline-rewards-modal overlay";
+  modal.style.display = "flex";
+
+  const hours = Math.floor(timeAway / 3600);
+  const minutes = Math.floor((timeAway % 3600) / 60);
+  const timeText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+  let rewardsList = "";
+  Object.entries(rewards).forEach(([resId, data]) => {
+    if (data.mined > 0) {
+      const resName = resId.charAt(0).toUpperCase() + resId.slice(1);
+      rewardsList += `<li>${resName}: ${fmt(data.mined)} (+$${fmt(
+        data.money
+      )})</li>`;
+    }
+  });
+
+  modal.innerHTML = `
+    <div class="offline-rewards-content">
+      <h2>🎁 Welcome Back!</h2>
+      <p>You were away for <strong>${timeText}</strong></p>
+      <p>Your mines kept working at 10% efficiency:</p>
+      <ul class="offline-rewards-list">
+        ${rewardsList}
+      </ul>
+      <div class="offline-rewards-total">
+        <strong>Total Money Earned: $${fmt(totalMoney)}</strong>
+      </div>
+      <button class="offline-rewards-btn" onclick="closeOfflineRewardsModal()">
+        Collect Rewards
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+// Close offline rewards modal
+function closeOfflineRewardsModal() {
+  const modal = document.querySelector(".offline-rewards-modal");
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Make closeOfflineRewardsModal globally accessible
+window.closeOfflineRewardsModal = closeOfflineRewardsModal;
 
 function saveGame() {
   if (!isLocalStorageAvailable()) return false;
@@ -1268,52 +1515,74 @@ function loadGame() {
 
     resources.iron.count = data.iron || 0;
     resources.copper.count = data.copper || 0;
+    resources.nickel.count = data.nickel || 0;
     resources.bronze.count = data.bronze || 0;
     resources.silver.count = data.silver || 0;
+    resources.cobalt.count = data.cobalt || 0;
     resources.gold.count = data.gold || 0;
+    resources.palladium.count = data.palladium || 0;
     resources.platinum.count = data.platinum || 0; // New resource
     resources.titanium.count = data.titanium || 0;
     resources.adamantium.count = data.adamantium || 0;
     resources.money.count = data.money || 0;
 
     copperUnlocked = !!data.copperUnlocked;
+    nickelUnlocked = !!data.nickelUnlocked;
     bronzeUnlocked = !!data.bronzeUnlocked;
     silverUnlocked = !!data.silverUnlocked;
+    cobaltUnlocked = !!data.cobaltUnlocked;
     goldUnlocked = !!data.goldUnlocked;
+    palladiumUnlocked = !!data.palladiumUnlocked;
     platinumUnlocked = !!data.platinumUnlocked; // New resource
     titaniumUnlocked = !!data.titaniumUnlocked;
     adamantiumUnlocked = !!data.adamantiumUnlocked;
-    if (copperUnlocked) unlockCopperUI();
+
+    if (copperUnlocked) unlockCopperUI(false);
     else relockResource("copper");
-    if (bronzeUnlocked) unlockBronzeUI();
+    if (nickelUnlocked) unlockNickelUI(false);
+    else relockResource("nickel");
+    if (bronzeUnlocked) unlockBronzeUI(false);
     else relockResource("bronze");
-    if (silverUnlocked) unlockSilverUI();
+    if (silverUnlocked) unlockSilverUI(false);
     else relockResource("silver");
-    if (goldUnlocked) unlockGoldUI();
+    if (cobaltUnlocked) unlockCobaltUI(false);
+    else relockResource("cobalt");
+    if (goldUnlocked) unlockGoldUI(false);
     else relockResource("gold");
-    if (platinumUnlocked) unlockPlatinumUI(); // New resource
+    if (palladiumUnlocked) unlockPalladiumUI(false);
+    else relockResource("palladium");
+    if (platinumUnlocked) unlockPlatinumUI(false); // New resource
     else relockResource("platinum"); // New resource
-    if (titaniumUnlocked) unlockTitaniumUI();
+    if (titaniumUnlocked) unlockTitaniumUI(false);
     else relockResource("titanium");
-    if (adamantiumUnlocked) unlockAdamantiumUI();
+    if (adamantiumUnlocked) unlockAdamantiumUI(false);
     else relockResource("adamantium");
 
     if (data.ironPerSecond !== undefined)
       resources.iron.perSecond = data.ironPerSecond;
     if (data.copperPerSecond !== undefined)
       resources.copper.perSecond = data.copperPerSecond;
+    if (data.nickelPerSecond !== undefined)
+      resources.nickel.perSecond = data.nickelPerSecond;
     if (data.bronzePerSecond !== undefined)
       resources.bronze.perSecond = data.bronzePerSecond;
     if (data.silverPerSecond !== undefined)
       resources.silver.perSecond = data.silverPerSecond;
+    if (data.cobaltPerSecond !== undefined)
+      resources.cobalt.perSecond = data.cobaltPerSecond;
     if (data.goldPerSecond !== undefined)
       resources.gold.perSecond = data.goldPerSecond;
+    if (data.palladiumPerSecond !== undefined)
+      resources.palladium.perSecond = data.palladiumPerSecond;
     if (data.platinumPerSecond !== undefined)
       resources.platinum.perSecond = data.platinumPerSecond; // New resource
     if (data.titaniumPerSecond !== undefined)
       resources.titanium.perSecond = data.titaniumPerSecond;
     if (data.adamantiumPerSecond !== undefined)
       resources.adamantium.perSecond = data.adamantiumPerSecond;
+
+    // Calculate and apply offline rewards AFTER perSecond values are loaded
+    calculateOfflineRewards(data);
 
     if (Array.isArray(data.upgrades)) {
       data.upgrades.forEach((u) => {
@@ -1357,7 +1626,7 @@ function loadGame() {
 
     // re-init autosellers
     shopItems
-      .filter((i) => i.id.startsWith("auto-seller") && i.count > 0)
+      .filter((i) => i.id.endsWith("-autoseller") && i.count > 0)
       .forEach((item) => {
         const resId = item.category;
         document
@@ -1380,106 +1649,304 @@ function loadGame() {
 /* ────────────────────────────────────────────────────────────────────────────
    UNLOCK UI HELPERS
 ──────────────────────────────────────────────────────────────────────────── */
-function unlockCopperUI() {
+function unlockCopperUI(expandPanel = true) {
   copperUnlocked = true;
   mineCopperBtn.disabled = sellCopperBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="copper"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-copper", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-copper", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-copper") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-copper")?.remove();
   document.getElementById("tab-resource-copper")?.classList.remove("locked");
 }
-function unlockBronzeUI() {
+
+function unlockNickelUI(expandPanel = true) {
+  nickelUnlocked = true;
+  mineNickelBtn.disabled = sellNickelBtn.disabled = false;
+  const panel = document.querySelector(
+    '.resource-panel[data-resource="nickel"]'
+  );
+  panel?.classList.remove("locked");
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-nickel", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-nickel") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
+  document.getElementById("lock-overlay-nickel")?.remove();
+  document.getElementById("tab-resource-nickel")?.classList.remove("locked");
+}
+function unlockBronzeUI(expandPanel = true) {
   bronzeUnlocked = true;
   mineBronzeBtn.disabled = sellBronzeBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="bronze"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-bronze", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-bronze", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-bronze") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-bronze")?.remove();
   document.getElementById("tab-resource-bronze")?.classList.remove("locked");
 }
-function unlockSilverUI() {
+function unlockSilverUI(expandPanel = true) {
   silverUnlocked = true;
   mineSilverBtn.disabled = sellSilverBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="silver"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-silver", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-silver", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-silver") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-silver")?.remove();
   document.getElementById("tab-resource-silver")?.classList.remove("locked");
 }
-function unlockGoldUI() {
+
+function unlockCobaltUI(expandPanel = true) {
+  cobaltUnlocked = true;
+  mineCobaltBtn.disabled = sellCobaltBtn.disabled = false;
+  const panel = document.querySelector(
+    '.resource-panel[data-resource="cobalt"]'
+  );
+  panel?.classList.remove("locked");
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-cobalt", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-cobalt") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
+  document.getElementById("lock-overlay-cobalt")?.remove();
+  document.getElementById("tab-resource-cobalt")?.classList.remove("locked");
+}
+function unlockGoldUI(expandPanel = true) {
   goldUnlocked = true;
   mineGoldBtn.disabled = sellGoldBtn.disabled = false;
   const panel = document.querySelector('.resource-panel[data-resource="gold"]');
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-gold", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-gold", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-gold") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-gold")?.remove();
   document.getElementById("tab-resource-gold")?.classList.remove("locked");
 }
-function unlockPlatinumUI() {
+
+function unlockPalladiumUI(expandPanel = true) {
+  palladiumUnlocked = true;
+  minePalladiumBtn.disabled = sellPalladiumBtn.disabled = false;
+  const panel = document.querySelector(
+    '.resource-panel[data-resource="palladium"]'
+  );
+  panel?.classList.remove("locked");
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-palladium", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-palladium") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
+  document.getElementById("lock-overlay-palladium")?.remove();
+  document.getElementById("tab-resource-palladium")?.classList.remove("locked");
+}
+function unlockPlatinumUI(expandPanel = true) {
   platinumUnlocked = true;
   minePlatinumBtn.disabled = sellPlatinumBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="platinum"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-platinum", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-platinum", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-platinum") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-platinum")?.remove();
   document.getElementById("tab-resource-platinum")?.classList.remove("locked");
 }
-function unlockTitaniumUI() {
+function unlockTitaniumUI(expandPanel = true) {
   titaniumUnlocked = true;
   mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="titanium"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-titanium", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-titanium", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-titanium") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-titanium")?.remove();
   document.getElementById("tab-resource-titanium")?.classList.remove("locked");
 }
-function unlockAdamantiumUI() {
+function unlockAdamantiumUI(expandPanel = true) {
   adamantiumUnlocked = true;
   mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = false;
   const panel = document.querySelector(
     '.resource-panel[data-resource="adamantium"]'
   );
   panel?.classList.remove("locked");
-  // Expand the panel when unlocked
-  panel?.classList.remove("collapsed");
-  try {
-    localStorage.setItem("panel-collapsed-adamantium", "0");
-  } catch {}
+
+  // Only force expansion for fresh unlocks, not when loading saves
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem("panel-collapsed-adamantium", "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem("panel-collapsed-adamantium") === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
   document.getElementById("lock-overlay-adamantium")?.remove();
   document
     .getElementById("tab-resource-adamantium")
@@ -1516,12 +1983,14 @@ function startNewGame() {
 
   // Reset unlocks
   copperUnlocked = false;
+  nickelUnlocked = false;
   bronzeUnlocked = false;
   silverUnlocked = false;
+  cobaltUnlocked = false;
   goldUnlocked = false;
+  palladiumUnlocked = false;
   platinumUnlocked = false; // New resource
   titaniumUnlocked = false;
-  adamantiumUnlocked = false;
   adamantiumUnlocked = false;
 
   // Reset shop items
@@ -1545,9 +2014,12 @@ function startNewGame() {
 
   // Reset UI buttons
   mineCopperBtn.disabled = sellCopperBtn.disabled = true;
+  mineNickelBtn.disabled = sellNickelBtn.disabled = true;
   mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
   mineSilverBtn.disabled = sellSilverBtn.disabled = true;
+  mineCobaltBtn.disabled = sellCobaltBtn.disabled = true;
   mineGoldBtn.disabled = sellGoldBtn.disabled = true;
+  minePalladiumBtn.disabled = sellPalladiumBtn.disabled = true;
   minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
   mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = true;
   mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = true;
@@ -1560,13 +2032,25 @@ function startNewGame() {
 
   // Relock all resources above iron
   relockResource("copper");
+  relockResource("nickel");
   relockResource("bronze");
   relockResource("silver");
+  relockResource("cobalt");
   relockResource("gold");
+  relockResource("palladium");
   relockResource("platinum"); // New resource
   relockResource("titanium");
   relockResource("adamantium");
   document.getElementById("tab-resource-copper")?.classList.add("locked");
+  document.getElementById("tab-resource-nickel")?.classList.add("locked");
+  document.getElementById("tab-resource-bronze")?.classList.add("locked");
+  document.getElementById("tab-resource-silver")?.classList.add("locked");
+  document.getElementById("tab-resource-cobalt")?.classList.add("locked");
+  document.getElementById("tab-resource-gold")?.classList.add("locked");
+  document.getElementById("tab-resource-palladium")?.classList.add("locked");
+  document.getElementById("tab-resource-platinum")?.classList.add("locked");
+  document.getElementById("tab-resource-titanium")?.classList.add("locked");
+  document.getElementById("tab-resource-adamantium")?.classList.add("locked");
 
   // Hide overlays, modals, and popups
   if (overlay) overlay.classList.add("hidden");
@@ -1814,6 +2298,33 @@ function showAutoSaveIndicator() {
   }
   cogIndicator.classList.add("show");
 }
+
+// Initialize locked resources as collapsed on page load
+document.addEventListener("DOMContentLoaded", () => {
+  // Ensure all locked resources start collapsed
+  const lockedResources = [
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+  lockedResources.forEach((res) => {
+    if (!isUnlocked(res)) {
+      const panel = document.querySelector(
+        `.resource-panel[data-resource="${res}"]`
+      );
+      if (panel && !panel.classList.contains("collapsed")) {
+        panel.classList.add("collapsed");
+      }
+    }
+  });
+});
 function hideAutoSaveIndicator() {
   document.getElementById("autosave-cog")?.classList.remove("show");
 }

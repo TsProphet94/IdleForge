@@ -6,12 +6,12 @@ export const shopItems = [
   // IRON
   // ──────────────────────────────────────────────────────────────
   {
-    id: "clicker-upgrade",
-    name: "Tougher Pickaxe",
+    id: "iron-clicker",
+    name: "Forged Pickaxe",
     description: "+1 iron per click",
     category: "iron",
-    basePrice: 40,
-    price: 40,
+    basePrice: 20,
+    price: 20,
     scale: 1.08,
     count: 0,
     max: 10,
@@ -20,68 +20,82 @@ export const shopItems = [
     },
   },
   {
-    id: "drill",
-    name: "Small Drill",
-    description: "+0.8 iron/sec per level",
+    id: "iron-automine-1",
+    name: "Rusty Drill",
+    description: "+3 iron/sec",
     category: "iron",
-    basePrice: 45,
-    price: 45,
-    scale: 1.1,
+    basePrice: 30,
+    price: 30,
+    scale: 1.15,
     count: 0,
-    max: 50,
+    max: 26,
     apply() {
-      resources.iron.perSecond += 0.8;
+      resources.iron.perSecond += 3;
     },
   },
   {
-    id: "jackhammer",
-    name: "Jackhammer",
-    description: "+1.2 iron/sec per level",
-    category: "iron",
-    basePrice: 70,
-    price: 70,
-    scale: 1.12,
-    count: 0,
-    max: 50,
-    apply() {
-      resources.iron.perSecond += 1.2;
-    },
-  },
-  {
-    id: "coring-rig",
-    name: "Coring Rig",
-    description: "+2 iron/sec per level",
+    id: "iron-automine-2",
+    name: "Steam Hammer",
+    description: "+8 iron/sec",
     category: "iron",
     basePrice: 120,
     price: 120,
     scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
-      resources.iron.perSecond += 2;
+      resources.iron.perSecond += 8;
     },
   },
   {
-    id: "mining-rig",
-    name: "Mining Rig",
-    description: "+5 iron/sec per level",
+    id: "iron-automine-3",
+    name: "Blast Furnace",
+    description: "+15 iron/sec",
     category: "iron",
-    basePrice: 350,
-    price: 350,
-    scale: 1.18,
+    basePrice: 480,
+    price: 480,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
-      resources.iron.perSecond += 5;
+      resources.iron.perSecond += 15;
     },
   },
   {
-    id: "auto-seller",
-    name: "Auto-Seller (Iron)",
+    id: "iron-automine-4",
+    name: "Steel Mill Complex",
+    description: "+30 iron/sec",
+    category: "iron",
+    basePrice: 1800,
+    price: 1800,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.iron.perSecond += 30;
+    },
+  },
+  {
+    id: "iron-automine-5",
+    name: "Industrial Foundry",
+    description: "+60 iron/sec",
+    category: "iron",
+    basePrice: 7200,
+    price: 7200,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.iron.perSecond += 60;
+    },
+  },
+  {
+    id: "iron-autoseller",
+    name: "Ore Merchant",
     description: "Automatically sells iron every 5s",
     category: "iron",
-    basePrice: 2000,
-    price: 2000,
+    basePrice: 1200,
+    price: 1200,
     scale: 1.15,
     count: 0,
     max: 1,
@@ -95,12 +109,12 @@ export const shopItems = [
   // ──────────────────────────────────────────────────────────────
   {
     id: "copper-clicker",
-    name: "Reinforced Chisel",
+    name: "Bronze Chisel",
     description: "+1 copper per click",
     category: "copper",
     basePrice: 120,
     price: 120,
-    scale: 1.1,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -108,69 +122,185 @@ export const shopItems = [
     },
   },
   {
-    id: "copper-drill",
-    name: "Copper Drill",
-    description: "+0.4 copper/sec per level",
+    id: "copper-automine-1",
+    name: "Wire Stripper",
+    description: "+3 copper/sec",
     category: "copper",
     basePrice: 130,
     price: 130,
-    scale: 1.12,
-    count: 0,
-    max: 50,
-    apply() {
-      resources.copper.perSecond += 0.4;
-    },
-  },
-  {
-    id: "automated-smelter",
-    name: "Automated Smelter",
-    description: "+1.2 copper/sec per level",
-    category: "copper",
-    basePrice: 470,
-    price: 470,
     scale: 1.15,
     count: 0,
-    max: 40,
+    max: 85,
     apply() {
-      resources.copper.perSecond += 1.2;
+      resources.copper.perSecond += 3;
     },
   },
   {
-    id: "copper-extractor",
-    name: "Copper Extractor",
-    description: "+5 copper/sec per level",
+    id: "copper-automine-2",
+    name: "Electric Harvester",
+    description: "+8 copper/sec",
     category: "copper",
-    basePrice: 2250,
-    price: 2250,
-    scale: 1.18,
+    basePrice: 500,
+    price: 500,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 85,
     apply() {
-      resources.copper.perSecond += 5;
+      resources.copper.perSecond += 8;
     },
   },
   {
-    id: "hydraulic-excavator",
-    name: "Hydraulic Excavator",
-    description: "+5 copper/sec per level",
+    id: "copper-automine-3",
+    name: "Conductivity Lab",
+    description: "+15 copper/sec",
     category: "copper",
-    basePrice: 2550,
-    price: 2550,
-    scale: 1.2,
+    basePrice: 2000,
+    price: 2000,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 85,
     apply() {
-      resources.copper.perSecond += 5;
+      resources.copper.perSecond += 15;
     },
   },
   {
-    id: "auto-seller-copper",
-    name: "Auto-Seller (Copper)",
+    id: "copper-automine-4",
+    name: "Electrical Grid",
+    description: "+30 copper/sec",
+    category: "copper",
+    basePrice: 8000,
+    price: 8000,
+    scale: 1.15,
+    count: 0,
+    max: 85,
+    apply() {
+      resources.copper.perSecond += 30;
+    },
+  },
+  {
+    id: "copper-automine-5",
+    name: "Voltage Amplifier",
+    description: "+40 copper/sec",
+    category: "copper",
+    basePrice: 30000,
+    price: 30000,
+    scale: 1.15,
+    count: 0,
+    max: 85,
+    apply() {
+      resources.copper.perSecond += 40;
+    },
+  },
+  {
+    id: "copper-autoseller",
+    name: "Wire Trader",
     description: "Automatically sells copper every 5s",
     category: "copper",
-    basePrice: 20000,
-    price: 20000,
-    scale: 1.18,
+    basePrice: 5000,
+    price: 5000,
+    scale: 1.15,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // NICKEL
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "nickel-clicker",
+    name: "Magnetic Hammer",
+    description: "+1 nickel per click",
+    category: "nickel",
+    basePrice: 200,
+    price: 200,
+    scale: 1.08,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.nickel.perClick += 1;
+    },
+  },
+  {
+    id: "nickel-automine-1",
+    name: "Lodestone Detector",
+    description: "+2 nickel/sec",
+    category: "nickel",
+    basePrice: 280,
+    price: 280,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.nickel.perSecond += 2;
+    },
+  },
+  {
+    id: "nickel-automine-2",
+    name: "Alloy Smelter",
+    description: "+5 nickel/sec",
+    category: "nickel",
+    basePrice: 1000,
+    price: 1000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.nickel.perSecond += 5;
+    },
+  },
+  {
+    id: "nickel-automine-3",
+    name: "Ferrite Core Lab",
+    description: "+10 nickel/sec",
+    category: "nickel",
+    basePrice: 4000,
+    price: 4000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.nickel.perSecond += 10;
+    },
+  },
+  {
+    id: "nickel-automine-4",
+    name: "Magnetic Field Array",
+    description: "+20 nickel/sec",
+    category: "nickel",
+    basePrice: 15000,
+    price: 15000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.nickel.perSecond += 20;
+    },
+  },
+  {
+    id: "nickel-automine-5",
+    name: "Magnetron Generator",
+    description: "+40 nickel/sec",
+    category: "nickel",
+    basePrice: 60000,
+    price: 60000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.nickel.perSecond += 40;
+    },
+  },
+  {
+    id: "nickel-autoseller",
+    name: "Alloy Broker",
+    description: "Automatically sells nickel every 5s",
+    category: "nickel",
+    basePrice: 10000,
+    price: 10000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -183,12 +313,12 @@ export const shopItems = [
   // ──────────────────────────────────────────────────────────────
   {
     id: "bronze-clicker",
-    name: "Bronze Pickaxe",
+    name: "Ancient Mallet",
     description: "+1 bronze per click",
     category: "bronze",
     basePrice: 300,
     price: 300,
-    scale: 1.12,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -196,69 +326,83 @@ export const shopItems = [
     },
   },
   {
-    id: "bronze-drill",
-    name: "Bronze Drill",
-    description: "+0.4 bronze/sec per level",
+    id: "bronze-automine-1",
+    name: "Grecian Bellows",
+    description: "+2 bronze/sec",
     category: "bronze",
     basePrice: 360,
     price: 360,
     scale: 1.15,
     count: 0,
-    max: 50,
+    max: 26,
     apply() {
-      resources.bronze.perSecond += 0.4;
+      resources.bronze.perSecond += 2;
     },
   },
   {
-    id: "bronze-smelter",
-    name: "Bronze Smelter",
-    description: "+1.2 bronze/sec per level",
+    id: "bronze-automine-2",
+    name: "Roman Forge",
+    description: "+5 bronze/sec",
     category: "bronze",
-    basePrice: 1200,
-    price: 1200,
-    scale: 1.18,
+    basePrice: 1500,
+    price: 1500,
+    scale: 1.15,
     count: 0,
-    max: 40,
-    apply() {
-      resources.bronze.perSecond += 1.2;
-    },
-  },
-  {
-    id: "bronze-extractor",
-    name: "Bronze Extractor",
-    description: "+5 bronze/sec per level",
-    category: "bronze",
-    basePrice: 5500,
-    price: 5500,
-    scale: 1.2,
-    count: 0,
-    max: 40,
+    max: 26,
     apply() {
       resources.bronze.perSecond += 5;
     },
   },
   {
-    id: "bronze-excavator",
-    name: "Bronze Excavator",
-    description: "+5 bronze/sec per level",
+    id: "bronze-automine-3",
+    name: "Temple Workshop",
+    description: "+10 bronze/sec",
     category: "bronze",
     basePrice: 6000,
     price: 6000,
-    scale: 1.22,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 26,
     apply() {
-      resources.bronze.perSecond += 5;
+      resources.bronze.perSecond += 10;
     },
   },
   {
-    id: "auto-seller-bronze",
-    name: "Auto-Seller (Bronze)",
+    id: "bronze-automine-4",
+    name: "Colosseum Foundry",
+    description: "+20 bronze/sec",
+    category: "bronze",
+    basePrice: 25000,
+    price: 25000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.bronze.perSecond += 20;
+    },
+  },
+  {
+    id: "bronze-automine-5",
+    name: "Olympian Arsenal",
+    description: "+40 bronze/sec",
+    category: "bronze",
+    basePrice: 100000,
+    price: 100000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.bronze.perSecond += 40;
+    },
+  },
+  {
+    id: "bronze-autoseller",
+    name: "Market Curator",
     description: "Automatically sells bronze every 5s",
     category: "bronze",
-    basePrice: 45000,
-    price: 45000,
-    scale: 1.2,
+    basePrice: 20000,
+    price: 20000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -270,13 +414,13 @@ export const shopItems = [
   // SILVER
   // ──────────────────────────────────────────────────────────────
   {
-    id: "silver-click-1",
-    name: "Silver Pickaxe",
+    id: "silver-clicker",
+    name: "Jeweler's Hammer",
     description: "+1 silver per click",
     category: "silver",
     basePrice: 15000,
     price: 15000,
-    scale: 1.25,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -284,69 +428,185 @@ export const shopItems = [
     },
   },
   {
-    id: "silver-auto-1",
-    name: "Silver Drill",
-    description: "+2 silver/sec per level",
+    id: "silver-automine-1",
+    name: "Mirror Polisher",
+    description: "+2 silver/sec",
     category: "silver",
     basePrice: 5200,
     price: 5200,
-    scale: 1.25,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
       resources.silver.perSecond += 2;
     },
   },
   {
-    id: "silver-auto-2",
-    name: "Silver Rig",
-    description: "+6 silver/sec per level",
+    id: "silver-automine-2",
+    name: "Silversmith Atelier",
+    description: "+5 silver/sec",
     category: "silver",
-    basePrice: 18000,
-    price: 18000,
-    scale: 1.25,
+    basePrice: 20000,
+    price: 20000,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
-      resources.silver.perSecond += 6;
+      resources.silver.perSecond += 5;
     },
   },
   {
-    id: "silver-auto-3",
-    name: "Silver Excavator",
-    description: "+20 silver/sec per level",
+    id: "silver-automine-3",
+    name: "Noble Mint",
+    description: "+10 silver/sec",
     category: "silver",
-    basePrice: 68000,
-    price: 68000,
-    scale: 1.25,
+    basePrice: 80000,
+    price: 80000,
+    scale: 1.15,
     count: 0,
-    max: 30,
+    max: 26,
+    apply() {
+      resources.silver.perSecond += 10;
+    },
+  },
+  {
+    id: "silver-automine-4",
+    name: "Royal Treasury",
+    description: "+20 silver/sec",
+    category: "silver",
+    basePrice: 300000,
+    price: 300000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
     apply() {
       resources.silver.perSecond += 20;
     },
   },
   {
-    id: "silver-auto-4",
-    name: "Quantum Silver Miner",
-    description: "+50 silver/sec per level",
+    id: "silver-automine-5",
+    name: "Platinum Refinery",
+    description: "+40 silver/sec",
     category: "silver",
-    basePrice: 190000,
-    price: 190000,
-    scale: 1.25,
+    basePrice: 1200000,
+    price: 1200000,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 26,
     apply() {
-      resources.silver.perSecond += 50;
+      resources.silver.perSecond += 40;
     },
   },
   {
-    id: "auto-seller-silver",
-    name: "Auto-Seller (Silver)",
+    id: "silver-autoseller",
+    name: "Luxury Dealer",
     description: "Automatically sells silver every 5s",
     category: "silver",
+    basePrice: 100000,
+    price: 100000,
+    scale: 1.15,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // COBALT
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "cobalt-clicker",
+    name: "Sapphire Chisel",
+    description: "+1 cobalt per click",
+    category: "cobalt",
+    basePrice: 25000,
+    price: 25000,
+    scale: 1.08,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.cobalt.perClick += 1;
+    },
+  },
+  {
+    id: "cobalt-automine-1",
+    name: "Ceramic Kiln",
+    description: "+2 cobalt/sec",
+    category: "cobalt",
+    basePrice: 40000,
+    price: 40000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.cobalt.perSecond += 2;
+    },
+  },
+  {
+    id: "cobalt-automine-2",
+    name: "Pigment Mill",
+    description: "+5 cobalt/sec",
+    category: "cobalt",
+    basePrice: 150000,
+    price: 150000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.cobalt.perSecond += 5;
+    },
+  },
+  {
+    id: "cobalt-automine-3",
+    name: "Glass Factory",
+    description: "+10 cobalt/sec",
+    category: "cobalt",
+    basePrice: 600000,
+    price: 600000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.cobalt.perSecond += 10;
+    },
+  },
+  {
+    id: "cobalt-automine-4",
+    name: "Battery Plant",
+    description: "+20 cobalt/sec",
+    category: "cobalt",
+    basePrice: 2500000,
+    price: 2500000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.cobalt.perSecond += 20;
+    },
+  },
+  {
+    id: "cobalt-automine-5",
+    name: "Reactor Core Facility",
+    description: "+40 cobalt/sec",
+    category: "cobalt",
+    basePrice: 10000000,
+    price: 10000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.cobalt.perSecond += 40;
+    },
+  },
+  {
+    id: "cobalt-autoseller",
+    name: "Industrial Broker",
+    description: "Automatically sells cobalt every 5s",
+    category: "cobalt",
     basePrice: 500000,
     price: 500000,
-    scale: 1.25,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -358,13 +618,13 @@ export const shopItems = [
   // GOLD
   // ──────────────────────────────────────────────────────────────
   {
-    id: "gold-click-1",
-    name: "Gold Pickaxe",
+    id: "gold-clicker",
+    name: "Golden Scepter",
     description: "+1 gold per click",
     category: "gold",
     basePrice: 35000,
     price: 35000,
-    scale: 1.25,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -372,69 +632,185 @@ export const shopItems = [
     },
   },
   {
-    id: "gold-auto-1",
-    name: "Gold Drill",
-    description: "+2 gold/sec per level",
+    id: "gold-automine-1",
+    name: "Treasure Hunter",
+    description: "+2 gold/sec",
     category: "gold",
-    basePrice: 12000,
-    price: 12000,
-    scale: 1.25,
+    basePrice: 100000,
+    price: 100000,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
       resources.gold.perSecond += 2;
     },
   },
   {
-    id: "gold-auto-2",
-    name: "Gold Rig",
-    description: "+6 gold/sec per level",
+    id: "gold-automine-2",
+    name: "Midas Machine",
+    description: "+5 gold/sec",
     category: "gold",
-    basePrice: 40000,
-    price: 40000,
-    scale: 1.25,
+    basePrice: 400000,
+    price: 400000,
+    scale: 1.15,
     count: 0,
-    max: 40,
+    max: 26,
     apply() {
-      resources.gold.perSecond += 6;
+      resources.gold.perSecond += 5;
     },
   },
   {
-    id: "gold-auto-3",
-    name: "Gold Excavator",
-    description: "+20 gold/sec per level",
+    id: "gold-automine-3",
+    name: "Bank Vault",
+    description: "+10 gold/sec",
     category: "gold",
-    basePrice: 150000,
-    price: 150000,
-    scale: 1.25,
+    basePrice: 1500000,
+    price: 1500000,
+    scale: 1.15,
     count: 0,
-    max: 30,
+    max: 26,
+    apply() {
+      resources.gold.perSecond += 10;
+    },
+  },
+  {
+    id: "gold-automine-4",
+    name: "Federal Reserve",
+    description: "+20 gold/sec",
+    category: "gold",
+    basePrice: 6000000,
+    price: 6000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
     apply() {
       resources.gold.perSecond += 20;
     },
   },
   {
-    id: "gold-auto-4",
-    name: "Quantum Gold Miner",
-    description: "+50 gold/sec per level",
+    id: "gold-automine-5",
+    name: "Fort Knox Vault",
+    description: "+40 gold/sec",
     category: "gold",
-    basePrice: 400000,
-    price: 400000,
-    scale: 1.25,
+    basePrice: 25000000,
+    price: 25000000,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 26,
     apply() {
-      resources.gold.perSecond += 50;
+      resources.gold.perSecond += 40;
     },
   },
   {
-    id: "auto-seller-gold",
-    name: "Auto-Seller (Gold)",
+    id: "gold-autoseller",
+    name: "Gold Baron",
     description: "Automatically sells gold every 5s",
     category: "gold",
-    basePrice: 900000,
-    price: 1200000,
-    scale: 1.25,
+    basePrice: 2000000,
+    price: 2000000,
+    scale: 1.15,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // PALLADIUM
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "palladium-clicker",
+    name: "Catalytic Wrench",
+    description: "+1 palladium per click",
+    category: "palladium",
+    basePrice: 80000,
+    price: 80000,
+    scale: 1.08,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.palladium.perClick += 1;
+    },
+  },
+  {
+    id: "palladium-automine-1",
+    name: "Catalyst Chamber",
+    description: "+2 palladium/sec",
+    category: "palladium",
+    basePrice: 200000,
+    price: 200000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.palladium.perSecond += 2;
+    },
+  },
+  {
+    id: "palladium-automine-2",
+    name: "Emission Filter",
+    description: "+5 palladium/sec",
+    category: "palladium",
+    basePrice: 800000,
+    price: 800000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.palladium.perSecond += 5;
+    },
+  },
+  {
+    id: "palladium-automine-3",
+    name: "Automotive Plant",
+    description: "+10 palladium/sec",
+    category: "palladium",
+    basePrice: 3000000,
+    price: 3000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.palladium.perSecond += 10;
+    },
+  },
+  {
+    id: "palladium-automine-4",
+    name: "Fuel Cell Factory",
+    description: "+20 palladium/sec",
+    category: "palladium",
+    basePrice: 12000000,
+    price: 12000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.palladium.perSecond += 20;
+    },
+  },
+  {
+    id: "palladium-automine-5",
+    name: "Hydrogen Reactor",
+    description: "+40 palladium/sec",
+    category: "palladium",
+    basePrice: 50000000,
+    price: 50000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.palladium.perSecond += 40;
+    },
+  },
+  {
+    id: "palladium-autoseller",
+    name: "Tech Distributor",
+    description: "Automatically sells palladium every 5s",
+    category: "palladium",
+    basePrice: 5000000,
+    price: 5000000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -447,82 +823,96 @@ export const shopItems = [
   // ──────────────────────────────────────────────────────────────
   {
     id: "platinum-clicker",
-    name: "Platinum Pickaxe",
+    name: "Prestige Blade",
     description: "+1 platinum per click",
     category: "platinum",
-    basePrice: 8000,
-    price: 8000,
-    scale: 1.25,
+    basePrice: 150000,
+    price: 150000,
+    scale: 1.08,
     count: 0,
-    max: 20,
+    max: 10,
     apply() {
       resources.platinum.perClick += 1;
     },
   },
   {
-    id: "platinum-miner-1",
-    name: "Basic Platinum Miner",
+    id: "platinum-automine-1",
+    name: "Jewelry Bench",
     description: "+2 platinum/sec",
     category: "platinum",
-    basePrice: 10000,
-    price: 10000,
-    scale: 1.25,
+    basePrice: 500000,
+    price: 500000,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 26,
     apply() {
       resources.platinum.perSecond += 2;
     },
   },
   {
-    id: "platinum-miner-2",
-    name: "Advanced Platinum Miner",
+    id: "platinum-automine-2",
+    name: "Elite Refinery",
     description: "+5 platinum/sec",
     category: "platinum",
-    basePrice: 25000,
-    price: 25000,
-    scale: 1.25,
+    basePrice: 2000000,
+    price: 2000000,
+    scale: 1.15,
     count: 0,
-    max: 20,
+    max: 26,
     apply() {
       resources.platinum.perSecond += 5;
     },
   },
   {
-    id: "platinum-miner-3",
-    name: "Elite Platinum Miner",
-    description: "+15 platinum/sec",
+    id: "platinum-automine-3",
+    name: "Credit Card Plant",
+    description: "+10 platinum/sec",
     category: "platinum",
-    basePrice: 70000,
-    price: 70000,
-    scale: 1.25,
+    basePrice: 8000000,
+    price: 8000000,
+    scale: 1.15,
     count: 0,
-    max: 10,
+    max: 26,
     apply() {
-      resources.platinum.perSecond += 15;
+      resources.platinum.perSecond += 10;
     },
   },
   {
-    id: "platinum-miner-4",
-    name: "Industrial Platinum Miner",
-    description: "+50 platinum/sec",
+    id: "platinum-automine-4",
+    name: "VIP Lounge",
+    description: "+20 platinum/sec",
     category: "platinum",
-    basePrice: 200000,
-    price: 200000,
-    scale: 1.25,
+    basePrice: 30000000,
+    price: 30000000,
+    scale: 1.15,
     count: 0,
-    max: 5,
+    max: 26,
     apply() {
-      resources.platinum.perSecond += 50;
+      resources.platinum.perSecond += 20;
     },
   },
   {
-    id: "auto-seller-platinum",
-    name: "Auto-Seller (Platinum)",
+    id: "platinum-automine-5",
+    name: "Diamond Exchange",
+    description: "+40 platinum/sec",
+    category: "platinum",
+    basePrice: 120000000,
+    price: 120000000,
+    scale: 1.15,
+    count: 0,
+    max: 26,
+    apply() {
+      resources.platinum.perSecond += 40;
+    },
+  },
+  {
+    id: "platinum-autoseller",
+    name: "Elite Auctioneer",
     description: "Automatically sells platinum every 5s",
     category: "platinum",
-    basePrice: 700000,
-    price: 700000,
-    scale: 1.25,
+    basePrice: 10000000,
+    price: 10000000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -534,13 +924,13 @@ export const shopItems = [
   // TITANIUM
   // ──────────────────────────────────────────────────────────────
   {
-    id: "titanium-clicker-upgrade",
-    name: "Titanium Pickaxe",
+    id: "titanium-clicker",
+    name: "Aerospace Ripper",
     description: "+1 titanium per click",
     category: "titanium",
-    basePrice: 800,
-    price: 800,
-    scale: 1.12,
+    basePrice: 300000,
+    price: 300000,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -548,83 +938,83 @@ export const shopItems = [
     },
   },
   {
-    id: "titanium-drill",
-    name: "Titanium Drill",
-    description: "+1.5 titanium/sec per level",
+    id: "titanium-automine-1",
+    name: "Jet Engine Mill",
+    description: "+2 titanium/sec",
     category: "titanium",
-    basePrice: 1000,
-    price: 1000,
+    basePrice: 1000000,
+    price: 1000000,
     scale: 1.15,
     count: 0,
-    max: 25,
+    max: 26,
     apply() {
-      resources.titanium.perSecond += 1.5;
+      resources.titanium.perSecond += 2;
     },
   },
   {
-    id: "titanium-miner-1",
-    name: "Basic Titanium Miner",
-    description: "+3 titanium/sec",
+    id: "titanium-automine-2",
+    name: "Spacecraft Forge",
+    description: "+5 titanium/sec",
     category: "titanium",
-    basePrice: 2500,
-    price: 2500,
-    scale: 1.25,
+    basePrice: 4000000,
+    price: 4000000,
+    scale: 1.15,
     count: 0,
-    max: 15,
+    max: 26,
     apply() {
-      resources.titanium.perSecond += 3;
+      resources.titanium.perSecond += 5;
     },
   },
   {
-    id: "titanium-miner-2",
-    name: "Advanced Titanium Miner",
-    description: "+8 titanium/sec",
+    id: "titanium-automine-3",
+    name: "Orbital Shipyard",
+    description: "+10 titanium/sec",
     category: "titanium",
-    basePrice: 7500,
-    price: 7500,
-    scale: 1.25,
+    basePrice: 15000000,
+    price: 15000000,
+    scale: 1.15,
     count: 0,
-    max: 10,
+    max: 26,
     apply() {
-      resources.titanium.perSecond += 8;
+      resources.titanium.perSecond += 10;
     },
   },
   {
-    id: "titanium-miner-3",
-    name: "Elite Titanium Miner",
+    id: "titanium-automine-4",
+    name: "Space Station",
     description: "+20 titanium/sec",
     category: "titanium",
-    basePrice: 25000,
-    price: 25000,
-    scale: 1.25,
+    basePrice: 60000000,
+    price: 60000000,
+    scale: 1.15,
     count: 0,
-    max: 8,
+    max: 26,
     apply() {
       resources.titanium.perSecond += 20;
     },
   },
   {
-    id: "titanium-miner-4",
-    name: "Industrial Titanium Miner",
-    description: "+60 titanium/sec",
+    id: "titanium-automine-5",
+    name: "Galactic Armada",
+    description: "+40 titanium/sec",
     category: "titanium",
-    basePrice: 80000,
-    price: 80000,
-    scale: 1.25,
+    basePrice: 250000000,
+    price: 250000000,
+    scale: 1.15,
     count: 0,
-    max: 5,
+    max: 26,
     apply() {
-      resources.titanium.perSecond += 60;
+      resources.titanium.perSecond += 40;
     },
   },
   {
-    id: "auto-seller-titanium",
-    name: "Auto-Seller (Titanium)",
+    id: "titanium-autoseller",
+    name: "Space Contractor",
     description: "Automatically sells titanium every 5s",
     category: "titanium",
-    basePrice: 300000,
-    price: 300000,
-    scale: 1.25,
+    basePrice: 50000000,
+    price: 50000000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -636,13 +1026,13 @@ export const shopItems = [
   // ADAMANTIUM
   // ──────────────────────────────────────────────────────────────
   {
-    id: "adamantium-clicker-upgrade",
-    name: "Adamantium Pickaxe",
+    id: "adamantium-clicker",
+    name: "Mythril Claw",
     description: "+1 adamantium per click",
     category: "adamantium",
-    basePrice: 1600,
-    price: 1600,
-    scale: 1.15,
+    basePrice: 600000,
+    price: 600000,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -650,83 +1040,83 @@ export const shopItems = [
     },
   },
   {
-    id: "adamantium-drill",
-    name: "Adamantium Drill",
-    description: "+2 adamantium/sec per level",
+    id: "adamantium-automine-1",
+    name: "Dragon's Breath Forge",
+    description: "+2 adamantium/sec",
     category: "adamantium",
-    basePrice: 2000,
-    price: 2000,
-    scale: 1.18,
+    basePrice: 2000000,
+    price: 2000000,
+    scale: 1.15,
     count: 0,
-    max: 25,
+    max: 16,
     apply() {
       resources.adamantium.perSecond += 2;
     },
   },
   {
-    id: "adamantium-miner-1",
-    name: "Basic Adamantium Miner",
-    description: "+4 adamantium/sec",
+    id: "adamantium-automine-2",
+    name: "Void Crystal Harvester",
+    description: "+5 adamantium/sec",
     category: "adamantium",
-    basePrice: 5000,
-    price: 5000,
-    scale: 1.28,
+    basePrice: 8000000,
+    price: 8000000,
+    scale: 1.15,
     count: 0,
-    max: 15,
+    max: 16,
     apply() {
-      resources.adamantium.perSecond += 4;
+      resources.adamantium.perSecond += 5;
     },
   },
   {
-    id: "adamantium-miner-2",
-    name: "Advanced Adamantium Miner",
-    description: "+12 adamantium/sec",
+    id: "adamantium-automine-3",
+    name: "Arcane Synthesis Lab",
+    description: "+10 adamantium/sec",
     category: "adamantium",
-    basePrice: 15000,
-    price: 15000,
-    scale: 1.25,
+    basePrice: 30000000,
+    price: 30000000,
+    scale: 1.15,
     count: 0,
-    max: 10,
+    max: 16,
     apply() {
-      resources.adamantium.perSecond += 12;
+      resources.adamantium.perSecond += 10;
     },
   },
   {
-    id: "adamantium-miner-3",
-    name: "Elite Adamantium Miner",
-    description: "+30 adamantium/sec",
+    id: "adamantium-automine-4",
+    name: "Celestial Foundry",
+    description: "+20 adamantium/sec",
     category: "adamantium",
-    basePrice: 50000,
-    price: 50000,
-    scale: 1.25,
+    basePrice: 120000000,
+    price: 120000000,
+    scale: 1.15,
     count: 0,
-    max: 8,
+    max: 16,
     apply() {
-      resources.adamantium.perSecond += 30;
+      resources.adamantium.perSecond += 20;
     },
   },
   {
-    id: "adamantium-miner-4",
-    name: "Industrial Adamantium Miner",
-    description: "+80 adamantium/sec",
+    id: "adamantium-automine-5",
+    name: "Ethereal Nexus",
+    description: "+40 adamantium/sec",
     category: "adamantium",
-    basePrice: 160000,
-    price: 160000,
-    scale: 1.25,
+    basePrice: 500000000,
+    price: 500000000,
+    scale: 1.15,
     count: 0,
-    max: 5,
+    max: 16,
     apply() {
-      resources.adamantium.perSecond += 80;
+      resources.adamantium.perSecond += 40;
     },
   },
   {
-    id: "auto-seller-adamantium",
-    name: "Auto-Seller (Adamantium)",
+    id: "adamantium-autoseller",
+    name: "Deity's Emissary",
     description: "Automatically sells adamantium every 5s",
     category: "adamantium",
-    basePrice: 600000,
-    price: 600000,
-    scale: 1.25,
+    basePrice: 100000000,
+    price: 100000000,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
