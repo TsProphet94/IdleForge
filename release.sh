@@ -44,10 +44,15 @@ fi
 
 echo "🔧 Releasing version $NEW_VERSION"
 
-# Commit any outstanding changes
-git add .
-git commit -m "Release $NEW_VERSION"
-git push origin main
+# Commit any outstanding changes (if any)
+if [[ -n $(git status --porcelain) ]]; then
+  echo "📝 Committing outstanding changes..."
+  git add .
+  git commit -m "Release $NEW_VERSION"
+  git push origin main
+else
+  echo "✅ Working directory is clean, proceeding with release..."
+fi
 
 # Update version.txt
 echo "Version $NEW_VERSION" > "$VERSION_FILE"
