@@ -2910,3 +2910,101 @@ footer .footer-content a:hover {
     font-size: 1.5rem;
   }
 }
+
+/* ===================== IMPROVED MOBILE HEADER LAYOUT ===================== */
+
+/* Two-row header layout for better mobile compatibility */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  width: 100%;
+}
+
+.header-nav {
+  display: flex;
+  gap: var(--space-xs);
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Money display when positioned at top */
+.money-top {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Ensure logo doesn't get squished */
+.header-top .logo {
+  flex-shrink: 0;
+  margin-right: var(--space-md);
+}
+
+/* Mobile-specific header adjustments */
+@media (max-width: 768px) {
+  header {
+    padding: var(--space-sm);
+  }
+  
+  .header-top {
+    margin-bottom: var(--space-xs);
+  }
+  
+  .header-top .logo {
+    font-size: 1.2rem;
+    margin-right: var(--space-sm);
+  }
+  
+  .logo01 {
+    width: 36px;
+    height: 36px;
+    margin-right: var(--space-sm);
+  }
+  
+  .money-top {
+    font-size: 0.95rem;
+    padding: var(--space-xs) var(--space-sm);
+    min-width: 70px;
+  }
+  
+  .header-nav button {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.8rem;
+    min-height: 40px;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .header-nav button .material-icons {
+    font-size: 1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .header-top .logo {
+    font-size: 1.1rem;
+  }
+  
+  .logo01 {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .money-top {
+    font-size: 0.9rem;
+    padding: var(--space-xs);
+    min-width: 60px;
+  }
+  
+  .header-nav button {
+    font-size: 0.75rem;
+    padding: var(--space-xs);
+    gap: 2px;
+  }
+  
+  .header-nav button .material-icons {
+    font-size: 0.9rem;
+  }
+}

@@ -100,14 +100,20 @@
     <!-- GAME UI -->
     <div id="game-ui" style="display: none">
       <header>
-        <h1 class="logo">
-          <img
-            src="images/main/main-logo.png"
-            alt="IdleForge Main Logo"
-            class="logo01"
-          />
-          IdleForge
-        </h1>
+        <div class="header-top">
+          <h1 class="logo">
+            <img
+              src="images/main/main-logo.png"
+              alt="IdleForge Main Logo"
+              class="logo01"
+            />
+            IdleForge
+          </h1>
+          
+          <div id="money-display" class="nav-box money-top">
+            <span id="money-count">0</span>
+          </div>
+        </div>
 
         <div id="dev-panel" class="hidden">
           <button id="dev-add-iron">+10k Iron</button>
@@ -124,10 +130,7 @@
           <button id="dev-add-money">+1M Money</button>
         </div>
 
-        <nav>
-          <div id="money-display" class="nav-box">
-            <span id="money-count">0</span>
-          </div>
+        <nav class="header-nav">
           <button id="tab-mine" class="active">
             <span class="material-icons">terrain</span>
             Mine
