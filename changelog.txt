@@ -1,4 +1,17 @@
-v0.1.27 – Mobile Header Fix & Progressive Web App!
+v0.1.28 – Enhanced iPhone Safe Area & PWA Polish!
+
+•   FIXED: Major improvement to iPhone PWA safe area handling - content now properly respects the notch/Dynamic Island area on all iPhone models.
+•   FIXED: Removed conflicting CSS that was pulling the header back into the status bar area on iPhone PWA installations.
+•   IMPROVED: Enhanced safe area detection with multiple fallback methods for maximum iPhone compatibility (X, 11, 12, 13, 14, 15 series).
+•   IMPROVED: Added minimum 44px top padding fallback for devices that don't support CSS env() functions properly.
+•   IMPROVED: Better PWA standalone mode detection with iPhone-specific WebKit optimizations.
+•   TECHNICAL: Added comprehensive safe area debugging tools for development (iPhone viewport, display mode, CSS support detection).
+•   TECHNICAL: Implemented multiple CSS strategies (@supports, @media queries, !important overrides) for bulletproof safe area handling.
+•   TECHNICAL: Enhanced PWA display mode CSS with proper header positioning and overlay safe area support.
+
+--------------------------------------
+
+v0.1.27 – PWA Safe Area Fix & Resource Panel State Fix!
 
 •   FIXED: Mobile header layout issue where menu button was cut off on iPhone screens - completely restructured header with two-row responsive design.
 •   NEW: Progressive Web App (PWA) support! IdleForge can now be installed as a mobile app directly from your browser.
