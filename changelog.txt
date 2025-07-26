@@ -1,3 +1,17 @@
+v0.1.22 – Theme Options & New Resources!
+
+•   New theme options added! Customize your mining experience with different visual styles.
+•   Added 4 vibrant neon themes: Neon Cyan, Neon Purple, Neon Pink, and Cyberpunk for an electrifying visual experience!
+•   Introduced Titanium! A new high-tier resource to mine and upgrade.
+•   Added Adamantium! The ultimate end-game resource with the highest value and unlock cost.
+•   Enhanced Platinum integration with improved progression and balance.
+•   Added collapsible resource panels for better screen space management and cleaner UI.
+•   Major Phase 1 Balance Update: Smooth 5x unlock cost progression, standardized 2.5x resource value scaling, and reduced upgrade cost scaling for better affordability.
+•   Complete iPhone & mobile optimization: Enhanced touch targets, single-column resource layout on mobile, iOS Safari improvements, and smooth scrolling for perfect mobile gameplay.
+•   Fixed background rendering issue and optimized mobile resource panel layout.
+
+--------------------------------------
+
 v0.1.21- Milestone Rewards, Platimum, Rebalance!
 
 •   New milestone rewards added for each resource, giving extra goals and bonuses as you progress.

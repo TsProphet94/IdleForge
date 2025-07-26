@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 80, // $ per platinum
+  sellPrice: 188, // $ per platinum (2.5x gold)
   category: "Platinum",
 };

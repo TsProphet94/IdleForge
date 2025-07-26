@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 4, // $ per copper
+  sellPrice: 5, // $ per copper (2.5x iron)
   category: "copper",
 };

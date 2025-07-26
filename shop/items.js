@@ -12,7 +12,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 40,
     price: 40,
-    scale: 1.1,
+    scale: 1.08,
     count: 0,
     max: 10,
     apply() {
@@ -26,7 +26,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 45,
     price: 45,
-    scale: 1.12,
+    scale: 1.1,
     count: 0,
     max: 50,
     apply() {
@@ -40,7 +40,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 70,
     price: 70,
-    scale: 1.15,
+    scale: 1.12,
     count: 0,
     max: 50,
     apply() {
@@ -54,7 +54,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 120,
     price: 120,
-    scale: 1.18,
+    scale: 1.15,
     count: 0,
     max: 40,
     apply() {
@@ -68,7 +68,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 350,
     price: 350,
-    scale: 1.22,
+    scale: 1.18,
     count: 0,
     max: 40,
     apply() {
@@ -82,7 +82,7 @@ export const shopItems = [
     category: "iron",
     basePrice: 2000,
     price: 2000,
-    scale: 1.18,
+    scale: 1.15,
     count: 0,
     max: 1,
     apply() {
@@ -100,7 +100,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 120,
     price: 120,
-    scale: 1.18,
+    scale: 1.1,
     count: 0,
     max: 10,
     apply() {
@@ -114,7 +114,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 130,
     price: 130,
-    scale: 1.22,
+    scale: 1.12,
     count: 0,
     max: 50,
     apply() {
@@ -128,7 +128,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 470,
     price: 470,
-    scale: 1.25,
+    scale: 1.15,
     count: 0,
     max: 40,
     apply() {
@@ -142,7 +142,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 2250,
     price: 2250,
-    scale: 1.28,
+    scale: 1.18,
     count: 0,
     max: 40,
     apply() {
@@ -156,7 +156,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 2550,
     price: 2550,
-    scale: 1.32,
+    scale: 1.2,
     count: 0,
     max: 20,
     apply() {
@@ -170,7 +170,7 @@ export const shopItems = [
     category: "copper",
     basePrice: 20000,
     price: 20000,
-    scale: 1.35,
+    scale: 1.18,
     count: 0,
     max: 1,
     apply() {
@@ -188,7 +188,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 300,
     price: 300,
-    scale: 1.22,
+    scale: 1.12,
     count: 0,
     max: 10,
     apply() {
@@ -202,7 +202,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 360,
     price: 360,
-    scale: 1.28,
+    scale: 1.15,
     count: 0,
     max: 50,
     apply() {
@@ -216,7 +216,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 1200,
     price: 1200,
-    scale: 1.3,
+    scale: 1.18,
     count: 0,
     max: 40,
     apply() {
@@ -230,7 +230,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 5500,
     price: 5500,
-    scale: 1.33,
+    scale: 1.2,
     count: 0,
     max: 40,
     apply() {
@@ -244,7 +244,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 6000,
     price: 6000,
-    scale: 1.36,
+    scale: 1.22,
     count: 0,
     max: 20,
     apply() {
@@ -258,7 +258,7 @@ export const shopItems = [
     category: "bronze",
     basePrice: 45000,
     price: 45000,
-    scale: 1.4,
+    scale: 1.2,
     count: 0,
     max: 1,
     apply() {
@@ -276,7 +276,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 15000,
     price: 15000,
-    scale: 1.35,
+    scale: 1.25,
     count: 0,
     max: 10,
     apply() {
@@ -290,7 +290,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 5200,
     price: 5200,
-    scale: 1.45,
+    scale: 1.25,
     count: 0,
     max: 40,
     apply() {
@@ -304,7 +304,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 18000,
     price: 18000,
-    scale: 1.5,
+    scale: 1.25,
     count: 0,
     max: 40,
     apply() {
@@ -318,7 +318,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 68000,
     price: 68000,
-    scale: 1.55,
+    scale: 1.25,
     count: 0,
     max: 30,
     apply() {
@@ -332,7 +332,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 190000,
     price: 190000,
-    scale: 1.6,
+    scale: 1.25,
     count: 0,
     max: 20,
     apply() {
@@ -346,7 +346,7 @@ export const shopItems = [
     category: "silver",
     basePrice: 500000,
     price: 500000,
-    scale: 1.8,
+    scale: 1.25,
     count: 0,
     max: 1,
     apply() {
@@ -378,7 +378,7 @@ export const shopItems = [
     category: "gold",
     basePrice: 12000,
     price: 12000,
-    scale: 1.3,
+    scale: 1.25,
     count: 0,
     max: 40,
     apply() {
@@ -392,7 +392,7 @@ export const shopItems = [
     category: "gold",
     basePrice: 40000,
     price: 40000,
-    scale: 1.35,
+    scale: 1.25,
     count: 0,
     max: 40,
     apply() {
@@ -406,7 +406,7 @@ export const shopItems = [
     category: "gold",
     basePrice: 150000,
     price: 150000,
-    scale: 1.4,
+    scale: 1.25,
     count: 0,
     max: 30,
     apply() {
@@ -420,7 +420,7 @@ export const shopItems = [
     category: "gold",
     basePrice: 400000,
     price: 400000,
-    scale: 1.45,
+    scale: 1.25,
     count: 0,
     max: 20,
     apply() {
@@ -434,7 +434,7 @@ export const shopItems = [
     category: "gold",
     basePrice: 900000,
     price: 1200000,
-    scale: 1.85,
+    scale: 1.25,
     count: 0,
     max: 1,
     apply() {
@@ -452,7 +452,7 @@ export const shopItems = [
     category: "platinum",
     basePrice: 8000,
     price: 8000,
-    scale: 1.35,
+    scale: 1.25,
     count: 0,
     max: 20,
     apply() {
@@ -466,7 +466,7 @@ export const shopItems = [
     category: "platinum",
     basePrice: 10000,
     price: 10000,
-    scale: 1.4,
+    scale: 1.25,
     count: 0,
     max: 20,
     apply() {
@@ -480,7 +480,7 @@ export const shopItems = [
     category: "platinum",
     basePrice: 25000,
     price: 25000,
-    scale: 1.45,
+    scale: 1.25,
     count: 0,
     max: 20,
     apply() {
@@ -494,7 +494,7 @@ export const shopItems = [
     category: "platinum",
     basePrice: 70000,
     price: 70000,
-    scale: 1.5,
+    scale: 1.25,
     count: 0,
     max: 10,
     apply() {
@@ -508,7 +508,7 @@ export const shopItems = [
     category: "platinum",
     basePrice: 200000,
     price: 200000,
-    scale: 1.55,
+    scale: 1.25,
     count: 0,
     max: 5,
     apply() {
@@ -522,7 +522,211 @@ export const shopItems = [
     category: "platinum",
     basePrice: 700000,
     price: 700000,
-    scale: 1.6,
+    scale: 1.25,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // TITANIUM
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "titanium-clicker-upgrade",
+    name: "Titanium Pickaxe",
+    description: "+1 titanium per click",
+    category: "titanium",
+    basePrice: 800,
+    price: 800,
+    scale: 1.12,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.titanium.perClick += 1;
+    },
+  },
+  {
+    id: "titanium-drill",
+    name: "Titanium Drill",
+    description: "+1.5 titanium/sec per level",
+    category: "titanium",
+    basePrice: 1000,
+    price: 1000,
+    scale: 1.15,
+    count: 0,
+    max: 25,
+    apply() {
+      resources.titanium.perSecond += 1.5;
+    },
+  },
+  {
+    id: "titanium-miner-1",
+    name: "Basic Titanium Miner",
+    description: "+3 titanium/sec",
+    category: "titanium",
+    basePrice: 2500,
+    price: 2500,
+    scale: 1.25,
+    count: 0,
+    max: 15,
+    apply() {
+      resources.titanium.perSecond += 3;
+    },
+  },
+  {
+    id: "titanium-miner-2",
+    name: "Advanced Titanium Miner",
+    description: "+8 titanium/sec",
+    category: "titanium",
+    basePrice: 7500,
+    price: 7500,
+    scale: 1.25,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.titanium.perSecond += 8;
+    },
+  },
+  {
+    id: "titanium-miner-3",
+    name: "Elite Titanium Miner",
+    description: "+20 titanium/sec",
+    category: "titanium",
+    basePrice: 25000,
+    price: 25000,
+    scale: 1.25,
+    count: 0,
+    max: 8,
+    apply() {
+      resources.titanium.perSecond += 20;
+    },
+  },
+  {
+    id: "titanium-miner-4",
+    name: "Industrial Titanium Miner",
+    description: "+60 titanium/sec",
+    category: "titanium",
+    basePrice: 80000,
+    price: 80000,
+    scale: 1.25,
+    count: 0,
+    max: 5,
+    apply() {
+      resources.titanium.perSecond += 60;
+    },
+  },
+  {
+    id: "auto-seller-titanium",
+    name: "Auto-Seller (Titanium)",
+    description: "Automatically sells titanium every 5s",
+    category: "titanium",
+    basePrice: 300000,
+    price: 300000,
+    scale: 1.25,
+    count: 0,
+    max: 1,
+    apply() {
+      /* handled in script.js */
+    },
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // ADAMANTIUM
+  // ──────────────────────────────────────────────────────────────
+  {
+    id: "adamantium-clicker-upgrade",
+    name: "Adamantium Pickaxe",
+    description: "+1 adamantium per click",
+    category: "adamantium",
+    basePrice: 1600,
+    price: 1600,
+    scale: 1.15,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.adamantium.perClick += 1;
+    },
+  },
+  {
+    id: "adamantium-drill",
+    name: "Adamantium Drill",
+    description: "+2 adamantium/sec per level",
+    category: "adamantium",
+    basePrice: 2000,
+    price: 2000,
+    scale: 1.18,
+    count: 0,
+    max: 25,
+    apply() {
+      resources.adamantium.perSecond += 2;
+    },
+  },
+  {
+    id: "adamantium-miner-1",
+    name: "Basic Adamantium Miner",
+    description: "+4 adamantium/sec",
+    category: "adamantium",
+    basePrice: 5000,
+    price: 5000,
+    scale: 1.28,
+    count: 0,
+    max: 15,
+    apply() {
+      resources.adamantium.perSecond += 4;
+    },
+  },
+  {
+    id: "adamantium-miner-2",
+    name: "Advanced Adamantium Miner",
+    description: "+12 adamantium/sec",
+    category: "adamantium",
+    basePrice: 15000,
+    price: 15000,
+    scale: 1.25,
+    count: 0,
+    max: 10,
+    apply() {
+      resources.adamantium.perSecond += 12;
+    },
+  },
+  {
+    id: "adamantium-miner-3",
+    name: "Elite Adamantium Miner",
+    description: "+30 adamantium/sec",
+    category: "adamantium",
+    basePrice: 50000,
+    price: 50000,
+    scale: 1.25,
+    count: 0,
+    max: 8,
+    apply() {
+      resources.adamantium.perSecond += 30;
+    },
+  },
+  {
+    id: "adamantium-miner-4",
+    name: "Industrial Adamantium Miner",
+    description: "+80 adamantium/sec",
+    category: "adamantium",
+    basePrice: 160000,
+    price: 160000,
+    scale: 1.25,
+    count: 0,
+    max: 5,
+    apply() {
+      resources.adamantium.perSecond += 80;
+    },
+  },
+  {
+    id: "auto-seller-adamantium",
+    name: "Auto-Seller (Adamantium)",
+    description: "Automatically sells adamantium every 5s",
+    category: "adamantium",
+    basePrice: 600000,
+    price: 600000,
+    scale: 1.25,
     count: 0,
     max: 1,
     apply() {
