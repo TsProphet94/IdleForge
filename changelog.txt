@@ -1,4 +1,4 @@
-v0.1.24 – New Resources, Offline Rewards & UI Polish!
+v0.1.25 – New Resources, Offline Rewards & UI Polish!
 
 •   NEW: Nickel resource! A mid-tier metal that bridges the gap between Bronze and Silver in the progression chain.
 •   NEW: Cobalt resource! A valuable blue metal that unlocks between Silver and Gold for enhanced late-game progression.

@@ -2946,28 +2946,28 @@ footer .footer-content a:hover {
   header {
     padding: var(--space-sm);
   }
-  
+
   .header-top {
     margin-bottom: var(--space-xs);
   }
-  
+
   .header-top .logo {
     font-size: 1.2rem;
     margin-right: var(--space-sm);
   }
-  
+
   .logo01 {
     width: 36px;
     height: 36px;
     margin-right: var(--space-sm);
   }
-  
+
   .money-top {
     font-size: 0.95rem;
     padding: var(--space-xs) var(--space-sm);
     min-width: 70px;
   }
-  
+
   .header-nav button {
     padding: var(--space-xs) var(--space-sm);
     font-size: 0.8rem;
@@ -2975,7 +2975,7 @@ footer .footer-content a:hover {
     flex: 1;
     justify-content: center;
   }
-  
+
   .header-nav button .material-icons {
     font-size: 1rem;
   }
@@ -2986,24 +2986,24 @@ footer .footer-content a:hover {
   .header-top .logo {
     font-size: 1.1rem;
   }
-  
+
   .logo01 {
     width: 32px;
     height: 32px;
   }
-  
+
   .money-top {
     font-size: 0.9rem;
     padding: var(--space-xs);
     min-width: 60px;
   }
-  
+
   .header-nav button {
     font-size: 0.75rem;
     padding: var(--space-xs);
     gap: 2px;
   }
-  
+
   .header-nav button .material-icons {
     font-size: 0.9rem;
   }
