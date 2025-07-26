@@ -876,6 +876,8 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  /* Ensure minimum safe area even if env() not supported */
+  padding-top: max(env(safe-area-inset-top), 20px);
 }
 
 /* Rubik font optimizations for modern gaming aesthetic */
@@ -952,9 +954,6 @@ header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--space-md);
   box-shadow: var(--shadow-md);
-  /* PWA Safe Area Support - compensate for the body safe area padding */
-  margin-top: calc(-1 * env(safe-area-inset-top));
-  padding-top: calc(var(--space-md) + env(safe-area-inset-top));
 }
 
 header .header-content {
@@ -3047,11 +3046,38 @@ footer .footer-content a:hover {
   body {
     min-height: 100vh;
     min-height: 100dvh;
+    /* Force minimum safe area for PWA */
+    padding-top: max(env(safe-area-inset-top), 44px) !important;
   }
 
   /* Additional safe area padding for PWA context */
   .main-menu-logo {
     margin-top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
+  }
+
+  /* Ensure header respects safe area in PWA mode */
+  header {
+    margin-top: 0 !important;
+    padding-top: var(--space-md) !important;
+  }
+}
+
+/* iPhone-specific safe area handling */
+@supports (-webkit-appearance: none) {
+  /* WebKit-based browsers (Safari, PWA on iOS) */
+  @media (display-mode: standalone) {
+    body {
+      /* Ensure content starts below notch on all iPhone models */
+      padding-top: max(env(safe-area-inset-top), 47px) !important;
+    }
+    
+    /* Specific handling for different iPhone screen sizes */
+    @media (max-width: 414px) and (max-height: 896px) {
+      /* iPhone with notch (X, 11, 12, 13, 14, 15 series) */
+      body {
+        padding-top: max(env(safe-area-inset-top), 44px) !important;
+      }
+    }
   }
 }
 
