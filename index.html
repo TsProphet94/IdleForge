@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <title>IdleForge</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- MAIN MENU OVERLAY -->
+    <div id="main-menu" class="overlay">
+      <img
+        src="images/main/main-logo.png"
+        alt="IdleForge Main Logo"
+        class="main-menu-logo"
+        style="max-width: 340px; width: 90%; margin: 0 auto; display: block"
+      />
+      <p class="tagline">Mine. Sell. Profit.</p>
+
+      <!-- THEME DROPDOWN -->
+      <div class="theme-select-container">
+        <label for="theme-select" style="font-weight: 600; font-size: 1.1em"
+          >Theme:</label
+        >
+        <select id="theme-select">
+          <option value="classic">Classic</option>
+          <option value="midnight">Midnight</option>
+          <option value="emerald">Emerald</option>
+          <option value="sunset">Sunset</option>
+          <option value="neon-cyan">Neon Cyan</option>
+          <option value="neon-purple">Neon Purple</option>
+          <option value="neon-pink">Neon Pink</option>
+          <option value="cyberpunk">Cyberpunk</option>
+        </select>
+      </div>
+
+      <div id="save-card" class="save-card hidden">
+        <h3>Last Save</h3>
+        <p>Money: <span id="save-money">--</span></p>
+        <p>Unlocked: <span id="save-unlocks">Iron</span></p>
+        <button id="btn-continue-card">Continue</button>
+      </div>
+
+      <button id="btn-new">New Game</button>
+      <button id="btn-continue">Continue</button>
+      <button id="btn-settings">Settings</button>
+
+      <!-- Confirm new game modal -->
+      <div id="confirm-newgame-modal" class="overlay hidden confirm-modal">
+        <div class="confirm-modal-box">
+          <h2>Start New Game?</h2>
+          <p>
+            Are you sure you want to start a new game? <br />This will erase all
+            your current progress.
+          </p>
+          <button id="confirm-newgame-yes" class="confirm-btn confirm-btn-yes">
+            Yes, Start New Game
+          </button>
+          <button id="confirm-newgame-no" class="confirm-btn confirm-btn-no">
+            Cancel
+          </button>
+        </div>
+      </div>
+      <section id="whats-new">
+        <h3>What’s New (<span id="version"></span>)</h3>
+        <div id="changelog" class="changelog">
+          <p>Loading…</p>
+        </div>
+      </section>
+
+      <!-- Confirm new game modal shell -->
+      <div id="confirm-newgame" class="overlay hidden"></div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div id="settings-menu" class="overlay" style="display: none">
+      <h2>Settings</h2>
+      <label>
+        <input type="checkbox" id="toggle-auto-save" checked />
+        Auto-Save Every 60s
+      </label>
+      <label>
+        <input type="checkbox" id="toggle-sound" />
+        Sound Effects
+      </label>
+      <button id="btn-back-to-menu">Back</button>
+    </div>
+
+    <!-- GAME UI -->
+    <div id="game-ui" style="display: none">
+      <header>
+        <h1 class="logo">
+          <img
+            src="images/main/pickaxe.png"
+            alt="Cartoon pickaxe icon"
+            class="logo01"
+          />
+          IdleForge
+        </h1>
+
+        <div id="dev-panel" class="hidden">
+          <button id="dev-add-iron">+10k Iron</button>
+          <button id="dev-add-copper">+10k Copper</button>
+          <button id="dev-add-bronze">+10k Bronze</button>
+          <button id="dev-add-silver">+10k Silver</button>
+          <button id="dev-add-gold">+10k Gold</button>
+          <button id="dev-add-platinum">+10k Platinum</button>
+          <button id="dev-add-titanium">+10k Titanium</button>
+          <button id="dev-add-adamantium">+10k Adamantium</button>
+          <button id="dev-add-money">+1M Money</button>
+        </div>
+
+        <nav>
+          <div id="money-display" class="nav-box">
+            <span id="money-count">0</span>
+          </div>
+          <button id="tab-mine" class="active">Mine</button>
+          <button id="tab-shop">Shop</button>
+          <button id="tab-stats">Stats</button>
+          <button id="btn-save-menu">Menu</button>
+        </nav>
+
+        <!-- Collapsed resource bar (optional) -->
+        <!-- <div id="resourceBar" class="resource-bar" aria-label="Collapsed resources"></div> -->
+      </header>
+
+      <main>
+        <!-- ===================== MINE SCREEN ===================== -->
+        <section id="screen-mine" class="screen-panel panel">
+          <div class="resources-container">
+            <!-- Iron Panel -->
+            <div class="resource-panel" data-resource="iron" id="iron-box">
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="iron"
+                  aria-label="Collapse Iron"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Iron: <span id="iron-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-iron"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag iron-pricetag"
+                  id="pricetag-iron"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/iron/fe.png"
+                  alt="Iron Icon"
+                  class="icon iron-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-iron-btn">Mine Iron</button>
+                  <button id="sell-iron-btn" disabled>Sell All Iron</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>Auto-mining rate: <span id="auto-rate-iron">0</span>/s</p>
+                <p id="sell-timer-iron" class="hidden">
+                  Next auto-sell in <span id="sell-countdown-iron">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-iron" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+            </div>
+
+            <!-- Copper Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="copper"
+              id="copper-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="copper"
+                  aria-label="Collapse Copper"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Copper: <span id="copper-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-copper"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag copper-pricetag"
+                  id="pricetag-copper"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/copper/cu.png"
+                  alt="Copper Icon"
+                  class="icon copper-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-copper-btn" disabled>Mine Copper</button>
+                  <button id="sell-copper-btn" disabled>Sell All Copper</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>Auto-mining rate: <span id="auto-rate-copper">0</span>/s</p>
+                <p id="sell-timer-copper" class="hidden">
+                  Next auto-sell in <span id="sell-countdown-copper">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-copper" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-copper">
+                <button id="unlock-copper-btn">Unlock Copper ($20k)</button>
+              </div>
+            </div>
+
+            <!-- Bronze Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="bronze"
+              id="bronze-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="bronze"
+                  aria-label="Collapse Bronze"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Bronze: <span id="bronze-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-bronze"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag bronze-pricetag"
+                  id="pricetag-bronze"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/bronze/bronze.png"
+                  alt="Bronze Icon"
+                  class="icon bronze-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-bronze-btn" disabled>Mine Bronze</button>
+                  <button id="sell-bronze-btn" disabled>Sell All Bronze</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>Auto-mining rate: <span id="auto-rate-bronze">0</span>/s</p>
+                <p id="sell-timer-bronze" class="hidden">
+                  Next auto-sell in <span id="sell-countdown-bronze">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-bronze" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-bronze">
+                <button id="unlock-bronze-btn">Unlock Bronze ($150k)</button>
+              </div>
+            </div>
+
+            <!-- Silver Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="silver"
+              id="silver-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="silver"
+                  aria-label="Collapse Silver"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Silver: <span id="silver-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-silver"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag silver-pricetag"
+                  id="pricetag-silver"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/silver/Ag.png"
+                  alt="Silver Icon"
+                  class="icon silver-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-silver-btn" disabled>Mine Silver</button>
+                  <button id="sell-silver-btn" disabled>Sell All Silver</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>Auto-mining rate: <span id="auto-rate-silver">0</span>/s</p>
+                <p id="sell-timer-silver" class="hidden">
+                  Next auto-sell in <span id="sell-countdown-silver">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-silver" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-silver">
+                <button id="unlock-silver-btn">Unlock Silver ($1M)</button>
+              </div>
+            </div>
+
+            <!-- Gold Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="gold"
+              id="gold-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="gold"
+                  aria-label="Collapse Gold"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Gold: <span id="gold-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-gold"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag gold-pricetag"
+                  id="pricetag-gold"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/gold/Au.png"
+                  alt="Gold Icon"
+                  class="icon gold-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-gold-btn" disabled>Mine Gold</button>
+                  <button id="sell-gold-btn" disabled>Sell All Gold</button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>Auto-mining rate: <span id="auto-rate-gold">0</span>/s</p>
+                <p id="sell-timer-gold" class="hidden">
+                  Next auto-sell in <span id="sell-countdown-gold">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-gold" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-gold">
+                <button id="unlock-gold-btn">Unlock Gold ($8M)</button>
+              </div>
+            </div>
+
+            <!-- Platinum Panel -->
+            <div
+              class="resource-panel locked"
+              data-resource="platinum"
+              id="platinum-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="platinum"
+                  aria-label="Collapse Platinum"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Platinum: <span id="platinum-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-platinum"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag platinum-pricetag"
+                  id="pricetag-platinum"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/platinum/pt.png"
+                  alt="Platinum Icon"
+                  class="icon platinum-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-platinum-btn" disabled>Mine Platinum</button>
+                  <button id="sell-platinum-btn" disabled>
+                    Sell All Platinum
+                  </button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate: <span id="auto-rate-platinum">0</span>/s
+                </p>
+                <p id="sell-timer-platinum" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-platinum">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-platinum" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-platinum">
+                <button id="unlock-platinum-btn">Unlock Platinum ($20M)</button>
+              </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════════════════════════════════════════════ -->
+            <!-- TITANIUM -->
+            <div
+              class="resource-panel locked"
+              data-resource="titanium"
+              id="titanium-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="titanium"
+                  aria-label="Collapse Titanium"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Titanium: <span id="titanium-count">0</span>
+                  <span class="collapsed-automine" id="collapsed-auto-titanium"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag titanium-pricetag"
+                  id="pricetag-titanium"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/titanium/Ti.png"
+                  alt="Titanium Icon"
+                  class="icon titanium-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-titanium-btn" disabled>Mine Titanium</button>
+                  <button id="sell-titanium-btn" disabled>
+                    Sell All Titanium
+                  </button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate: <span id="auto-rate-titanium">0</span>/s
+                </p>
+                <p id="sell-timer-titanium" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-titanium">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-titanium" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-titanium">
+                <button id="unlock-titanium-btn">Unlock Titanium ($50M)</button>
+              </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════════════════════════════════════════════════ -->
+            <!-- ADAMANTIUM -->
+            <div
+              class="resource-panel locked"
+              data-resource="adamantium"
+              id="adamantium-box"
+            >
+              <div class="resource-header">
+                <button
+                  class="collapse-btn"
+                  data-res="adamantium"
+                  aria-label="Collapse Adamantium"
+                  title="Collapse/Expand"
+                >
+                  ▼
+                </button>
+                <h2>
+                  Adamantium: <span id="adamantium-count">0</span>
+                  <span
+                    class="collapsed-automine"
+                    id="collapsed-auto-adamantium"
+                    >0/s</span
+                  >
+                </h2>
+                <span
+                  class="resource-pricetag adamantium-pricetag"
+                  id="pricetag-adamantium"
+                  style="display: none"
+                ></span>
+              </div>
+
+              <div class="resource-display">
+                <img
+                  src="images/adamantium/Ad.png"
+                  alt="Adamantium Icon"
+                  class="icon adamantium-icon"
+                />
+                <div class="resource-content">
+                  <button id="mine-adamantium-btn" disabled>
+                    Mine Adamantium
+                  </button>
+                  <button id="sell-adamantium-btn" disabled>
+                    Sell All Adamantium
+                  </button>
+                </div>
+              </div>
+
+              <div class="auto-status">
+                <p>
+                  Auto-mining rate: <span id="auto-rate-adamantium">0</span>/s
+                </p>
+                <p id="sell-timer-adamantium" class="hidden">
+                  Next auto-sell in
+                  <span id="sell-countdown-adamantium">--</span>s
+                  <label class="switch">
+                    <input type="checkbox" id="auto-sell-toggle-adamantium" />
+                    <span class="slider round"></span>
+                  </label>
+                </p>
+              </div>
+
+              <div class="lock-overlay" id="lock-overlay-adamantium">
+                <button id="unlock-adamantium-btn">
+                  Unlock Adamantium ($150M)
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== SHOP SCREEN (FULL TAB) ===================== -->
+        <section id="screen-shop" class="screen-panel panel hidden">
+          <h2>Shop</h2>
+
+          <!-- Resource filter tabs (inside the shop screen) -->
+          <div id="resource-tabs" class="resource-tabs">
+            <button data-resource="iron" class="resource-tab active">
+              Iron
+            </button>
+            <button
+              data-resource="copper"
+              id="tab-resource-copper"
+              class="resource-tab locked"
+            >
+              Copper
+            </button>
+            <button
+              data-resource="bronze"
+              id="tab-resource-bronze"
+              class="resource-tab locked"
+            >
+              Bronze
+            </button>
+            <button
+              data-resource="silver"
+              id="tab-resource-silver"
+              class="resource-tab locked"
+            >
+              Silver
+            </button>
+            <button
+              data-resource="gold"
+              id="tab-resource-gold"
+              class="resource-tab locked"
+            >
+              Gold
+            </button>
+            <button
+              data-resource="platinum"
+              id="tab-resource-platinum"
+              class="resource-tab locked"
+            >
+              Platinum
+            </button>
+            <button
+              data-resource="titanium"
+              id="tab-resource-titanium"
+              class="resource-tab locked"
+            >
+              Titanium
+            </button>
+            <button
+              data-resource="adamantium"
+              id="tab-resource-adamantium"
+              class="resource-tab locked"
+            >
+              Adamantium
+            </button>
+          </div>
+
+          <ul id="shop-list">
+            <!-- Populated via renderShop() -->
+          </ul>
+        </section>
+
+        <!-- ===================== STATS SCREEN ===================== -->
+        <section id="screen-stats" class="screen-panel panel hidden">
+          <h2>Stats</h2>
+          <div class="stats-tabs">
+            <button class="stats-tab-btn active" data-tab="main">Stats</button>
+            <button class="stats-tab-btn" data-tab="milestones">
+              Milestones
+            </button>
+          </div>
+          <div id="stats-main-tab">
+            <div class="stats-group" style="margin-bottom: 1.5em">
+              <h3>Highscore</h3>
+              <p>Your best score: <span id="stat-highscore">0</span></p>
+            </div>
+            <div class="stats-group">
+              <h3>Money</h3>
+              <p>Total earned: $<span id="stat-earned">0</span></p>
+              <p>Total spent: $<span id="stat-spent">0</span></p>
+              <p>Total Net worth: $<span id="stat-net">0</span></p>
+            </div>
+            <div class="stats-group">
+              <h3>Resources Mined</h3>
+              <ul class="stats-list">
+                <li>Iron: <span id="stat-mined-iron">0</span></li>
+                <li>Copper: <span id="stat-mined-copper">0</span></li>
+                <li>Bronze: <span id="stat-mined-bronze">0</span></li>
+                <li>Silver: <span id="stat-mined-silver">0</span></li>
+                <li>Gold: <span id="stat-mined-gold">0</span></li>
+                <li>Platinum: <span id="stat-mined-platinum">0</span></li>
+                <li>Titanium: <span id="stat-mined-titanium">0</span></li>
+                <li>Adamantium: <span id="stat-mined-adamantium">0</span></li>
+              </ul>
+            </div>
+            <div class="stats-group">
+              <h3>Resources Sold</h3>
+              <ul class="stats-list">
+                <li>Iron: <span id="stat-sold-iron">0</span></li>
+                <li>Copper: <span id="stat-sold-copper">0</span></li>
+                <li>Bronze: <span id="stat-sold-bronze">0</span></li>
+                <li>Silver: <span id="stat-sold-silver">0</span></li>
+                <li>Gold: <span id="stat-sold-gold">0</span></li>
+                <li>Platinum: <span id="stat-sold-platinum">0</span></li>
+                <li>Titanium: <span id="stat-sold-titanium">0</span></li>
+                <li>Adamantium: <span id="stat-sold-adamantium">0</span></li>
+              </ul>
+            </div>
+            <div class="stats-group">
+              <h3>Clicks</h3>
+              <ul class="stats-list">
+                <li>Mine clicks: <span id="stat-click-mine">0</span></li>
+                <li>Sell clicks: <span id="stat-click-sell">0</span></li>
+                <li>Shop purchases: <span id="stat-click-shop">0</span></li>
+              </ul>
+            </div>
+          </div>
+          <div id="stats-milestones-tab" class="hidden">
+            <div class="stats-group">
+              <h3>Mining Milestones</h3>
+              <ul class="stats-list" id="milestone-list">
+                <!-- Populated by script.js -->
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="footer-content">
+          <p>Made with VsCode/ChatGPT 4.1-mini-high/Claude Sonnet 4</p>
+          <a
+            href="https://github.com/TsProphet94/IdleForge"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub</a
+          >
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

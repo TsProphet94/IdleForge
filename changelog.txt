@@ -1,0 +1,65 @@
+v0.1.22 – Theme Options & New Resources!
+
+•   New theme options added! Customize your mining experience with different visual styles.
+•   Added 4 vibrant neon themes: Neon Cyan, Neon Purple, Neon Pink, and Cyberpunk for an electrifying visual experience!
+•   Introduced Titanium! A new high-tier resource to mine and upgrade.
+•   Added Adamantium! The ultimate end-game resource with the highest value and unlock cost.
+•   Enhanced Platinum integration with improved progression and balance.
+•   Added collapsible resource panels for better screen space management and cleaner UI.
+•   Major Phase 1 Balance Update: Smooth 5x unlock cost progression, standardized 2.5x resource value scaling, and reduced upgrade cost scaling for better affordability.
+•   Complete iPhone & mobile optimization: Enhanced touch targets, single-column resource layout on mobile, iOS Safari improvements, and smooth scrolling for perfect mobile gameplay.
+•   Fixed background rendering issue and optimized mobile resource panel layout.
+
+--------------------------------------
+
+v0.1.21- Milestone Rewards, Platimum, Rebalance!
+
+•   New milestone rewards added for each resource, giving extra goals and bonuses as you progress.
+•   New resource: Platinum! Unlock, mine, and upgrade this high-value late-game metal.
+•   Major balance update: All resource sell prices increased for smoother progression. Upgrade base prices and scaling reduced across all resources—upgrades are now more affordable and rewarding. Late-game unlock costs and platinum/gold progression tuned for less grind and more satisfying ramp.
+•   New Main Menu Background!
+•   Passive income and per-click upgrades now scale better with resource value.
+•   Early, mid, and late game progression rebalanced for a fair challenge and less paywall cliff.
+•   Fixed new game logic, ensuring (mine per click) is reset to 1.
+•   Fixed autoseller toggle logic.
+•   Added rescource price tag, indicating its value.
+•   Added IdleForge logo to main menu.
+•   Added Highscore feature.
+
+--------------------------------------
+
+v0.1.17– Gold icon fix 
+
+--------------------------------------
+
+v0.1.14– Milestone Tab & UI Enhancements
+
+•   New Milestone Tab! Each resource now has its own clearly separated section with labeled headings, making it easier to track your progress at a glance.
+
+•   Fix: Switching between Shop and Mine tabs now preserves their individual scroll positions. No more jarring scroll jumps!
+
+•	Improvements: Minor code cleanup and streamlined UI logic for better maintainability and responsiveness. New animations on shop and money counters.
+
+---------------------------------------
+
+v0.1.13 – “Bulk or Bust”
+
+Shop Overhaul
+•	Shop moved from a slide-out drawer to its own full screen. Cleaner grid, easier scrolling, way less claustrophobic.
+•	Buy Max button added.
+•	Button label trimmed: Buy Max, uprgade progress bar.
+
+Economy & Balance Pass
+•	Full rebalance of unlock costs and upgrade curves across all resources.
+•	Progression tuned for a smooth ramp, not a sheer paywall cliff.
+•	Early game still snappy; late game less trivial. Passive income properly considered.
+
+QoL & Polish
+•	Unified styling for both Buy buttons (same gradient, hover, disabled states).
+•	Dynamic labels/disable states update in-place without janky refreshes.
+•	Unlock overlays reliably rebuild after wipes/new games.
+•	New stat panel showing global game stats.
+
+Under the Hood
+•	Bulk math helpers (bulkCost, bulkAffordable, etc.) centralized and reused.
+•	Save/load, autosell timers, and stat tracking cleaned up for fewer edge-case gremlins.
