@@ -871,13 +871,6 @@ body {
   -webkit-text-size-adjust: 100%;
   /* Smooth scrolling for iOS */
   -webkit-overflow-scrolling: touch;
-  /* PWA Safe Area Support - extend background to edges but add padding for content */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  /* Ensure minimum safe area even if env() not supported */
-  padding-top: max(env(safe-area-inset-top), 20px);
 }
 
 /* Rubik font optimizations for modern gaming aesthetic */
@@ -3042,23 +3035,15 @@ footer .footer-content a:hover {
 
 /* PWA display mode - when app is installed and running in standalone mode */
 @media (display-mode: standalone) {
-  /* Ensure proper safe area handling in PWA mode */
+  /* Ensure proper safe area handling in PWA mode - background extends to edges */
   body {
     min-height: 100vh;
     min-height: 100dvh;
-    /* Force minimum safe area for PWA */
-    padding-top: max(env(safe-area-inset-top), 44px) !important;
   }
 
-  /* Additional safe area padding for PWA context */
-  .main-menu-logo {
-    margin-top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
-  }
-
-  /* Ensure header respects safe area in PWA mode */
-  header {
-    margin-top: 0 !important;
-    padding-top: var(--space-md) !important;
+  /* Game header gets safe area padding */
+  #game-ui header {
+    padding-top: max(env(safe-area-inset-top), 20px);
   }
 }
 
@@ -3066,30 +3051,25 @@ footer .footer-content a:hover {
 @supports (-webkit-appearance: none) {
   /* WebKit-based browsers (Safari, PWA on iOS) */
   @media (display-mode: standalone) {
-    body {
-      /* Ensure content starts below notch on all iPhone models */
-      padding-top: max(env(safe-area-inset-top), 47px) !important;
+    #game-ui header {
+      /* Ensure header content starts below notch on all iPhone models */
+      padding-top: max(env(safe-area-inset-top), 24px);
     }
     
     /* Specific handling for different iPhone screen sizes */
     @media (max-width: 414px) and (max-height: 896px) {
       /* iPhone with notch (X, 11, 12, 13, 14, 15 series) */
-      body {
-        padding-top: max(env(safe-area-inset-top), 44px) !important;
+      #game-ui header {
+        padding-top: max(env(safe-area-inset-top), 20px);
       }
     }
   }
 }
 
-/* Device-specific safe area optimizations */
+/* Device-specific safe area optimizations for horizontal spacing only */
 @supports (padding: max(0px)) {
-  /* Enhanced safe area support for devices with notches */
-  body {
-    padding-left: max(env(safe-area-inset-left), var(--space-sm));
-    padding-right: max(env(safe-area-inset-right), var(--space-sm));
-  }
-
-  header {
+  /* Enhanced safe area support for devices with notches - horizontal spacing only */
+  #game-ui header {
     padding-left: max(env(safe-area-inset-left), var(--space-md));
     padding-right: max(env(safe-area-inset-right), var(--space-md));
   }

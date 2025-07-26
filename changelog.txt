@@ -1,3 +1,15 @@
+v0.1.29 – Perfect iPhone PWA Experience!
+
+•   FIXED: Complete overhaul of iPhone safe area handling - removed ugly top bar that was disrupting full-screen PWA experience.
+•   FIXED: Main menu now maintains perfect edge-to-edge display with seamless background extending to screen edges.
+•   IMPROVED: Game header-only safe area padding ensures content stays below iPhone notch/Dynamic Island without affecting main menu.
+•   IMPROVED: Targeted CSS approach - only game screens get safe area padding, preserving immersive main menu experience.
+•   IMPROVED: Removed excessive body padding that was creating visible bars and disrupting PWA's native app feel.
+•   TECHNICAL: Streamlined safe area implementation using specific #game-ui header targeting instead of global body padding.
+•   TECHNICAL: Cleaned up development debugging code for cleaner production deployment.
+
+--------------------------------------
+
 v0.1.28 – Enhanced iPhone Safe Area & PWA Polish!
 
 •   FIXED: Major improvement to iPhone PWA safe area handling - content now properly respects the notch/Dynamic Island area on all iPhone models.

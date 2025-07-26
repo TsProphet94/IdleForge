@@ -2318,37 +2318,3 @@ document.addEventListener("DOMContentLoaded", () => {
 function hideAutoSaveIndicator() {
   document.getElementById("autosave-cog")?.classList.remove("show");
 }
-
-/* ────────────────────────────────────────────────────────────────────────────
-   PWA SAFE AREA DEBUGGING (DEVELOPMENT ONLY)
-──────────────────────────────────────────────────────────────────────────── */
-if (isDev) {
-  // Log safe area values for debugging on iPhone
-  document.addEventListener("DOMContentLoaded", () => {
-    const checkSafeArea = () => {
-      const computedStyle = getComputedStyle(document.documentElement);
-      const safeAreaTop = computedStyle.getPropertyValue('--safe-area-inset-top') || 
-                         getComputedStyle(document.body).paddingTop;
-      
-      console.log('🔍 Safe Area Debug Info:');
-      console.log('  Device:', navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Other');
-      console.log('  Display Mode:', window.matchMedia('(display-mode: standalone)').matches ? 'PWA' : 'Browser');
-      console.log('  Viewport:', window.innerWidth + 'x' + window.innerHeight);
-      console.log('  Body padding-top:', getComputedStyle(document.body).paddingTop);
-      console.log('  Screen:', screen.width + 'x' + screen.height);
-      
-      // Test if safe area is working
-      if (CSS.supports('padding-top: env(safe-area-inset-top)')) {
-        console.log('  ✅ env() CSS support: Available');
-      } else {
-        console.log('  ❌ env() CSS support: Not available');
-      }
-    };
-    
-    // Check immediately and after orientation changes
-    checkSafeArea();
-    window.addEventListener('orientationchange', () => {
-      setTimeout(checkSafeArea, 100);
-    });
-  });
-}
