@@ -1,5 +1,5 @@
 // Service Worker for PWA functionality
-const CACHE_NAME = "idleforge-v0.1.26";
+const CACHE_NAME = "idleforge-v0.1.27";
 const urlsToCache = [
   "./",
   "./index.html",
