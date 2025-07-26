@@ -533,11 +533,26 @@
   padding: 0;
 }
 
+html {
+  /* PWA Viewport Support - ensure background extends to all edges */
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  background: linear-gradient(
+    135deg,
+    var(--color-bg) 0%,
+    var(--color-bg-secondary) 100%
+  );
+  /* Extend background beyond safe areas */
+  padding: 0;
+  margin: 0;
+}
+
 html,
 body {
   touch-action: manipulation;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
+  user-select: none; /* Standard property for compatibility */
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
   font-size: 16px;
@@ -856,6 +871,11 @@ body {
   -webkit-text-size-adjust: 100%;
   /* Smooth scrolling for iOS */
   -webkit-overflow-scrolling: touch;
+  /* PWA Safe Area Support - extend background to edges but add padding for content */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* Rubik font optimizations for modern gaming aesthetic */
@@ -932,6 +952,9 @@ header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--space-md);
   box-shadow: var(--shadow-md);
+  /* PWA Safe Area Support - compensate for the body safe area padding */
+  margin-top: calc(-1 * env(safe-area-inset-top));
+  padding-top: calc(var(--space-md) + env(safe-area-inset-top));
 }
 
 header .header-content {
@@ -1732,6 +1755,11 @@ main {
   align-items: center;
   z-index: 2000;
   padding: var(--space-xl);
+  /* PWA Safe Area Support for overlays */
+  padding-top: calc(var(--space-xl) + env(safe-area-inset-top));
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom));
+  padding-left: calc(var(--space-xl) + env(safe-area-inset-left));
+  padding-right: calc(var(--space-xl) + env(safe-area-inset-right));
 }
 
 .overlay#main-menu {
@@ -3006,5 +3034,56 @@ footer .footer-content a:hover {
 
   .header-nav button .material-icons {
     font-size: 0.9rem;
+  }
+}
+
+/* ============================================================================
+   PWA & SAFE AREA OPTIMIZATIONS
+   ========================================================================== */
+
+/* PWA display mode - when app is installed and running in standalone mode */
+@media (display-mode: standalone) {
+  /* Ensure proper safe area handling in PWA mode */
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Additional safe area padding for PWA context */
+  .main-menu-logo {
+    margin-top: calc(var(--space-md) + env(safe-area-inset-top, 0px));
+  }
+}
+
+/* Device-specific safe area optimizations */
+@supports (padding: max(0px)) {
+  /* Enhanced safe area support for devices with notches */
+  body {
+    padding-left: max(env(safe-area-inset-left), var(--space-sm));
+    padding-right: max(env(safe-area-inset-right), var(--space-sm));
+  }
+
+  header {
+    padding-left: max(env(safe-area-inset-left), var(--space-md));
+    padding-right: max(env(safe-area-inset-right), var(--space-md));
+  }
+
+  .overlay {
+    padding-left: max(
+      calc(var(--space-xl) + env(safe-area-inset-left)),
+      var(--space-xl)
+    );
+    padding-right: max(
+      calc(var(--space-xl) + env(safe-area-inset-right)),
+      var(--space-xl)
+    );
+  }
+}
+
+/* Landscape orientation optimizations for PWA */
+@media (orientation: landscape) and (display-mode: standalone) {
+  .resources-container {
+    max-width: 90vw;
+    margin: 0 auto;
   }
 }

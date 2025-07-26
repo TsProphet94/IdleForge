@@ -1,0 +1,30 @@
+# IdleForge Development Files
+.DS_Store
+.vscode/
+*.log
+
+# Deployment temporary directory
+../idleforge-deploy/
+
+# Local test files
+test-*.html
+temp/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Editor backups
+*~
+*.bak
+*.swp
+*.swo
+
+# Node modules (if added later)
+node_modules/
+npm-debug.log*

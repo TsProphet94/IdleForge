@@ -1537,6 +1537,16 @@ function loadGame() {
     titaniumUnlocked = !!data.titaniumUnlocked;
     adamantiumUnlocked = !!data.adamantiumUnlocked;
 
+    // Restore collapse states BEFORE unlocking resources
+    if (data.collapseStates) {
+      RES_IDS.forEach((res) => {
+        try {
+          const collapsed = data.collapseStates[res];
+          localStorage.setItem(`panel-collapsed-${res}`, collapsed ? "1" : "0");
+        } catch {}
+      });
+    }
+
     if (copperUnlocked) unlockCopperUI(false);
     else relockResource("copper");
     if (nickelUnlocked) unlockNickelUI(false);
@@ -1602,26 +1612,6 @@ function loadGame() {
       Object.assign(stats.mined, data.stats.mined || {});
       Object.assign(stats.sold, data.stats.sold || {});
       Object.assign(stats.clicks, data.stats.clicks || {});
-    }
-
-    // Restore collapse states
-    if (data.collapseStates) {
-      RES_IDS.forEach((res) => {
-        try {
-          const collapsed = data.collapseStates[res];
-          localStorage.setItem(`panel-collapsed-${res}`, collapsed ? "1" : "0");
-          const panel = document.querySelector(
-            `.resource-panel[data-resource='${res}']`
-          );
-          if (panel) {
-            if (collapsed) {
-              panel.classList.add("collapsed");
-            } else {
-              panel.classList.remove("collapsed");
-            }
-          }
-        } catch {}
-      });
     }
 
     // re-init autosellers

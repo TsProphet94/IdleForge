@@ -1,4 +1,4 @@
-v0.1.26 – Mobile Header Fix & Progressive Web App!
+v0.1.27 – Mobile Header Fix & Progressive Web App!
 
 •   FIXED: Mobile header layout issue where menu button was cut off on iPhone screens - completely restructured header with two-row responsive design.
 •   NEW: Progressive Web App (PWA) support! IdleForge can now be installed as a mobile app directly from your browser.
@@ -10,6 +10,16 @@ v0.1.26 – Mobile Header Fix & Progressive Web App!
 •   TECHNICAL: Added comprehensive PWA meta tags for proper mobile app integration and installation prompts.
 •   TECHNICAL: Implemented background sync and cache-first strategies for seamless offline gaming experience.
 •   DEPLOYMENT: Cleaned production codebase removing all development scripts and files for optimized GitHub Pages deployment.
+•   FIXED: PWA header positioning on iPhone - content now displays below status bar instead of being covered by battery/time indicators.
+•   FIXED: Resource panels now properly maintain their collapsed state when continuing saved games - no more unwanted expansion of locked resources!
+•   IMPROVED: Added comprehensive CSS safe area inset support for all iPhone models including those with notches (iPhone X, 11, 12, 13, 14, 15 series).
+•   IMPROVED: Background color now extends seamlessly to screen edges while content respects safe areas - no ugly bars at the top.
+•   IMPROVED: Enhanced PWA display mode detection with optimized standalone app experience.
+•   IMPROVED: Better landscape orientation support for PWA mode with centered content layout.
+•   TECHNICAL: Fixed order of operations in loadGame() function - collapse states are now restored before unlocking resources for proper UI state management.
+•   TECHNICAL: Added dynamic viewport height (100dvh) support for modern mobile browsers.
+•   TECHNICAL: Implemented CSS env() functions for safe-area-inset handling across all UI elements.
+•   TECHNICAL: Added device-specific optimizations using CSS @supports queries for enhanced compatibility.
 
 --------------------------------------
 

@@ -1,9 +1,29 @@
 #!/bin/bash
 
+# Enhanced IdleForge Release Automation Script
+# Automatically handles versioning, service worker updates, and deployment
+
+# Exit on any error
+set -e
+
 # Configuration
 REPO_URL="https://github.com/TsProphet94/IdleForge.git"
 DEPLOY_DIR="../idleforge-deploy"
 VERSION_FILE="version.txt"
+
+# Validate required files exist
+if [[ ! -f "sw.js" ]]; then
+  echo "❌ Error: sw.js not found. Are you in the correct directory?"
+  exit 1
+fi
+
+if [[ ! -f "index.html" ]]; then
+  echo "❌ Error: index.html not found. Are you in the correct directory?"
+  exit 1
+fi
+
+echo "🚀 IdleForge Release Automation Starting..."
+echo "📍 Current directory: $(pwd)"
 
 # Determine new semantic version
 if [[ -f "$VERSION_FILE" ]] && CURRENT_VERSION=$(grep -Eo '([0-9]+\.){2}[0-9]+' "$VERSION_FILE"); then
@@ -31,8 +51,20 @@ git push origin main
 
 # Update version.txt
 echo "Version $NEW_VERSION" > "$VERSION_FILE"
-git add "$VERSION_FILE"
-git commit -m "Tag version $NEW_VERSION"
+
+# Update service worker cache version to match
+echo "🔄 Updating service worker cache version to $NEW_VERSION"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # macOS
+  sed -i '' "s/const CACHE_NAME = \"idleforge-v.*\";/const CACHE_NAME = \"idleforge-v$NEW_VERSION\";/" sw.js
+else
+  # Linux
+  sed -i "s/const CACHE_NAME = \"idleforge-v.*\";/const CACHE_NAME = \"idleforge-v$NEW_VERSION\";/" sw.js
+fi
+
+# Add all updated files
+git add "$VERSION_FILE" sw.js
+git commit -m "Tag version $NEW_VERSION and update service worker cache"
 git push origin main
 
 # Deploy to gh-pages
@@ -50,5 +82,22 @@ git add .
 git commit -m "Deploy version $NEW_VERSION"
 git push -u origin gh-pages --force
 
-echo "✅ Deployment complete!"
-echo "🌍 Visit: https://tsprophet94.github.io/IdleForge/"
+# Return to original directory
+cd - > /dev/null
+
+# Success summary
+echo ""
+echo "🎉 =================================="
+echo "✅ RELEASE COMPLETE!"
+echo "🎯 Version: $NEW_VERSION"
+echo "📦 Service Worker Cache: idleforge-v$NEW_VERSION"
+echo "🌍 Live URL: https://tsprophet94.github.io/IdleForge/"
+echo "⏰ PWA users will auto-update within 24 hours"
+echo "=================================="
+echo ""
+echo "📱 To force immediate PWA update:"
+echo "   1. Close the app completely"
+echo "   2. Reopen it"
+echo ""
+echo "🔍 Monitor deployment status:"
+echo "   https://github.com/TsProphet94/IdleForge/deployments"
