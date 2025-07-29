@@ -1,0 +1,1482 @@
+/* ==========================================================================
+   INTERACTIONS & ANIMATIONS
+   ========================================================================== */
+
+/* ==========================================================================
+   RESOURCE PANEL COLLAPSE/EXPAND FUNCTIONALITY
+   ========================================================================== */
+
+/* Improved resource header layout */
+.resource-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0 0.2em;
+  min-height: 2.5em;
+  position: relative;
+}
+
+/* Left-align content when collapsed (except price tag) */
+.resource-panel.collapsed .resource-header {
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
+  padding: 0 0.2em;
+}
+
+.resource-header h2 {
+  font-size: 1.35em;
+  font-weight: 700;
+  margin: 0 0.2em 0 0;
+  flex: 1;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+/* Collapsed state h2 styling for left alignment */
+.resource-panel.collapsed .resource-header h2 {
+  flex: 1;
+  margin: 0 0.2em 0 0;
+  justify-content: flex-start;
+}
+
+.resource-header h2 span:first-child {
+  min-width: 22px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.resource-header h2 .collapsed-automine {
+  display: none;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.2em 0.5em;
+  border-radius: 8px;
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 2.5em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.resource-panel.collapsed .resource-header h2 .collapsed-automine {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resource-header .resource-pricetag {
+  position: absolute;
+  top: -0.7em;
+  right: -0.7em;
+  background: var(--grad-accent);
+  color: #fff;
+  font-size: 1.05em;
+  font-weight: 700;
+  padding: 0.18em 0.85em;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.02em;
+  z-index: 2;
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.92;
+}
+
+.resource-header .collapse-btn {
+  font-size: 1.25em;
+  margin: 0 0.2em 0 0;
+  padding: 0.3em;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-light) 0%,
+    var(--color-surface) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  flex-shrink: 0;
+  width: 2.2em;
+  height: 2.2em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.resource-header .collapse-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resource-header .collapse-btn:hover::before {
+  opacity: 1;
+}
+
+/* Add a subtle pulse animation for better visual feedback */
+.resource-header .collapse-btn {
+  animation: none;
+}
+
+.resource-header .collapse-btn:focus-visible {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* Remove focus outline when clicked, only show for keyboard navigation */
+.resource-header .collapse-btn:focus:not(:focus-visible) {
+  outline: none;
+  animation: none;
+}
+
+@keyframes subtle-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(255, 211, 61, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(255, 211, 61, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+.resource-header .collapse-btn:hover,
+.resource-header .collapse-btn:focus-visible {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-accent-dark) 100%
+  );
+  color: var(--color-bg);
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 12px rgba(255, 211, 61, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px) scale(1.05);
+}
+
+.resource-panel.collapsed .resource-header .collapse-btn {
+  transform: rotate(-90deg) translateY(-1px) scale(1.05);
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-dark) 100%
+  );
+  color: var(--color-bg);
+  border-color: var(--color-secondary);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  /* Maintain collapsed state styling even when focused */
+  outline: none;
+}
+
+.resource-panel.collapsed .resource-header .collapse-btn:hover {
+  transform: rotate(-90deg) translateY(-2px) scale(1.08);
+  box-shadow: 0 6px 16px rgba(78, 205, 196, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.resource-panel.collapsed .resource-header .collapse-btn:focus-visible {
+  animation: none; /* No pulse animation when collapsed */
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.resource-header .collapse-btn:active {
+  transform: translateY(0) scale(1.02);
+  box-shadow: 0 2px 6px rgba(255, 211, 61, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.1s ease;
+}
+
+.resource-panel.collapsed .resource-header .collapse-btn:active {
+  transform: rotate(-90deg) translateY(0) scale(1.02);
+}
+
+/* Collapse/Expand Resource Panel */
+.resource-panel.collapsed {
+  padding: 0.5em;
+  min-height: 0;
+  max-height: 90px;
+  overflow: hidden;
+  transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.resource-panel.collapsed .resource-display {
+  display: none !important;
+}
+
+.resource-panel.collapsed .auto-status {
+  display: none !important;
+}
+
+/* Lock overlay styling for collapsed state */
+.resource-panel.collapsed.locked .lock-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 10;
+  border-radius: var(--radius-lg);
+}
+
+.resource-panel.collapsed.locked .lock-overlay button {
+  padding: 0.4em 1em;
+  background: var(--grad-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-smooth);
+  min-height: 36px;
+}
+
+.resource-panel.collapsed.locked .lock-overlay button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(255, 211, 61, 0.3);
+}
+
+.resource-panel:not(.collapsed) .auto-status {
+  display: flex;
+}
+
+/* ==========================================================================
+   COLLAPSED PROGRESS BAR STYLING
+   ========================================================================== */
+
+/* When collapsed, reposition the existing autosell progress bar to bottom of panel */
+.resource-panel.collapsed .autosell-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  border-radius: 0 0 8px 8px;
+  z-index: 2;
+}
+
+/* Hide the collapsed progress bar elements we added (not needed anymore) */
+.collapsed-progress-bar {
+  display: none !important;
+}
+
+/* ==========================================================================
+   THEME DROPDOWN STYLING
+   ========================================================================== */
+.theme-select-container {
+  margin: 1.2em auto 1.5em auto;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  justify-content: center;
+}
+
+.theme-select-container select {
+  padding: 0.4em 1.2em 0.4em 0.7em;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-surface-light);
+  background: var(--color-surface-light);
+  color: var(--color-text-primary);
+  font-size: 1em;
+  font-weight: 600;
+  outline: none;
+  transition: border var(--transition-fast), background var(--transition-fast);
+}
+
+.theme-select-container select:focus {
+  border-color: var(--color-accent);
+}
+
+/* Premium theme selector styling */
+.theme-select-container select option[value="aurora"] {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.theme-select-container select option[value="dragon-fire"] {
+  background: linear-gradient(90deg, #ff6b35 0%, #d63031 100%);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   RESOURCE PRICE TAGS
+   ========================================================================== */
+.resource-pricetag {
+  position: absolute;
+  top: -0.7em;
+  right: -0.7em;
+  background: var(--grad-accent);
+  color: #fff;
+  font-size: 1.05em;
+  font-weight: 700;
+  padding: 0.18em 0.85em;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  letter-spacing: 0.02em;
+  z-index: 2;
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.92;
+}
+
+/* Ensure resource-header is positioned relative for pricetag placement */
+.resource-header {
+  position: relative;
+}
+
+/* ==========================================================================
+   STATS PANEL TABS & MILESTONES
+   ========================================================================== */
+.stats-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-tab-btn {
+  background: var(--color-surface-light);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.stats-tab-btn.active {
+  background: var(--grad-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+#stats-milestones-tab .stats-group {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+#milestone-list {
+  margin-top: 1rem;
+}
+
+/* Milestone List Styles */
+#milestone-list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  margin-bottom: 0.2rem;
+  overflow: hidden;
+  min-height: 2.2em;
+}
+
+#milestone-list li.milestone-achieved {
+  color: var(--color-success);
+  font-weight: 700;
+  background: rgba(107, 207, 127, 0.08);
+}
+
+/* Milestone progress bar background */
+.milestone-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.milestone-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-success) 0%,
+    var(--color-accent) 100%
+  );
+  opacity: 0.25;
+  border-radius: var(--radius-sm);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.milestone-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#milestone-list li .milestone-badge {
+  background: var(--grad-accent);
+  color: var(--color-bg);
+  font-size: 0.85em;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.2em 0.9em;
+  margin-right: 0.5em;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   CONFIRM NEW GAME MODAL
+   ========================================================================== */
+.confirm-modal {
+  z-index: 3000;
+  background: rgba(10, 10, 15, 0.97);
+}
+
+.confirm-modal-box {
+  background: var(--color-surface);
+  padding: 2rem 2.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 340px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.confirm-modal-box h2 {
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.confirm-modal-box p {
+  color: var(--color-text-secondary);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.confirm-btn {
+  font-weight: 600;
+  padding: 0.7rem 2.2rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 1rem;
+  margin: 0 0.5rem 0 0;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.confirm-btn-yes {
+  background: var(--grad-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.confirm-btn-yes:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+
+.confirm-btn-no {
+  background: var(--color-surface-light);
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.confirm-btn-no:hover {
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
+   ANIMATIONS & EFFECTS
+   ========================================================================== */
+
+/* Money counter bounce animation */
+#money-display.money-bounce {
+  animation: money-bounce 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes money-bounce {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+  20% {
+    transform: scale(1.07) rotate(-1deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 2px 8px 0 var(--color-accent);
+  }
+  40% {
+    transform: scale(0.98) rotate(0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 1px 4px 0 var(--color-accent);
+  }
+  60% {
+    transform: scale(1.03) rotate(-0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 2px 8px 0 var(--color-accent);
+  }
+  80% {
+    transform: scale(0.99) rotate(0.5deg);
+    box-shadow: 0 0 0 0 var(--color-accent), 0 1px 4px 0 var(--color-accent);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@keyframes sell-pop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.sell-pop {
+  position: absolute;
+  top: -20px;
+  right: var(--space-lg);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-success);
+  animation: sell-pop 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.button-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+}
+
+/* Title shimmer */
+@keyframes shine {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+#main-menu h1 {
+  background: linear-gradient(90deg, #fff 0%, #ffd93d 50%, #fff 100%);
+  background-size: 400px 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine 3s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Touch-specific improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  .resource-panel:hover {
+    transform: none;
+  }
+
+  #shop-list li:hover {
+    transform: none;
+    background: var(--color-surface);
+  }
+
+  .shop-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  nav button:hover:not(:disabled) {
+    background: var(--color-surface-light);
+  }
+
+  /* Add active states for better touch feedback */
+  .resource-panel:active {
+    transform: scale(0.98);
+  }
+
+  nav button:active {
+    transform: scale(0.95);
+  }
+
+  .shop-btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+/* ===================== IMPROVED MOBILE HEADER LAYOUT ===================== */
+
+/* Two-row header layout for better mobile compatibility */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  width: 100%;
+}
+
+.header-nav {
+  display: flex;
+  gap: var(--space-xs);
+  width: 100%;
+  justify-content: space-between;
+}
+
+/* Money display when positioned at top */
+.money-top {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Ensure logo doesn't get squished */
+.header-top .logo {
+  flex-shrink: 0;
+  margin-right: var(--space-md);
+}
+
+/* ==========================================================================
+   PREMIUM THEME INTERACTIONS & SPECIAL EFFECTS
+   ========================================================================== */
+
+/* Aurora Theme Special Effects */
+.theme-aurora .btn-primary:hover,
+.theme-aurora .btn-secondary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4),
+    0 0 30px rgba(79, 172, 254, 0.6), inset 0 0 20px rgba(79, 172, 254, 0.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-aurora .resource-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3),
+    0 0 40px rgba(79, 172, 254, 0.4);
+  border: 1px solid rgba(79, 172, 254, 0.5);
+}
+
+.theme-aurora .shop-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4),
+    0 0 35px rgba(67, 233, 123, 0.5);
+}
+
+.theme-aurora .money-display {
+  animation: aurora-pulse 2s ease-in-out infinite;
+}
+
+@keyframes aurora-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(79, 172, 254, 0.8),
+      0 0 20px rgba(79, 172, 254, 0.6), 0 0 30px rgba(79, 172, 254, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(67, 233, 123, 0.9),
+      0 0 25px rgba(67, 233, 123, 0.7), 0 0 35px rgba(67, 233, 123, 0.5);
+  }
+}
+
+/* Dragon Fire Theme Special Effects */
+.theme-dragon-fire .btn-primary:hover,
+.theme-dragon-fire .btn-secondary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.6),
+    0 0 40px rgba(255, 107, 53, 0.8), inset 0 0 25px rgba(255, 107, 53, 0.15);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-dragon-fire .resource-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 12px 35px rgba(255, 107, 53, 0.5),
+    0 0 45px rgba(255, 107, 53, 0.6);
+  border: 1px solid rgba(255, 107, 53, 0.7);
+}
+
+.theme-dragon-fire .shop-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 30px rgba(214, 48, 49, 0.5),
+    0 0 40px rgba(214, 48, 49, 0.6);
+}
+
+.theme-dragon-fire .money-display {
+  animation: fire-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fire-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.8),
+      0 0 20px rgba(255, 107, 53, 0.6), 0 0 30px rgba(255, 107, 53, 0.4);
+  }
+  33% {
+    text-shadow: 0 0 15px rgba(255, 71, 87, 0.9),
+      0 0 25px rgba(255, 71, 87, 0.7), 0 0 35px rgba(255, 71, 87, 0.5);
+  }
+  66% {
+    text-shadow: 0 0 12px rgba(214, 48, 49, 0.9),
+      0 0 22px rgba(214, 48, 49, 0.7), 0 0 32px rgba(214, 48, 49, 0.5);
+  }
+}
+
+/* Premium resource click effects */
+.theme-aurora .resource-card.clicking {
+  animation: aurora-click-burst 0.6s ease-out;
+}
+
+.theme-dragon-fire .resource-card.clicking {
+  animation: fire-click-burst 0.6s ease-out;
+}
+
+@keyframes aurora-click-burst {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(79, 172, 254, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px rgba(79, 172, 254, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 40px rgba(79, 172, 254, 0);
+  }
+}
+
+@keyframes fire-click-burst {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px rgba(255, 107, 53, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 40px rgba(255, 107, 53, 0);
+  }
+}
+
+/* Premium tab switching effects */
+.theme-aurora .tab-btn.active {
+  background: var(--grad-primary);
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4),
+    0 0 25px rgba(79, 172, 254, 0.3);
+}
+
+.theme-dragon-fire .tab-btn.active {
+  background: var(--grad-primary);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4),
+    0 0 25px rgba(255, 107, 53, 0.3);
+}
+
+/* Premium milestone progress effects */
+.theme-aurora .milestone-item.completed {
+  box-shadow: 0 0 20px rgba(67, 233, 123, 0.5),
+    inset 0 0 15px rgba(67, 233, 123, 0.1);
+  border: 1px solid rgba(67, 233, 123, 0.6);
+}
+
+.theme-dragon-fire .milestone-item.completed {
+  box-shadow: 0 0 20px rgba(253, 203, 110, 0.5),
+    inset 0 0 15px rgba(253, 203, 110, 0.1);
+  border: 1px solid rgba(253, 203, 110, 0.6);
+}
+
+/* ==========================================================================
+   ENHANCED MINE BUTTON ANIMATIONS & FEEDBACK
+   ========================================================================== */
+
+/* Base mine button animations for all themes */
+#mine-iron-btn,
+#mine-copper-btn,
+#mine-nickel-btn,
+#mine-bronze-btn,
+#mine-silver-btn,
+#mine-cobalt-btn,
+#mine-gold-btn,
+#mine-palladium-btn,
+#mine-platinum-btn,
+#mine-titanium-btn,
+#mine-adamantium-btn {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+}
+
+/* Hover effects for mine buttons */
+#mine-iron-btn:hover:not(:disabled),
+#mine-copper-btn:hover:not(:disabled),
+#mine-nickel-btn:hover:not(:disabled),
+#mine-bronze-btn:hover:not(:disabled),
+#mine-silver-btn:hover:not(:disabled),
+#mine-cobalt-btn:hover:not(:disabled),
+#mine-gold-btn:hover:not(:disabled),
+#mine-palladium-btn:hover:not(:disabled),
+#mine-platinum-btn:hover:not(:disabled),
+#mine-titanium-btn:hover:not(:disabled),
+#mine-adamantium-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15),
+    0 4px 15px var(--color-primary-alpha, rgba(79, 172, 254, 0.3));
+  filter: brightness(1.1);
+}
+
+/* Active state when being clicked */
+.mining-active {
+  transform: translateY(1px) scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  filter: brightness(1.2) !important;
+}
+
+/* Shake animation for impact feedback */
+.mining-shake {
+  animation: mining-shake 0.3s ease-in-out;
+}
+
+@keyframes mining-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px) rotate(-0.5deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(0.5deg);
+  }
+}
+
+/* Floating damage/gain feedback */
+.mining-feedback {
+  font-weight: 700;
+  font-size: 1.2em;
+  color: var(--color-success, #10b981);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px currentColor;
+  pointer-events: none;
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 1;
+  z-index: 9999;
+}
+
+/* Resource-specific feedback colors */
+.mining-feedback[data-resource="iron"] {
+  color: #b0b0b0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #b0b0b0;
+}
+
+.mining-feedback[data-resource="copper"] {
+  color: #e6a86c;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #e6a86c;
+}
+
+.mining-feedback[data-resource="nickel"] {
+  color: #a0a0a0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #a0a0a0;
+}
+
+.mining-feedback[data-resource="bronze"] {
+  color: #e8b06a;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #e8b06a;
+}
+
+.mining-feedback[data-resource="silver"] {
+  color: #f5f5f5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #f5f5f5;
+}
+
+.mining-feedback[data-resource="cobalt"] {
+  color: #4169e1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #4169e1;
+}
+
+.mining-feedback[data-resource="gold"] {
+  color: #ffec8b;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #ffec8b;
+}
+
+.mining-feedback[data-resource="palladium"] {
+  color: #e8eaf0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #e8eaf0;
+}
+
+.mining-feedback[data-resource="platinum"] {
+  color: #b2b2b2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #b2b2b2;
+}
+
+.mining-feedback[data-resource="titanium"] {
+  color: #a3a3a3;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #a3a3a3;
+}
+
+.mining-feedback[data-resource="adamantium"] {
+  color: #6a6a6a;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 10px #6a6a6a, 0 0 20px #6a6a6a;
+}
+
+/* Screen flash effect - improved for smoother blending */
+.mining-screen-flash {
+  transition: opacity 0.1s ease-out;
+
+  /* Smooth edge blending */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  mix-blend-mode: soft-light;
+
+  /* Softer gradient edges */
+  border-radius: 20px;
+
+  /* Hardware acceleration for smooth animation */
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+/* Mining particles for premium resources */
+.mining-particle {
+  opacity: 1;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mining-particle[data-resource="adamantium"] {
+  background: #6a6a6a !important;
+  box-shadow: 0 0 8px #6a6a6a, 0 0 12px #6a6a6a !important;
+}
+
+/* Enhanced button feedback for resource tiers */
+#mine-gold-btn.mining-active,
+#mine-palladium-btn.mining-active,
+#mine-platinum-btn.mining-active,
+#mine-titanium-btn.mining-active,
+#mine-adamantium-btn.mining-active {
+  transform: translateY(1px) scale(0.95) !important;
+  filter: brightness(1.3) contrast(1.1) !important;
+}
+
+/* ==========================================================================
+   ENHANCED AUTOSELL ANIMATIONS & FEEDBACK
+   ========================================================================== */
+
+/* Autosell timer states */
+#sell-timer-iron,
+#sell-timer-copper,
+#sell-timer-nickel,
+#sell-timer-bronze,
+#sell-timer-silver,
+#sell-timer-cobalt,
+#sell-timer-gold,
+#sell-timer-palladium,
+#sell-timer-platinum,
+#sell-timer-titanium,
+#sell-timer-adamantium {
+  transition: all 0.2s ease-in-out;
+  border-radius: var(--radius-sm);
+  padding: 0.3em 0.6em;
+  margin: 0.2em 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Autosell urgency states */
+.autosell-urgent {
+  background: rgba(255, 193, 7, 0.1) !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+  animation: autosell-pulse-urgent 1s ease-in-out infinite;
+}
+
+.autosell-ready {
+  background: rgba(40, 167, 69, 0.15) !important;
+  border-color: rgba(40, 167, 69, 0.4) !important;
+  animation: autosell-pulse-ready 0.5s ease-in-out infinite;
+}
+
+.autosell-success {
+  background: rgba(40, 167, 69, 0.2) !important;
+  border-color: rgba(40, 167, 69, 0.6) !important;
+  transform: scale(1.02);
+  animation: autosell-success-pulse 0.4s ease-out;
+}
+
+@keyframes autosell-pulse-urgent {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0);
+    transform: scale(1.01);
+  }
+}
+
+@keyframes autosell-pulse-ready {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.5);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(40, 167, 69, 0);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes autosell-success-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.6);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(40, 167, 69, 0.2);
+  }
+  100% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 12px rgba(40, 167, 69, 0);
+  }
+}
+
+/* Enhanced sell button autosell flash */
+.autosell-flash {
+  animation: autosell-button-flash 0.6s ease-out;
+  transform: scale(1.03) !important;
+}
+
+@keyframes autosell-button-flash {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  25% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3),
+      0 0 25px rgba(40, 167, 69, 0.4), inset 0 0 15px rgba(40, 167, 69, 0.1);
+    filter: brightness(1.2);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4),
+      0 0 30px rgba(40, 167, 69, 0.5), inset 0 0 20px rgba(40, 167, 69, 0.15);
+    filter: brightness(1.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    filter: brightness(1);
+  }
+}
+
+/* Autosell floating feedback */
+.autosell-feedback {
+  font-weight: 700;
+  pointer-events: none;
+  transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 1;
+  z-index: 9999;
+}
+
+.autosell-feedback-main {
+  font-size: 1.3em;
+  color: #28a745;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px #28a745, 0 0 25px #28a745;
+  margin-bottom: 0.2em;
+}
+
+.autosell-feedback-sub {
+  font-size: 0.9em;
+  color: #6c757d;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  opacity: 0.8;
+}
+
+/* Premium theme autosell enhancements */
+.theme-aurora .autosell-feedback-main {
+  color: #4facfe;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px #4facfe, 0 0 25px #00f2fe;
+}
+
+.theme-dragon-fire .autosell-feedback-main {
+  color: #ff6b35;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px #ff6b35, 0 0 25px #d63031;
+}
+
+/* Smooth autosell screen pulse effect */
+.autosell-screen-pulse {
+  /* Minimal visual effect without excessive blur */
+  mix-blend-mode: overlay;
+
+  /* Soft gradient edges */
+  border-radius: 50px;
+
+  /* Hardware acceleration for smooth animation */
+  will-change: opacity;
+  transform: translateZ(0);
+
+  /* Softer transition */
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Global smoothing for all visual effects */
+.mining-feedback,
+.autosell-feedback,
+.mining-particle,
+.autosell-audio-cue {
+  /* Hardware acceleration */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+
+  /* Anti-aliasing for smooth edges */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Smooth backdrop integration */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Enhanced autosell countdown styling */
+#sell-countdown-iron,
+#sell-countdown-copper,
+#sell-countdown-nickel,
+#sell-countdown-bronze,
+#sell-countdown-silver,
+#sell-countdown-cobalt,
+#sell-countdown-gold,
+#sell-countdown-palladium,
+#sell-countdown-platinum,
+#sell-countdown-titanium,
+#sell-countdown-adamantium {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--color-accent);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Autosell switch enhancements */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-left: 0.8em;
+  vertical-align: middle;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--color-text-muted);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:checked + .slider {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Autosell switch hover effects */
+.slider:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+input:checked + .slider:hover {
+  background-color: #218838;
+  box-shadow: 0 0 12px rgba(40, 167, 69, 0.4);
+}
+
+/* Autosell progress bar */
+.autosell-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin-top: 0.5em;
+  overflow: hidden;
+  position: relative;
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden; /* Improve rendering performance */
+}
+
+.autosell-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-success) 0%,
+    var(--color-accent) 100%
+  );
+  border-radius: 2px;
+  transition: width 0.1s linear; /* Faster, linear transition for smooth progress */
+  position: relative;
+  will-change: width; /* Optimize for width changes */
+}
+
+.autosell-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: autosell-progress-shine 2s linear infinite;
+}
+
+@keyframes autosell-progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Enhanced autosell timer container */
+#sell-timer-iron,
+#sell-timer-copper,
+#sell-timer-nickel,
+#sell-timer-bronze,
+#sell-timer-silver,
+#sell-timer-cobalt,
+#sell-timer-gold,
+#sell-timer-palladium,
+#sell-timer-platinum,
+#sell-timer-titanium,
+#sell-timer-adamantium {
+  transition: all 0.2s ease-in-out;
+  border-radius: var(--radius-md);
+  padding: 0.4em 0.8em;
+  margin: 0.3em 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.01)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Premium theme autosell timer enhancements */
+.theme-aurora .autosell-progress-fill {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.theme-dragon-fire .autosell-progress-fill {
+  background: linear-gradient(90deg, #ff6b35 0%, #d63031 100%);
+}
+
+.theme-aurora .autosell-ready {
+  background: rgba(79, 172, 254, 0.15) !important;
+  border-color: rgba(79, 172, 254, 0.4) !important;
+  box-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
+}
+
+.theme-dragon-fire .autosell-ready {
+  background: rgba(255, 107, 53, 0.15) !important;
+  border-color: rgba(255, 107, 53, 0.4) !important;
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Ripple effect on click */
+#mine-iron-btn::after,
+#mine-copper-btn::after,
+#mine-nickel-btn::after,
+#mine-bronze-btn::after,
+#mine-silver-btn::after,
+#mine-cobalt-btn::after,
+#mine-gold-btn::after,
+#mine-palladium-btn::after,
+#mine-platinum-btn::after,
+#mine-titanium-btn::after,
+#mine-adamantium-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mining-active::after {
+  animation: mine-ripple 0.6s ease-out;
+}
+
+@keyframes mine-ripple {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 120%;
+    height: 120%;
+    opacity: 0;
+  }
+}
+
+/* Enhanced feedback for premium themes */
+.theme-aurora .mining-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(79, 172, 254, 0.6),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-aurora .mining-feedback {
+  color: #4facfe;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px #4facfe, 0 0 25px #00f2fe;
+}
+
+.theme-dragon-fire .mining-active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 107, 53, 0.6),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-dragon-fire .mining-feedback {
+  color: #ff6b35;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 0 15px #ff6b35, 0 0 25px #d63031;
+}
+
+/* Pulse effect on mine buttons when available */
+#mine-iron-btn:not(:disabled),
+#mine-copper-btn:not(:disabled),
+#mine-nickel-btn:not(:disabled),
+#mine-bronze-btn:not(:disabled),
+#mine-silver-btn:not(:disabled),
+#mine-cobalt-btn:not(:disabled),
+#mine-gold-btn:not(:disabled),
+#mine-palladium-btn:not(:disabled),
+#mine-platinum-btn:not(:disabled),
+#mine-titanium-btn:not(:disabled),
+#mine-adamantium-btn:not(:disabled) {
+  animation: mine-pulse 3s ease-in-out infinite;
+}
+
+@keyframes mine-pulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1),
+      0 0 0 0 var(--color-primary-alpha, rgba(79, 172, 254, 0.4));
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
+      0 0 0 8px var(--color-primary-alpha, rgba(79, 172, 254, 0));
+  }
+}

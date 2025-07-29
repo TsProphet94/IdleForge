@@ -1,3 +1,23 @@
+v0.1.31 – Major CSS Architecture Refactor & Shop Visual Enhancements!
+
+•   REFACTORED: Complete modularization of CSS architecture - split monolithic 3,000+ line styles.css into organized modular structure.
+•   NEW: Created styles/ directory with 6 specialized CSS modules: base.css, themes.css, layout.css, components.css, interactions.css, responsive.css.
+•   NEW: Professional PNG resource icons replace emoji icons in shop tabs - each resource now displays its proper metallic logo with visual state effects.
+•   IMPROVED: Enhanced shop tab icons with sophisticated CSS styling - brightness/saturation filters for normal, active, and locked states.
+•   IMPROVED: Enhanced maintainability with clear separation of concerns - each CSS file has single responsibility (themes, layout, components, etc.).
+•   IMPROVED: Better development workflow - easier to locate, modify, and debug specific styles without affecting unrelated code.
+•   IMPROVED: Scalable architecture ready for future theme additions, new components, and responsive breakpoints.
+•   IMPROVED: Enhanced autosell visual feedback system with resource-specific effects, progress bars, and mobile haptic feedback support.
+•   IMPROVED: Sophisticated autosell timing system with speed upgrade integration and smooth countdown animations.
+•   TECHNICAL: Preserved all existing functionality - no visual changes or breaking changes to game appearance or behavior.
+•   TECHNICAL: Optimized CSS load order with @import statements ensuring proper cascade and theme application.
+•   TECHNICAL: Added comprehensive CSS documentation (CSS_REFACTOR_SUMMARY.md) explaining new architecture and benefits.
+•   TECHNICAL: Enhanced autosell progress bar system with collapsed panel support and visual urgency indicators.
+•   TECHNICAL: Improved autosell effects with resource-specific colors, particle systems for premium resources, and screen pulse feedback.
+•   TECHNICAL: Removed redundant deploy-gh-pages.sh script - consolidated deployment workflow through release.sh for better automation.
+
+--------------------------------------
+
 v0.1.29 – Perfect iPhone PWA Experience!
 
 •   FIXED: Complete overhaul of iPhone safe area handling - removed ugly top bar that was disrupting full-screen PWA experience.

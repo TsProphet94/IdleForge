@@ -92,7 +92,7 @@ export const shopItems = [
   {
     id: "iron-autoseller",
     name: "Ore Merchant",
-    description: "Automatically sells iron every 5s",
+    description: "Automatically sells iron every 15s",
     category: "iron",
     basePrice: 1200,
     price: 1200,
@@ -101,6 +101,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "iron-autosell-speed",
+    name: "Express Delivery",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "iron",
+    basePrice: 2400,
+    price: 2400,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000, // 2 seconds in milliseconds
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -194,7 +209,7 @@ export const shopItems = [
   {
     id: "copper-autoseller",
     name: "Wire Trader",
-    description: "Automatically sells copper every 5s",
+    description: "Automatically sells copper every 15s",
     category: "copper",
     basePrice: 5000,
     price: 5000,
@@ -203,6 +218,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "copper-autosell-speed",
+    name: "Lightning Network",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "copper",
+    basePrice: 10000,
+    price: 10000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -296,7 +326,7 @@ export const shopItems = [
   {
     id: "nickel-autoseller",
     name: "Alloy Broker",
-    description: "Automatically sells nickel every 5s",
+    description: "Automatically sells nickel every 15s",
     category: "nickel",
     basePrice: 10000,
     price: 10000,
@@ -305,6 +335,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "nickel-autosell-speed",
+    name: "Magnetic Courier",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "nickel",
+    basePrice: 20000,
+    price: 20000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -398,7 +443,7 @@ export const shopItems = [
   {
     id: "bronze-autoseller",
     name: "Market Curator",
-    description: "Automatically sells bronze every 5s",
+    description: "Automatically sells bronze every 15s",
     category: "bronze",
     basePrice: 20000,
     price: 20000,
@@ -407,6 +452,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "bronze-autosell-speed",
+    name: "Roman Roads",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "bronze",
+    basePrice: 40000,
+    price: 40000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -500,7 +560,7 @@ export const shopItems = [
   {
     id: "silver-autoseller",
     name: "Luxury Dealer",
-    description: "Automatically sells silver every 5s",
+    description: "Automatically sells silver every 15s",
     category: "silver",
     basePrice: 100000,
     price: 100000,
@@ -509,6 +569,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "silver-autosell-speed",
+    name: "Royal Courier",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "silver",
+    basePrice: 200000,
+    price: 200000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -602,7 +677,7 @@ export const shopItems = [
   {
     id: "cobalt-autoseller",
     name: "Industrial Broker",
-    description: "Automatically sells cobalt every 5s",
+    description: "Automatically sells cobalt every 15s",
     category: "cobalt",
     basePrice: 500000,
     price: 500000,
@@ -611,6 +686,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "cobalt-autosell-speed",
+    name: "Industrial Pipeline",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "cobalt",
+    basePrice: 1000000,
+    price: 1000000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -704,7 +794,7 @@ export const shopItems = [
   {
     id: "gold-autoseller",
     name: "Gold Baron",
-    description: "Automatically sells gold every 5s",
+    description: "Automatically sells gold every 15s",
     category: "gold",
     basePrice: 2000000,
     price: 2000000,
@@ -713,6 +803,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "gold-autosell-speed",
+    name: "Midas Express",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "gold",
+    basePrice: 4000000,
+    price: 4000000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -806,7 +911,7 @@ export const shopItems = [
   {
     id: "palladium-autoseller",
     name: "Tech Distributor",
-    description: "Automatically sells palladium every 5s",
+    description: "Automatically sells palladium every 15s",
     category: "palladium",
     basePrice: 5000000,
     price: 5000000,
@@ -815,6 +920,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "palladium-autosell-speed",
+    name: "Catalyst Network",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "palladium",
+    basePrice: 10000000,
+    price: 10000000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -908,7 +1028,7 @@ export const shopItems = [
   {
     id: "platinum-autoseller",
     name: "Elite Auctioneer",
-    description: "Automatically sells platinum every 5s",
+    description: "Automatically sells platinum every 15s",
     category: "platinum",
     basePrice: 10000000,
     price: 10000000,
@@ -917,6 +1037,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "platinum-autosell-speed",
+    name: "Prestige Portal",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "platinum",
+    basePrice: 20000000,
+    price: 20000000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -1010,7 +1145,7 @@ export const shopItems = [
   {
     id: "titanium-autoseller",
     name: "Space Contractor",
-    description: "Automatically sells titanium every 5s",
+    description: "Automatically sells titanium every 15s",
     category: "titanium",
     basePrice: 50000000,
     price: 50000000,
@@ -1019,6 +1154,21 @@ export const shopItems = [
     max: 1,
     apply() {
       /* handled in script.js */
+    },
+  },
+  {
+    id: "titanium-autosell-speed",
+    name: "Warp Drive",
+    description: "Reduces autosell time by 2s (min 3s)",
+    category: "titanium",
+    basePrice: 100000000,
+    price: 100000000,
+    scale: 1.25,
+    count: 0,
+    max: 6,
+    speedReduction: 2000,
+    apply() {
+      /* handled in script.js - updates autosell interval */
     },
   },
 
@@ -1110,17 +1260,18 @@ export const shopItems = [
     },
   },
   {
-    id: "adamantium-autoseller",
-    name: "Deity's Emissary",
-    description: "Automatically sells adamantium every 5s",
+    id: "adamantium-autosell-speed",
+    name: "Divine Convergence",
+    description: "Reduces autosell time by 2s (min 3s)",
     category: "adamantium",
-    basePrice: 100000000,
-    price: 100000000,
-    scale: 1.15,
+    basePrice: 200000000,
+    price: 200000000,
+    scale: 1.25,
     count: 0,
-    max: 1,
+    max: 6,
+    speedReduction: 2000,
     apply() {
-      /* handled in script.js */
+      /* handled in script.js - updates autosell interval */
     },
   },
 ];

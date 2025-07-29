@@ -48,6 +48,8 @@ const themeClassList = [
   "theme-neon-purple",
   "theme-neon-pink",
   "theme-cyberpunk",
+  "theme-aurora",
+  "theme-dragon-fire",
 ];
 
 function setTheme(theme) {
@@ -65,8 +67,25 @@ function setTheme(theme) {
 
 if (themeSelect) {
   themeSelect.addEventListener("change", (e) => {
-    setTheme(e.target.value);
+    const selectedTheme = e.target.value;
+    setTheme(selectedTheme);
+
+    // Premium theme activation effects
+    if (selectedTheme === "aurora") {
+      // Add special aurora activation effect
+      document.body.style.animation = "aurora-dance 2s ease-in-out";
+      setTimeout(() => {
+        document.body.style.animation = "";
+      }, 2000);
+    } else if (selectedTheme === "dragon-fire") {
+      // Add special dragon fire activation effect
+      document.body.style.animation = "fire-flicker 2s ease-in-out";
+      setTimeout(() => {
+        document.body.style.animation = "";
+      }, 2000);
+    }
   });
+
   // On load, set theme from localStorage or default
   let savedTheme = "classic";
   try {
@@ -413,7 +432,7 @@ function spendMoney(amount) {
 }
 
 /** Sell all */
-function sellAll(resId) {
+function sellAll(resId, isAutoSell = false) {
   if (!isUnlocked(resId)) return 0;
   const qty = resources[resId].count;
   if (qty <= 0) return 0;
@@ -422,7 +441,19 @@ function sellAll(resId) {
   stats.sold[resId] += qty;
   resources[resId].count = 0;
   stats.clicks.sell++;
-  createSellPop(resId);
+
+  // Enhanced visual effects for autosell
+  if (isAutoSell) {
+    createAutoSellEffects(resId, cash, qty);
+
+    // Add haptic feedback for mobile
+    if ("vibrate" in navigator) {
+      navigator.vibrate([30, 10, 30]); // Short-pause-short pattern
+    }
+  } else {
+    createSellPop(resId);
+  }
+
   updateUI();
   return cash;
 }
@@ -432,7 +463,199 @@ function mineResource(resId) {
   const gain = resources[resId].perClick;
   addOre(resId, gain);
   stats.clicks.mine++;
+
+  // Enhanced mine button feedback for all themes
+  const mineButton = document.getElementById(`mine-${resId}-btn`);
+  if (mineButton) {
+    // Add immediate button feedback
+    mineButton.classList.add("mining-active");
+    setTimeout(() => {
+      mineButton.classList.remove("mining-active");
+    }, 200);
+
+    // Add button shake for impact
+    mineButton.classList.add("mining-shake");
+    setTimeout(() => {
+      mineButton.classList.remove("mining-shake");
+    }, 300);
+  }
+
+  // Premium theme click effects
+  const currentTheme = document.body.className;
+  if (
+    currentTheme.includes("theme-aurora") ||
+    currentTheme.includes("theme-dragon-fire")
+  ) {
+    const resourceCard =
+      document.querySelector(`[data-resource="${resId}"]`) ||
+      document.querySelector(`#${resId}-panel`);
+    if (resourceCard) {
+      resourceCard.classList.add("clicking");
+      setTimeout(() => {
+        resourceCard.classList.remove("clicking");
+      }, 600);
+    }
+  }
+
+  // Create floating damage/gain indicator
+  createMiningFeedback(mineButton, gain, resId);
+
   updateUI();
+}
+
+// New function for mining feedback animations
+function createMiningFeedback(button, gain, resId) {
+  if (!button) return;
+
+  // Haptic feedback for mobile devices
+  if ("vibrate" in navigator) {
+    navigator.vibrate(50); // Short vibration
+  }
+
+  const feedback = document.createElement("div");
+  feedback.className = "mining-feedback";
+  feedback.textContent = `+${gain}`;
+
+  // Add resource-specific styling
+  feedback.setAttribute("data-resource", resId);
+
+  // Position relative to button
+  const rect = button.getBoundingClientRect();
+  feedback.style.position = "fixed";
+  feedback.style.left = rect.left + rect.width / 2 + "px";
+  feedback.style.top = rect.top + "px";
+  feedback.style.transform = "translateX(-50%)";
+  feedback.style.pointerEvents = "none";
+  feedback.style.zIndex = "9999";
+
+  document.body.appendChild(feedback);
+
+  // Animate upward and fade out
+  setTimeout(() => {
+    feedback.style.transform = "translateX(-50%) translateY(-40px) scale(1.2)";
+    feedback.style.opacity = "0";
+  }, 10);
+
+  // Remove element after animation
+  setTimeout(() => {
+    if (feedback.parentNode) {
+      feedback.parentNode.removeChild(feedback);
+    }
+  }, 800);
+
+  // Create particle burst for higher tier resources
+  if (
+    ["gold", "palladium", "platinum", "titanium", "adamantium"].includes(resId)
+  ) {
+    createParticleBurst(button, resId);
+  }
+}
+
+// Particle burst effect for premium resources
+function createParticleBurst(button, resId) {
+  const rect = button.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  // Create 6-8 particles
+  for (let i = 0; i < 7; i++) {
+    const particle = document.createElement("div");
+    particle.className = "mining-particle";
+    particle.setAttribute("data-resource", resId);
+
+    particle.style.position = "fixed";
+    particle.style.left = centerX + "px";
+    particle.style.top = centerY + "px";
+    particle.style.width = "4px";
+    particle.style.height = "4px";
+    particle.style.borderRadius = "50%";
+    particle.style.pointerEvents = "none";
+    particle.style.zIndex = "9999";
+
+    // Resource-specific particle colors
+    const colors = {
+      gold: "#ffec8b",
+      palladium: "#e8eaf0",
+      platinum: "#b2b2b2",
+      titanium: "#a3a3a3",
+      adamantium: "#6a6a6a",
+    };
+
+    particle.style.background = colors[resId] || "#ffffff";
+    particle.style.boxShadow = `0 0 6px ${colors[resId] || "#ffffff"}`;
+
+    document.body.appendChild(particle);
+
+    // Random direction and distance
+    const angle = (i / 7) * 2 * Math.PI;
+    const distance = 30 + Math.random() * 20;
+    const targetX = centerX + Math.cos(angle) * distance;
+    const targetY = centerY + Math.sin(angle) * distance;
+
+    // Animate particle
+    setTimeout(() => {
+      particle.style.transition =
+        "all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      particle.style.left = targetX + "px";
+      particle.style.top = targetY + "px";
+      particle.style.opacity = "0";
+      particle.style.transform = "scale(0)";
+    }, 10);
+
+    // Remove particle
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, 650);
+  }
+}
+
+// Screen flash effect for enhanced feedback
+function createScreenFlash(resId) {
+  const flash = document.createElement("div");
+  flash.className = "mining-screen-flash";
+  flash.style.position = "fixed";
+  flash.style.top = "0";
+  flash.style.left = "0";
+  flash.style.width = "100vw";
+  flash.style.height = "100vh";
+  flash.style.pointerEvents = "none";
+  flash.style.zIndex = "9998";
+  flash.style.opacity = "0";
+
+  // Theme-specific flash colors
+  const currentTheme = document.body.className;
+  if (currentTheme.includes("theme-aurora")) {
+    flash.style.background =
+      "radial-gradient(circle, rgba(79, 172, 254, 0.1) 0%, transparent 70%)";
+  } else if (currentTheme.includes("theme-dragon-fire")) {
+    flash.style.background =
+      "radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%)";
+  } else {
+    flash.style.background =
+      "radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%)";
+  }
+
+  document.body.appendChild(flash);
+
+  // Quick flash animation
+  setTimeout(() => {
+    flash.style.opacity = "1";
+    flash.style.transition = "opacity 0.1s ease-out";
+  }, 10);
+
+  setTimeout(() => {
+    flash.style.opacity = "0";
+    flash.style.transition = "opacity 0.2s ease-out";
+  }, 80);
+
+  // Remove after animation
+  setTimeout(() => {
+    if (flash.parentNode) {
+      flash.parentNode.removeChild(flash);
+    }
+  }, 300);
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -796,6 +1019,17 @@ shopList.addEventListener("click", (e) => {
     const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
     if (toggle) {
       toggle.checked = true;
+      startAutoSell(resId);
+    }
+  }
+
+  // Handle autosell speed upgrades
+  if (item.id.endsWith("-autosell-speed")) {
+    const resId = item.category;
+    // Check if autosell is currently active for this resource
+    const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+    if (toggle && toggle.checked) {
+      // Restart autosell with the new speed
       startAutoSell(resId);
     }
   }
@@ -1190,6 +1424,27 @@ function createSellPop(resourceId) {
 /* ────────────────────────────────────────────────────────────────────────────
    AUTO-SELL
 ──────────────────────────────────────────────────────────────────────────── */
+
+// Calculate current autosell interval based on speed upgrades
+function calculateAutoSellInterval(resId) {
+  const baseInterval = 15000; // 15 seconds base
+  const minInterval = 3000; // 3 seconds minimum
+
+  // Find autosell speed upgrades for this resource
+  const speedUpgrades = shopItems.filter(
+    (item) => item.category === resId && item.id.endsWith("-autosell-speed")
+  );
+
+  let totalSpeedBonus = 0;
+  speedUpgrades.forEach((upgrade) => {
+    totalSpeedBonus += upgrade.count * upgrade.speedReduction;
+  });
+
+  // Calculate final interval (can't go below minimum)
+  const finalInterval = Math.max(minInterval, baseInterval - totalSpeedBonus);
+  return finalInterval;
+}
+
 function startAutoSell(resId) {
   stopAutoSell(resId);
   const seller = shopItems.find(
@@ -1197,36 +1452,532 @@ function startAutoSell(resId) {
   );
   if (!seller || seller.count === 0) return;
 
-  autoSellIntervals[resId] = 5000;
+  // Calculate current autosell interval based on upgrades (15s base, down to 3s with upgrades)
+  autoSellIntervals[resId] = calculateAutoSellInterval(resId);
   nextSellTimes[resId] = Date.now() + autoSellIntervals[resId];
 
   document.getElementById(`sell-timer-${resId}`)?.classList.remove("hidden");
-  countdownTimers[resId] = setInterval(() => updateSellCountdown(resId), 500);
+
+  countdownTimers[resId] = setInterval(() => updateSellCountdown(resId), 50); // 20fps for smooth animation
   autoSellTimers[resId] = setInterval(() => {
-    sellAll(resId);
+    // First, update the next sell time for the new cycle
     nextSellTimes[resId] = Date.now() + autoSellIntervals[resId];
+
+    // Then execute the sale
+    sellAll(resId, true); // Pass true to indicate this is an autosell
   }, autoSellIntervals[resId]);
 }
+
 function stopAutoSell(resId) {
   clearInterval(autoSellTimers[resId]);
   clearInterval(countdownTimers[resId]);
+
+  // Clean up progress bar
+  const progressBar = document.getElementById(`autosell-progress-${resId}`);
+  if (progressBar) {
+    progressBar.remove();
+  }
+
+  // Remove visual states
+  const timerEl = document.getElementById(`sell-timer-${resId}`);
+  if (timerEl) {
+    timerEl.classList.remove(
+      "autosell-urgent",
+      "autosell-ready",
+      "autosell-success"
+    );
+  }
 }
+
 function updateSellCountdown(resId) {
-  const sec = Math.ceil((nextSellTimes[resId] - Date.now()) / 1000);
+  const totalInterval =
+    autoSellIntervals[resId] || calculateAutoSellInterval(resId);
+  const remaining = nextSellTimes[resId] - Date.now();
+  const sec = Math.ceil(remaining / 1000);
+
+  // More precise progress calculation for smoother animation
+  // Ensure progress is properly bounded and handles timing edge cases
+  let progress = (totalInterval - remaining) / totalInterval;
+  progress = Math.max(0, Math.min(1, progress));
+
+  // If remaining time is negative (timer has passed), reset to start of next cycle
+  if (remaining <= 0) {
+    progress = 0;
+  }
+
   const countdownEl = document.getElementById(`sell-countdown-${resId}`);
-  if (countdownEl) countdownEl.textContent = Math.max(sec, 0);
+  if (countdownEl) {
+    const timeLeft = Math.max(sec, 0);
+    countdownEl.textContent = timeLeft;
+
+    // Update progress bar if it exists, or create it
+    let progressBar = document.getElementById(`autosell-progress-${resId}`);
+    if (!progressBar) {
+      progressBar = document.createElement("div");
+      progressBar.id = `autosell-progress-${resId}`;
+      progressBar.className = "autosell-progress-bar";
+      progressBar.innerHTML = '<div class="autosell-progress-fill"></div>';
+
+      // Check if panel is collapsed to determine where to append the progress bar
+      const panel = document.getElementById(`${resId}-box`);
+      if (panel && panel.classList.contains("collapsed")) {
+        // For collapsed panels, append to the panel itself
+        panel.appendChild(progressBar);
+      } else {
+        // For expanded panels, append to the countdown timer's parent (normal location)
+        countdownEl.parentNode.appendChild(progressBar);
+      }
+    } else {
+      // If progress bar exists, check if we need to move it based on collapse state
+      const panel = document.getElementById(`${resId}-box`);
+      if (panel && panel.classList.contains("collapsed")) {
+        // Move to panel if collapsed
+        if (progressBar.parentNode !== panel) {
+          panel.appendChild(progressBar);
+        }
+      } else {
+        // Move to normal location if expanded
+        if (progressBar.parentNode !== countdownEl.parentNode) {
+          countdownEl.parentNode.appendChild(progressBar);
+        }
+      }
+    }
+
+    const fillEl = progressBar.querySelector(".autosell-progress-fill");
+    if (fillEl) {
+      // Use a more precise percentage with decimals for smoother animation
+      const percentage = Math.round(progress * 10000) / 100; // Two decimal places
+      fillEl.style.width = percentage + "%";
+    }
+
+    // Add visual urgency as countdown gets closer to 0
+    const timerEl = document.getElementById(`sell-timer-${resId}`);
+    if (timerEl) {
+      timerEl.classList.remove("autosell-urgent", "autosell-ready");
+      if (timeLeft <= 1) {
+        timerEl.classList.add("autosell-ready");
+      } else if (timeLeft <= 2) {
+        timerEl.classList.add("autosell-urgent");
+      }
+    }
+  }
+}
+
+// Enhanced autosell visual effects
+function createAutoSellEffects(resId, cashEarned, quantitySold) {
+  // Check if the resource panel is collapsed
+  const panel = document.getElementById(`${resId}-box`);
+  if (panel && panel.classList.contains("collapsed")) {
+    // Special effect for collapsed panels
+    createCollapsedAutoSellEffect(panel, cashEarned, quantitySold, resId);
+    return;
+  }
+
+  const sellButton = document.getElementById(`sell-${resId}-btn`);
+  const timerEl = document.getElementById(`sell-timer-${resId}`);
+
+  // Subtle haptic feedback for mobile devices
+  if ("vibrate" in navigator) {
+    navigator.vibrate([30, 10, 30]); // Double pulse for autosell
+  }
+
+  if (sellButton) {
+    // Auto-sell button flash effect
+    sellButton.classList.add("autosell-flash");
+    setTimeout(() => {
+      sellButton.classList.remove("autosell-flash");
+    }, 600);
+
+    // Create floating money indicator from sell button
+    createAutoSellFeedback(sellButton, cashEarned, quantitySold, resId);
+  }
+
+  if (timerEl) {
+    // Timer success pulse
+    timerEl.classList.add("autosell-success");
+    setTimeout(() => {
+      timerEl.classList.remove("autosell-success");
+    }, 400);
+  }
+
+  // Screen pulse effect for autosell
+  createAutoSellPulse(resId);
+}
+
+// Floating feedback for autosell
+function createAutoSellFeedback(button, cash, quantity, resId) {
+  if (!button) return;
+
+  // Double-check if the resource panel is collapsed
+  const panel = document.getElementById(`${resId}-panel`);
+  if (panel && panel.classList.contains("collapsed")) {
+    return; // Don't show feedback for collapsed panels
+  }
+
+  // Check if button is actually visible and positioned correctly
+  const rect = button.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0 || rect.top === 0) {
+    return; // Button is not properly positioned, likely hidden
+  }
+
+  const feedback = document.createElement("div");
+  feedback.className = "autosell-feedback";
+  feedback.innerHTML = `
+    <div class="autosell-feedback-main">+$${fmt(cash)}</div>
+  `;
+
+  // Position relative to button
+  feedback.style.position = "fixed";
+  feedback.style.left = rect.left + rect.width / 2 + "px";
+  feedback.style.top = rect.top + "px";
+  feedback.style.transform = "translateX(-50%)";
+  feedback.style.pointerEvents = "none";
+  feedback.style.zIndex = "9999";
+
+  document.body.appendChild(feedback);
+
+  // Animate upward and fade out
+  setTimeout(() => {
+    feedback.style.transform = "translateX(-50%) translateY(-50px) scale(1.1)";
+    feedback.style.opacity = "0";
+  }, 10);
+
+  // Remove element after animation
+  setTimeout(() => {
+    if (feedback.parentNode) {
+      feedback.parentNode.removeChild(feedback);
+    }
+  }, 1000);
+}
+
+// Subtle screen pulse for autosell
+function createAutoSellPulse(resId) {
+  const pulse = document.createElement("div");
+  pulse.className = "autosell-screen-pulse";
+  pulse.style.position = "fixed";
+  pulse.style.top = "0";
+  pulse.style.left = "0";
+  pulse.style.width = "100vw";
+  pulse.style.height = "100vh";
+  pulse.style.pointerEvents = "none";
+  pulse.style.zIndex = "9997";
+  pulse.style.opacity = "0";
+
+  // Resource-specific subtle colors
+  const colors = {
+    iron: "rgba(176, 176, 176, 0.03)",
+    copper: "rgba(230, 168, 108, 0.03)",
+    nickel: "rgba(160, 160, 160, 0.03)",
+    bronze: "rgba(232, 176, 106, 0.03)",
+    silver: "rgba(245, 245, 245, 0.03)",
+    cobalt: "rgba(65, 105, 225, 0.03)",
+    gold: "rgba(255, 236, 139, 0.04)",
+    palladium: "rgba(232, 234, 240, 0.03)",
+    platinum: "rgba(178, 178, 178, 0.03)",
+    titanium: "rgba(163, 163, 163, 0.03)",
+    adamantium: "rgba(106, 106, 106, 0.05)",
+  };
+
+  pulse.style.background = `radial-gradient(circle, ${
+    colors[resId] || "rgba(255, 255, 255, 0.02)"
+  } 0%, transparent 70%)`;
+
+  document.body.appendChild(pulse);
+
+  // Gentle pulse animation
+  setTimeout(() => {
+    pulse.style.opacity = "1";
+    pulse.style.transition = "opacity 0.2s ease-out";
+  }, 10);
+
+  setTimeout(() => {
+    pulse.style.opacity = "0";
+    pulse.style.transition = "opacity 0.4s ease-out";
+  }, 200);
+
+  // Remove after animation
+  setTimeout(() => {
+    if (pulse.parentNode) {
+      pulse.parentNode.removeChild(pulse);
+    }
+  }, 600);
+}
+
+// Audio cue simulation through visual feedback
+function createAutoSellAudioCue(resId) {
+  // Create a subtle visual "ding" effect at the top of the screen
+  const ding = document.createElement("div");
+  ding.className = "autosell-audio-cue";
+  ding.innerHTML = "♪";
+  ding.style.position = "fixed";
+  ding.style.top = "20px";
+  ding.style.right = "20px";
+  ding.style.fontSize = "1.5em";
+  ding.style.color = "#28a745";
+  ding.style.fontWeight = "700";
+  ding.style.textShadow = "0 0 10px #28a745";
+  ding.style.pointerEvents = "none";
+  ding.style.zIndex = "9999";
+  ding.style.opacity = "0";
+  ding.style.transform = "scale(0.5)";
+  ding.style.transition = "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+
+  document.body.appendChild(ding);
+
+  // Animate in
+  setTimeout(() => {
+    ding.style.opacity = "1";
+    ding.style.transform = "scale(1)";
+  }, 10);
+
+  // Animate out
+  setTimeout(() => {
+    ding.style.opacity = "0";
+    ding.style.transform = "scale(0.8) translateY(-20px)";
+  }, 300);
+
+  // Remove
+  setTimeout(() => {
+    if (ding.parentNode) {
+      ding.parentNode.removeChild(ding);
+    }
+  }, 600);
+}
+
+// Special visual effect for collapsed panels when autosell triggers
+function createCollapsedAutoSellEffect(panel, cashEarned, quantitySold, resId) {
+  if (!panel) return;
+
+  // Subtle panel flash
+  panel.style.boxShadow = "0 0 20px rgba(45, 212, 191, 0.4)";
+  panel.style.borderColor = "rgba(45, 212, 191, 0.6)";
+  panel.style.transition = "all 0.3s ease-out";
+
+  // Create floating money indicator
+  const moneyFloat = document.createElement("div");
+  moneyFloat.textContent = `+$${formatNumber(cashEarned)}`;
+  moneyFloat.style.position = "absolute";
+  moneyFloat.style.top = "50%";
+  moneyFloat.style.right = "10px";
+  moneyFloat.style.transform = "translateY(-50%)";
+  moneyFloat.style.color = "#22c55e";
+  moneyFloat.style.fontWeight = "bold";
+  moneyFloat.style.fontSize = "0.9em";
+  moneyFloat.style.textShadow = "0 0 8px rgba(34, 197, 94, 0.5)";
+  moneyFloat.style.pointerEvents = "none";
+  moneyFloat.style.zIndex = "10";
+  moneyFloat.style.opacity = "0";
+  moneyFloat.style.transition = "all 0.5s ease-out";
+
+  panel.style.position = "relative";
+  panel.appendChild(moneyFloat);
+
+  // Animate the money indicator
+  setTimeout(() => {
+    moneyFloat.style.opacity = "1";
+    moneyFloat.style.transform = "translateY(-70%)";
+  }, 50);
+
+  setTimeout(() => {
+    moneyFloat.style.opacity = "0";
+    moneyFloat.style.transform = "translateY(-90%)";
+  }, 800);
+
+  // Reset panel styling
+  setTimeout(() => {
+    panel.style.boxShadow = "";
+    panel.style.borderColor = "";
+    panel.style.transition = "";
+  }, 500);
+
+  // Remove money indicator
+  setTimeout(() => {
+    if (moneyFloat.parentNode) {
+      moneyFloat.parentNode.removeChild(moneyFloat);
+    }
+  }, 1300);
+
+  // Subtle haptic feedback for mobile
+  if ("vibrate" in navigator) {
+    navigator.vibrate([20, 10, 20]); // Gentle pulse for collapsed
+  }
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   VERSION LOAD
+   VERSION LOAD & UPDATE SYSTEM
 ──────────────────────────────────────────────────────────────────────────── */
+let currentVersion = null;
+
 fetch("version.txt")
   .then((r) => r.text())
   .then((txt) => {
+    currentVersion = txt.trim();
     const versionEl = document.getElementById("version");
-    if (versionEl) versionEl.textContent = txt;
+    if (versionEl) versionEl.textContent = currentVersion;
+    
+    // Send version to service worker if available
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SET_VERSION',
+        version: currentVersion
+      });
+    }
   })
   .catch(() => {});
+
+// Service Worker Update Management
+if ("serviceWorker" in navigator) {
+  let updateAvailable = false;
+  let registration = null;
+
+  // Register service worker
+  navigator.serviceWorker
+    .register("./sw.js")
+    .then((reg) => {
+      registration = reg;
+      console.log("SW: Registered successfully");
+      
+      // Send version to service worker immediately after registration
+      if (currentVersion && reg.active) {
+        reg.active.postMessage({
+          type: 'SET_VERSION',
+          version: currentVersion
+        });
+      }
+
+      // Check for updates periodically
+      setInterval(() => {
+        reg.update();
+      }, 60000); // Check every minute
+
+      // Listen for service worker updates
+      reg.addEventListener("updatefound", () => {
+        const newWorker = reg.installing;
+
+        if (newWorker) {
+          console.log("SW: Update found, downloading...");
+          showUpdateNotification("downloading");
+          
+          // Send version to new service worker
+          if (currentVersion) {
+            newWorker.postMessage({
+              type: 'SET_VERSION',
+              version: currentVersion
+            });
+          }
+
+          newWorker.addEventListener("statechange", () => {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              console.log("SW: Update ready");
+              updateAvailable = true;
+              showUpdateNotification("ready");
+            }
+          });
+        }
+      });
+    })
+    .catch((err) => {
+      console.log("SW: Registration failed", err);
+    });
+
+  // Listen for messages from service worker
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "UPDATE_APPLIED") {
+      console.log("SW: Update applied, reloading...");
+      showUpdateNotification("applied");
+      // Small delay to show the message, then reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    }
+  });
+
+  // Function to apply update
+  function applyUpdate() {
+    if (updateAvailable && registration && registration.waiting) {
+      console.log("SW: Applying update...");
+      showUpdateNotification("applying");
+      registration.waiting.postMessage({ type: "SKIP_WAITING" });
+    }
+  }
+
+  // Auto-apply update after a short delay
+  function autoApplyUpdate() {
+    setTimeout(() => {
+      if (updateAvailable) {
+        applyUpdate();
+      }
+    }, 3000); // 3 second delay to show the notification
+  }
+
+  // Update notification system
+  function showUpdateNotification(stage) {
+    // Remove existing notification
+    const existingNotification = document.getElementById("update-notification");
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    let message = "";
+    let buttonText = "";
+    let showButton = false;
+    let autoClose = false;
+
+    switch (stage) {
+      case "downloading":
+        message = "📥 Downloading update...";
+        autoClose = false;
+        break;
+      case "ready":
+        message = "✨ Update ready! Applying automatically...";
+        autoClose = true;
+        autoApplyUpdate(); // Auto-apply after showing message
+        break;
+      case "applying":
+        message = "⚡ Applying update...";
+        autoClose = false;
+        break;
+      case "applied":
+        message = "🎉 Update applied! Reloading...";
+        autoClose = false;
+        break;
+    }
+
+    if (message) {
+      const notification = document.createElement("div");
+      notification.id = "update-notification";
+      notification.className = "update-notification";
+      notification.innerHTML = `
+        <div class="update-message">
+          <span class="update-icon">${message.split(" ")[0]}</span>
+          <span class="update-text">${message.substring(2)}</span>
+        </div>
+        ${
+          showButton
+            ? `<button class="update-button" onclick="applyUpdate()">${buttonText}</button>`
+            : ""
+        }
+      `;
+
+      document.body.appendChild(notification);
+
+      // Auto-close for some stages
+      if (autoClose) {
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 5000);
+      }
+    }
+  }
+
+  // Make applyUpdate globally available
+  window.applyUpdate = applyUpdate;
+}
 
 function changelogToHTML(txt) {
   const lines = txt.split(/\r?\n/);
@@ -1614,17 +2365,22 @@ function loadGame() {
       Object.assign(stats.clicks, data.stats.clicks || {});
     }
 
-    // re-init autosellers
+    // re-init autosellers with random timing variation to prevent synchronization
     shopItems
       .filter((i) => i.id.endsWith("-autoseller") && i.count > 0)
-      .forEach((item) => {
+      .forEach((item, index) => {
         const resId = item.category;
         document
           .getElementById(`sell-timer-${resId}`)
           ?.classList.remove("hidden");
         const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
         if (toggle) toggle.checked = true;
-        startAutoSell(resId);
+
+        // Add random delay to desynchronize autosell timers (0-4 seconds)
+        const randomDelay = Math.random() * 4000;
+        setTimeout(() => {
+          startAutoSell(resId);
+        }, randomDelay);
       });
 
     console.log("Game loaded successfully");

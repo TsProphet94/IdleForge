@@ -1,0 +1,200 @@
+/* ==========================================================================
+   BASE LAYOUT & MAIN CONTAINERS
+   ========================================================================== */
+
+#game-ui {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Smooth scrolling for iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    var(--color-surface-light) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+
+  /* Smoother integration with effects */
+  isolation: isolate;
+
+  /* Softer edges for better visual blending */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+header .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+main {
+  flex: 1;
+  padding: var(--space-lg) var(--space-md);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Better mobile scrolling performance */
+  will-change: scroll-position;
+}
+
+footer {
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+footer .footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  text-align: center;
+  flex-wrap: wrap;
+}
+footer .footer-content small,
+footer .footer-content p,
+footer .footer-content a {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+footer .footer-content a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* Screen containers */
+#screen-mine,
+#screen-shop,
+#screen-stats {
+  min-height: 100%;
+}
+
+#screen-shop {
+  position: static;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  overflow-y: visible;
+}
+
+#screen-stats {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ==========================================================================
+   RESPONSIVE & MOBILE OPTIMIZATION
+   ========================================================================== */
+
+/* iPhone-specific optimizations */
+@media (max-width: 480px) {
+  main {
+    padding: var(--space-sm);
+  }
+}
+
+/* Very small screens (iPhone SE, etc.) */
+@media (max-width: 360px) {
+  header {
+    padding: var(--space-sm);
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  header {
+    position: relative;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  main {
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .resources-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-lg);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* ============================================================================
+   PWA & SAFE AREA OPTIMIZATIONS
+   ========================================================================== */
+
+/* PWA display mode - when app is installed and running in standalone mode */
+@media (display-mode: standalone) {
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  #game-ui header {
+    padding-top: max(env(safe-area-inset-top), 20px);
+  }
+}
+
+/* iPhone-specific safe area handling */
+@supports (-webkit-appearance: none) {
+  @media (display-mode: standalone) {
+    #game-ui header {
+      padding-top: max(env(safe-area-inset-top), 24px);
+    }
+
+    @media (max-width: 414px) and (max-height: 896px) {
+      #game-ui header {
+        padding-top: max(env(safe-area-inset-top), 20px);
+      }
+    }
+  }
+}
+
+/* Device-specific safe area optimizations for horizontal spacing only */
+@supports (padding: max(0px)) {
+  #game-ui header {
+    padding-left: max(env(safe-area-inset-left), var(--space-md));
+    padding-right: max(env(safe-area-inset-right), var(--space-md));
+  }
+}
+
+/* Landscape orientation optimizations for PWA */
+@media (orientation: landscape) and (display-mode: standalone) {
+  .resources-container {
+    max-width: 90vw;
+    margin: 0 auto;
+  }
+}
