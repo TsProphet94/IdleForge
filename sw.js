@@ -15,25 +15,30 @@ const urlsToCache = [
   "./styles/responsive.css",
   "./script.js",
   "./manifest.json",
+  "./version.txt",
+  "./changelog.txt",
   "./icons/icon-192x192.png",
   "./icons/icon-512x512.png",
   "./icons/apple-touch-icon.png",
   "./images/main/main-logo.png",
   "./images/main/main-menu-background.png",
   "./images/main/pickaxe.png",
-  // Resource images
+  // Resource images - Icons and Backgrounds
   "./images/iron/fe.png",
   "./images/iron/iron-background.png",
   "./images/copper/cu.png",
   "./images/copper/copper-background.png",
+  "./images/nickel/Ni.png",
   "./images/nickel/nickel-background.png",
   "./images/bronze/bronze.png",
   "./images/bronze/bronze-background.png",
   "./images/silver/Ag.png",
   "./images/silver/silver-background.png",
+  "./images/cobalt/Co.png",
   "./images/cobalt/cobalt-background.png",
   "./images/gold/Au.png",
   "./images/gold/gold-background.png",
+  "./images/palladium/Pd.png",
   "./images/palladium/palladium-background.png",
   "./images/platinum/Pt.png",
   "./images/platinum/platinum-background.png",
@@ -41,6 +46,20 @@ const urlsToCache = [
   "./images/titanium/titanium-background.png",
   "./images/adamantium/Ad.png",
   "./images/adamantium/adamantium-background.png",
+  // Resource JavaScript modules
+  "./resources/iron.js",
+  "./resources/copper.js",
+  "./resources/nickel.js",
+  "./resources/bronze.js",
+  "./resources/silver.js",
+  "./resources/cobalt.js",
+  "./resources/gold.js",
+  "./resources/palladium.js",
+  "./resources/platinum.js",
+  "./resources/titanium.js",
+  "./resources/adamantium.js",
+  // Shop system
+  "./shop/items.js",
 ];
 
 // Install event - cache resources
@@ -54,8 +73,7 @@ self.addEventListener("install", (event) => {
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        // Notify main thread that update is ready
-        self.postMessage({ type: "UPDATE_READY" });
+        console.log("SW: Files cached successfully");
         // Skip waiting to activate immediately
         return self.skipWaiting();
       })

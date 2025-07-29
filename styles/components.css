@@ -688,23 +688,27 @@ nav button:active {
 /* === Update Notification System === */
 .update-notification {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
-  padding: 16px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
   z-index: 10000;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   font-family: "Rubik", sans-serif;
   font-weight: 500;
-  font-size: 14px;
-  min-width: 280px;
-  animation: slideInFromRight 0.4s ease-out;
+  font-size: 16px;
+  min-width: 360px;
+  max-width: 500px;
+  animation: scaleInCenter 0.5s ease-out;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .update-notification .update-message {
@@ -740,13 +744,13 @@ nav button:active {
   transform: translateY(-1px);
 }
 
-@keyframes slideInFromRight {
+@keyframes scaleInCenter {
   from {
-    transform: translateX(100%);
+    transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
 }
@@ -764,18 +768,20 @@ nav button:active {
 /* Mobile optimization */
 @media (max-width: 480px) {
   .update-notification {
-    top: 10px;
+    top: 50%;
+    left: 50%;
     right: 10px;
-    left: 10px;
-    width: auto;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 40px);
     min-width: unset;
-    font-size: 13px;
-    padding: 14px 16px;
+    max-width: unset;
+    font-size: 14px;
+    padding: 20px 24px;
   }
 
   .update-notification .update-button {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
 

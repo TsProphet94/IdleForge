@@ -673,7 +673,7 @@
 
               <div class="resource-display">
                 <img
-                  src="images/platinum/pt.png"
+                  src="images/platinum/Pt.png"
                   alt="Platinum Icon"
                   class="icon platinum-icon"
                 />
@@ -1199,21 +1199,5 @@
       </footer>
     </div>
     <script type="module" src="script.js"></script>
-
-    <!-- PWA Service Worker Registration -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("./sw.js")
-            .then((registration) => {
-              console.log("SW registered: ", registration);
-            })
-            .catch((registrationError) => {
-              console.log("SW registration failed: ", registrationError);
-            });
-        });
-      }
-    </script>
   </body>
 </html>

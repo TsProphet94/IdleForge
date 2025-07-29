@@ -1970,7 +1970,7 @@ if ("serviceWorker" in navigator) {
           if (notification.parentNode) {
             notification.remove();
           }
-        }, 5000);
+        }, 8000); // Increased from 5000ms to 8000ms (8 seconds)
       }
     }
   }
