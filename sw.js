@@ -98,7 +98,8 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   } else if (event.data && event.data.type === "SET_VERSION") {
     // Update cache name with current version
-    CACHE_NAME = CACHE_PREFIX + event.data.version.replace(/\s+/g, '-').toLowerCase();
+    CACHE_NAME =
+      CACHE_PREFIX + event.data.version.replace(/\s+/g, "-").toLowerCase();
     console.log("SW: Cache name updated to:", CACHE_NAME);
   }
 });

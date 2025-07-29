@@ -1814,12 +1814,12 @@ fetch("version.txt")
     currentVersion = txt.trim();
     const versionEl = document.getElementById("version");
     if (versionEl) versionEl.textContent = currentVersion;
-    
+
     // Send version to service worker if available
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({
-        type: 'SET_VERSION',
-        version: currentVersion
+        type: "SET_VERSION",
+        version: currentVersion,
       });
     }
   })
@@ -1836,12 +1836,12 @@ if ("serviceWorker" in navigator) {
     .then((reg) => {
       registration = reg;
       console.log("SW: Registered successfully");
-      
+
       // Send version to service worker immediately after registration
       if (currentVersion && reg.active) {
         reg.active.postMessage({
-          type: 'SET_VERSION',
-          version: currentVersion
+          type: "SET_VERSION",
+          version: currentVersion,
         });
       }
 
@@ -1857,12 +1857,12 @@ if ("serviceWorker" in navigator) {
         if (newWorker) {
           console.log("SW: Update found, downloading...");
           showUpdateNotification("downloading");
-          
+
           // Send version to new service worker
           if (currentVersion) {
             newWorker.postMessage({
-              type: 'SET_VERSION',
-              version: currentVersion
+              type: "SET_VERSION",
+              version: currentVersion,
             });
           }
 
