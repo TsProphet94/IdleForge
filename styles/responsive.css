@@ -4,6 +4,25 @@
 
 /* iPhone-specific optimizations */
 @media (max-width: 480px) {
+  /* Safe area padding for iPhone with notch */
+  #game-ui {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Header safe area adjustments */
+  header {
+    padding-left: max(var(--space-md), env(safe-area-inset-left));
+    padding-right: max(var(--space-md), env(safe-area-inset-right));
+  }
+
+  /* Main content safe area */
+  main {
+    padding-left: max(var(--space-sm), env(safe-area-inset-left));
+    padding-right: max(var(--space-sm), env(safe-area-inset-right));
+  }
   /* Force single column layout on mobile */
   .resources-container {
     display: flex !important;
@@ -31,6 +50,37 @@
     font-size: 0.9rem;
   }
 
+  /* Header navigation specifically */
+  .header-nav {
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .header-nav button {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Better touch targets for all interactive elements */
+  button,
+  .switch,
+  .resource-tab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ensure proper spacing between interactive elements */
+  .resource-actions {
+    gap: var(--space-sm);
+  }
+
+  .shop-btn-row {
+    gap: var(--space-sm);
+  }
+
   /* Optimize resource panels for mobile */
   .resource-panel {
     padding: var(--space-md);
@@ -48,9 +98,22 @@
     font-size: 1rem;
   }
 
+  /* Better resource display for mobile */
+  .resource-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    text-align: left;
+  }
+
+  .resource-display h3 {
+    font-size: 1.5rem;
+  }
+
   /* Shop optimization for mobile */
   #shop-list {
     gap: var(--space-sm);
+    grid-template-columns: 1fr;
   }
 
   #shop-list li {
@@ -61,6 +124,22 @@
     min-height: 48px;
     font-size: 0.95rem;
     padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Resource tabs mobile optimization */
+  .resource-tabs {
+    gap: var(--space-xs);
+  }
+
+  .resource-tab {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .tab-icon-img {
+    width: 16px;
+    height: 16px;
   }
 
   /* Theme selector mobile optimization */
@@ -84,6 +163,48 @@
 
   .stats-money p {
     font-size: 0.85rem;
+  }
+
+  /* Force single column layout for stats on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile ForgeCore adjustments */
+  .forgecore-upgrades {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile prestige stats */
+  .prestige-stats {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile milestone grid */
+  .milestone-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stats tabs mobile optimization */
+  .stats-tabs {
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+
+  .stats-tab-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .stats-tab-btn .material-icons {
+    font-size: 1.1rem;
   }
 
   /* Milestone list mobile optimization */
@@ -162,6 +283,7 @@
 
 /* Very small screens (iPhone SE, etc.) */
 @media (max-width: 360px) {
+  /* Compress header navigation even more */
   nav {
     gap: var(--space-xs);
     margin-left: var(--space-sm);
@@ -170,10 +292,21 @@
 
   nav button {
     padding: var(--space-xs) var(--space-sm);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     min-height: 40px;
   }
 
+  .header-nav {
+    gap: 2px;
+  }
+
+  .header-nav button {
+    padding: var(--space-xs);
+    font-size: 0.7rem;
+    min-height: 40px;
+  }
+
+  /* Even more compressed resource panels */
   .resource-panel {
     padding: var(--space-sm);
   }
@@ -196,7 +329,7 @@
     font-size: 0.8rem;
   }
 
-  /* Extra small screens */
+  /* Extra small screens header */
   .header-top .logo {
     font-size: 1.1rem;
   }
@@ -207,13 +340,13 @@
   }
 
   .money-top {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: var(--space-xs);
     min-width: 60px;
   }
 
   .header-nav button {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     padding: var(--space-xs);
     gap: 2px;
   }
@@ -221,14 +354,64 @@
   .header-nav button .material-icons {
     font-size: 0.9rem;
   }
+
+  /* Resource tabs - make them stack better on tiny screens */
+  .resource-tab {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 0;
+  }
+
+  .tab-icon-img {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+  }
+
+  /* Extra small stats tabs */
+  .stats-tab-btn {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.85rem;
+    gap: var(--space-xs);
+  }
+
+  .stats-tab-btn .material-icons {
+    font-size: 1rem;
+  }
 }
 
 /* Landscape orientation on mobile */
 @media (max-height: 500px) and (orientation: landscape) {
+  /* Compress header in landscape to save vertical space */
+  header {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
   header h1 {
     font-size: 1.2rem;
   }
 
+  .logo01 {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-top {
+    margin-bottom: var(--space-xs);
+  }
+
+  .header-nav button {
+    min-height: 36px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.8rem;
+  }
+
+  .money-top {
+    padding: var(--space-xs);
+    font-size: 0.85rem;
+  }
+
+  /* Optimize content spacing */
   .resources-container {
     gap: var(--space-md);
   }
@@ -245,6 +428,13 @@
   .resource-actions button {
     min-width: auto;
     flex: 1;
+    min-height: 44px;
+  }
+
+  /* Compact stats in landscape */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: var(--space-sm);
   }
 }
 
@@ -259,6 +449,43 @@
   .resource-panel {
     min-height: auto;
     width: 100%;
+  }
+
+  /* Allow 2-column layout for shop on larger phones */
+  #shop-list {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-sm);
+  }
+
+  /* Allow 2-column layout for stats on larger phones */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  }
+
+  /* Better resource layout for larger phones */
+  .resource-actions {
+    flex-direction: row;
+    gap: var(--space-sm);
+  }
+
+  .resource-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Stats tabs can be horizontal on larger phones */
+  .stats-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  .stats-tab-btn {
+    flex: 1;
+    min-width: 0;
+    max-width: 150px;
+    justify-content: center;
   }
 }
 
@@ -279,8 +506,16 @@
   }
 
   .stats-tabs {
-    flex-direction: column;
-    gap: 0.3rem;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .stats-tab-btn {
+    flex: 0 1 auto;
+    min-width: 120px;
+    max-width: 200px;
   }
 
   .milestone-grid {

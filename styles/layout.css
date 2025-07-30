@@ -95,6 +95,7 @@ footer .footer-content a:hover {
   backdrop-filter: none;
   box-shadow: none;
   overflow-y: visible;
+  overflow-x: hidden;
 }
 
 #screen-stats {

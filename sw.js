@@ -1,66 +1,101 @@
-// Service Worker for PWA functionality
+// Service Worker for PWA functionality (Optimized)
 // Cache name will be set dynamically when the SW receives the version
-let CACHE_NAME = "idleforge-v0.1.30"; // Default fallback
+let CACHE_NAME = "idleforge-v0.1.34"; // Updated to match version.txt
 const CACHE_PREFIX = "idleforge-";
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./styles.css",
+  // CSS Modules
   "./styles/base.css",
   "./styles/themes.css",
   "./styles/layout.css",
   "./styles/components.css",
   "./styles/interactions.css",
   "./styles/responsive.css",
+  // Core JavaScript
   "./script.js",
+  // Configuration & Data
   "./manifest.json",
   "./version.txt",
   "./changelog.txt",
+  // PWA Icons
   "./icons/icon-192x192.png",
   "./icons/icon-512x512.png",
   "./icons/apple-touch-icon.png",
+  // Main UI Assets
   "./images/main/main-logo.png",
   "./images/main/main-menu-background.png",
   "./images/main/pickaxe.png",
-  // Resource images - Icons and Backgrounds
-  "./images/iron/fe.png",
-  "./images/iron/iron-background.png",
-  "./images/copper/cu.png",
-  "./images/copper/copper-background.png",
-  "./images/nickel/Ni.png",
-  "./images/nickel/nickel-background.png",
-  "./images/bronze/bronze.png",
-  "./images/bronze/bronze-background.png",
-  "./images/silver/Ag.png",
-  "./images/silver/silver-background.png",
-  "./images/cobalt/Co.png",
-  "./images/cobalt/cobalt-background.png",
-  "./images/gold/Au.png",
-  "./images/gold/gold-background.png",
-  "./images/palladium/Pd.png",
-  "./images/palladium/palladium-background.png",
-  "./images/platinum/Pt.png",
-  "./images/platinum/platinum-background.png",
-  "./images/titanium/Ti.png",
-  "./images/titanium/titanium-background.png",
-  "./images/adamantium/Ad.png",
-  "./images/adamantium/adamantium-background.png",
-  // Resource JavaScript modules
-  "./resources/iron.js",
-  "./resources/copper.js",
-  "./resources/nickel.js",
-  "./resources/bronze.js",
-  "./resources/silver.js",
-  "./resources/cobalt.js",
-  "./resources/gold.js",
-  "./resources/palladium.js",
-  "./resources/platinum.js",
-  "./resources/titanium.js",
-  "./resources/adamantium.js",
-  // Shop system
+  // Resource Images - Optimized grouping
+  ...generateResourceImagePaths(),
+  // JavaScript Modules
+  ...generateResourceJSPaths(),
+  // Shop System
   "./shop/items.js",
 ];
+
+// Helper functions to reduce repetitive arrays
+function generateResourceImagePaths() {
+  const resources = [
+    "iron",
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+  const paths = [];
+  resources.forEach((res) => {
+    // Icon and background for each resource
+    paths.push(
+      `./images/${res}/${getResourceIconName(res)}.png`,
+      `./images/${res}/${res}-background.png`
+    );
+  });
+  return paths;
+}
+
+function generateResourceJSPaths() {
+  const resources = [
+    "iron",
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+  return resources.map((res) => `./resources/${res}.js`);
+}
+
+// Resource icon name mapping for correct file references
+function getResourceIconName(resource) {
+  const iconMap = {
+    iron: "fe",
+    copper: "cu",
+    nickel: "Ni",
+    bronze: "bronze",
+    silver: "Ag",
+    cobalt: "Co",
+    gold: "Au",
+    palladium: "Pd",
+    platinum: "Pt",
+    titanium: "Ti",
+    adamantium: "Ad",
+  };
+  return iconMap[resource] || resource;
+}
 
 // Install event - cache resources
 self.addEventListener("install", (event) => {

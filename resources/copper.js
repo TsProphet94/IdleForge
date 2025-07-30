@@ -6,6 +6,6 @@ export default {
   count: 0,
   perClick: 1,
   perSecond: 0,
-  sellPrice: 3, // $ per copper - 3x iron value (2.5x iron)
+  sellPrice: 2, // $ per copper - 2x iron value (balanced progression)
   category: "copper",
 };

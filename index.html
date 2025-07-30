@@ -33,6 +33,7 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles/performance.css" />
   </head>
   <body>
     <!-- MAIN MENU OVERLAY -->
@@ -126,6 +127,17 @@
           <div id="money-display" class="nav-box money-top">
             <span id="money-count">0</span>
           </div>
+
+          <div
+            id="core-shards-display"
+            class="nav-box money-top"
+            style="display: none"
+          >
+            <span class="material-icons" style="font-size: 16px; color: #4facfe"
+              >auto_awesome</span
+            >
+            <span id="core-shards-count">0</span>
+          </div>
         </div>
 
         <div id="dev-panel" class="hidden">
@@ -155,6 +167,10 @@
           <button id="tab-stats">
             <span class="material-icons">analytics</span>
             Stats
+          </button>
+          <button id="tab-forgecore" style="display: none">
+            <span class="material-icons">auto_awesome</span>
+            Core
           </button>
           <button id="btn-save-menu">Menu</button>
         </nav>
@@ -273,7 +289,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-copper">
-                <button id="unlock-copper-btn">Unlock Copper ($20k)</button>
+                <button id="unlock-copper-btn">Unlock Copper ($200k)</button>
               </div>
             </div>
 
@@ -332,7 +348,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-nickel">
-                <button id="unlock-nickel-btn">Unlock Nickel ($60k)</button>
+                <button id="unlock-nickel-btn">Unlock Nickel ($800k)</button>
               </div>
             </div>
 
@@ -391,7 +407,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-bronze">
-                <button id="unlock-bronze-btn">Unlock Bronze ($100k)</button>
+                <button id="unlock-bronze-btn">Unlock Bronze ($3.2M)</button>
               </div>
             </div>
 
@@ -450,7 +466,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-silver">
-                <button id="unlock-silver-btn">Unlock Silver ($500k)</button>
+                <button id="unlock-silver-btn">Unlock Silver ($12.8M)</button>
               </div>
             </div>
 
@@ -509,7 +525,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-cobalt">
-                <button id="unlock-cobalt-btn">Unlock Cobalt ($1.5M)</button>
+                <button id="unlock-cobalt-btn">Unlock Cobalt ($76.8M)</button>
               </div>
             </div>
 
@@ -568,7 +584,7 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-gold">
-                <button id="unlock-gold-btn">Unlock Gold ($2.5M)</button>
+                <button id="unlock-gold-btn">Unlock Gold ($460.8M)</button>
               </div>
             </div>
 
@@ -635,7 +651,7 @@
 
               <div class="lock-overlay" id="lock-overlay-palladium">
                 <button id="unlock-palladium-btn">
-                  Unlock Palladium ($6M)
+                  Unlock Palladium ($2.76B)
                 </button>
               </div>
             </div>
@@ -700,7 +716,9 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-platinum">
-                <button id="unlock-platinum-btn">Unlock Platinum ($20M)</button>
+                <button id="unlock-platinum-btn">
+                  Unlock Platinum ($30.4B)
+                </button>
               </div>
             </div>
 
@@ -765,7 +783,9 @@
               </div>
 
               <div class="lock-overlay" id="lock-overlay-titanium">
-                <button id="unlock-titanium-btn">Unlock Titanium ($50M)</button>
+                <button id="unlock-titanium-btn">
+                  Unlock Titanium ($334.5B)
+                </button>
               </div>
             </div>
 
@@ -835,7 +855,7 @@
 
               <div class="lock-overlay" id="lock-overlay-adamantium">
                 <button id="unlock-adamantium-btn">
-                  Unlock Adamantium ($150M)
+                  Unlock Adamantium ($3.68T)
                 </button>
               </div>
             </div>
@@ -1004,6 +1024,10 @@
             <button class="stats-tab-btn" data-tab="milestones">
               <span class="material-icons">emoji_events</span>
               Milestones
+            </button>
+            <button class="stats-tab-btn" data-tab="prestige">
+              <span class="material-icons">upgrade</span>
+              Prestige
             </button>
           </div>
 
@@ -1181,6 +1205,112 @@
               <ul class="stats-list milestone-grid" id="milestone-list">
                 <!-- Populated by script.js -->
               </ul>
+            </div>
+          </div>
+
+          <div id="stats-prestige-tab" class="hidden">
+            <div class="prestige-container">
+              <div class="prestige-header">
+                <h3>⚡ Prestige System</h3>
+                <p class="prestige-subtitle">
+                  Reset your progress to gain powerful Core Shards for permanent
+                  upgrades
+                </p>
+              </div>
+
+              <div class="prestige-stats">
+                <div class="prestige-stat-card">
+                  <div class="prestige-stat-icon">💎</div>
+                  <div class="prestige-stat-content">
+                    <h4>Core Shards</h4>
+                    <span class="prestige-stat-value" id="prestige-core-shards"
+                      >0</span
+                    >
+                  </div>
+                </div>
+
+                <div class="prestige-stat-card">
+                  <div class="prestige-stat-icon">🔄</div>
+                  <div class="prestige-stat-content">
+                    <h4>Total Prestiges</h4>
+                    <span class="prestige-stat-value" id="prestige-total-count"
+                      >0</span
+                    >
+                  </div>
+                </div>
+
+                <div class="prestige-stat-card">
+                  <div class="prestige-stat-icon">🎯</div>
+                  <div class="prestige-stat-content">
+                    <h4>Next Prestige Reward</h4>
+                    <span class="prestige-stat-value" id="prestige-next-reward"
+                      >0</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="prestige-info">
+                <h4>What is Prestige?</h4>
+                <p>
+                  Prestiging resets your progress but rewards you with Core
+                  Shards - a premium currency that can be spent on permanent
+                  upgrades in the Core tab.
+                </p>
+
+                <h4>Requirements:</h4>
+                <ul class="prestige-requirements">
+                  <li>Unlock Nickel mining</li>
+                  <li>Earn enough money to generate at least 1 Core Shard</li>
+                </ul>
+              </div>
+
+              <div class="prestige-action">
+                <button
+                  id="prestige-action-btn"
+                  class="prestige-button"
+                  style="display: none"
+                >
+                  Prestige (+0 Core Shards)
+                </button>
+                <p id="prestige-locked-message" class="prestige-locked">
+                  Unlock Nickel to enable prestiging
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== CORE SCREEN ===================== -->
+        <section id="screen-forgecore" class="screen-panel panel hidden">
+          <div class="forgecore-header">
+            <h2>⚡ Core</h2>
+            <p class="forgecore-subtitle">
+              Upgrade your core mining capabilities with Core Shards
+            </p>
+          </div>
+
+          <div class="prestige-section">
+            <div class="prestige-info">
+              <h3>Prestige System</h3>
+              <p>
+                Reset your progress to gain Core Shards for permanent upgrades!
+              </p>
+              <p>Total Prestiges: <span id="total-prestiges">0</span></p>
+            </div>
+            <button
+              id="prestige-btn"
+              class="prestige-button"
+              style="display: none"
+            >
+              Prestige (+0 Core Shards)
+            </button>
+          </div>
+
+          <div class="forgecore-upgrades-container">
+            <h3>Core Upgrades</h3>
+            <div id="forgecore-upgrades" class="forgecore-upgrades">
+              <!-- Populated by updateForgeCodeUI() -->
             </div>
           </div>
         </section>

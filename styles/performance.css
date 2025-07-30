@@ -1,0 +1,168 @@
+/* Performance CSS Optimizations */
+
+/* Hardware acceleration for animated elements */
+.autosell-feedback,
+.sell-pop,
+.particle,
+.autosell-screen-pulse,
+.money-display {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force GPU layer */
+  backface-visibility: hidden;
+}
+
+/* Optimize repaints for frequently changing elements */
+.resource-count,
+.auto-rate,
+.collapsed-auto,
+.money-count,
+.shop-item-price,
+.shop-bar-fill {
+  contain: layout style paint;
+}
+
+/* Container queries optimization */
+.resource-panel {
+  contain: layout style;
+}
+
+.shop-list {
+  contain: layout style;
+}
+
+/* Reduce layout thrashing for progress bars */
+.shop-bar,
+.autosell-progress,
+.milestone-progress-bar {
+  contain: layout;
+}
+
+/* Optimize font rendering */
+.resource-count,
+.money-count,
+.auto-rate {
+  font-feature-settings: "tnum"; /* Tabular numbers for consistent width */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Prevent unnecessary reflows */
+.collapse-btn,
+.shop-btn,
+.resource-tab {
+  contain: layout style;
+}
+
+/* Optimize animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.autosave-cog {
+  animation: spin 1s linear infinite;
+  will-change: transform;
+}
+
+/* Memory-efficient transitions */
+.resource-panel.collapsed .resource-content {
+  transition: height 0.3s ease-out;
+  will-change: height;
+}
+
+.resource-panel:not(.collapsed) .resource-content {
+  will-change: auto;
+}
+
+/* Optimize visual effects */
+.autosell-feedback {
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  pointer-events: none;
+}
+
+.sell-pop {
+  animation: sellPop 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes sellPop {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2) translateY(-20px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.8) translateY(-40px);
+    opacity: 0;
+  }
+}
+
+/* Reduce paint complexity for background elements */
+.autosell-screen-pulse {
+  background: radial-gradient(
+    circle,
+    var(--pulse-color, rgba(255, 255, 255, 0.02)) 0%,
+    transparent 70%
+  );
+  will-change: opacity;
+}
+
+/* Optimize grid layouts */
+.shop-list {
+  display: grid;
+  contain: layout;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Performance hints for large lists */
+.milestone-resource-list {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 200px;
+}
+
+/* Optimize text rendering for frequently updated elements */
+.resource-count,
+.money-count {
+  text-rendering: optimizeSpeed;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+}
+
+/* Reduce GPU memory usage for hidden elements */
+.hidden {
+  content-visibility: hidden;
+}
+
+/* Batch repaints for shop items */
+.shop-card {
+  contain: layout style paint;
+}
+
+/* Optimize button interactions */
+.resource-btn {
+  contain: layout style;
+  touch-action: manipulation;
+}
+
+/* Prevent layout shifts */
+.pricetag {
+  min-width: 4em;
+  text-align: right;
+}
+
+.resource-count {
+  min-width: 6em;
+  text-align: right;
+}
+
+/* Optimize collapsed panels */
+.resource-panel.collapsed .resource-content {
+  content-visibility: hidden;
+}

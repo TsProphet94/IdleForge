@@ -1,3 +1,14 @@
+v0.1.35 – Prestige System & New CSS Modals!
+
+•   NEW: Prestige System! Players can now reset their progress in exchange for powerful permanent bonuses, adding a new layer of long-term progression and replayability.
+•   NEW: Prestige modal dialog with detailed information, confirmation step, and summary of rewards earned.
+•   NEW: Modular CSS modal system implemented for all in-game dialogs (Prestige, Welcome Back, Settings, etc.) for consistent, modern UI/UX.
+•   IMPROVED: All modal dialogs now feature smooth animations, responsive layouts, and theme support for seamless integration with the game's visual style.
+•   TECHNICAL: Added modals.css to the styles/ directory, encapsulating all modal-related styles for maintainability and scalability.
+•   TECHNICAL: Refactored modal logic for easier extension and future modal additions.
+
+-------------------------------------
+
 v0.1.31 – Major CSS Architecture Refactor & Shop Visual Enhancements!
 
 •   REFACTORED: Complete modularization of CSS architecture - split monolithic 3,000+ line styles.css into organized modular structure.

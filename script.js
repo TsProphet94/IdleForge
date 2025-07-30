@@ -1,7 +1,431 @@
 // ───────────────────────────────────────────────────────────────────────────
-// RESOURCE PANEL COLLAPSE/EXPAND
+// CUSTOM MODAL SYSTEM
+// ───────────────────────────────────────────────────────────────────────────
+
+class ModalSystem {
+  constructor() {
+    this.currentModal = null;
+  }
+
+  createModal(options) {
+    // Remove existing modal if any
+    this.closeModal();
+
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+
+    const container = document.createElement("div");
+    container.className = "modal-container";
+
+    const header = document.createElement("div");
+    header.className = "modal-header";
+
+    const icon = document.createElement("div");
+    icon.className = `modal-icon ${options.type || "info"}`;
+    icon.innerHTML = options.icon || "⚠️";
+
+    const title = document.createElement("h3");
+    title.className = "modal-title";
+    title.textContent = options.title || "Notification";
+
+    header.appendChild(icon);
+    header.appendChild(title);
+
+    const content = document.createElement("div");
+    content.className = "modal-content";
+    content.innerHTML = options.message || "";
+
+    const actions = document.createElement("div");
+    actions.className = "modal-actions";
+
+    // Add buttons based on options
+    if (options.buttons) {
+      options.buttons.forEach((button) => {
+        const btn = document.createElement("button");
+        btn.className = `modal-btn ${button.class || "secondary"}`;
+        btn.innerHTML = button.text;
+        btn.onclick = () => {
+          this.closeModal();
+          if (button.callback) button.callback();
+        };
+        actions.appendChild(btn);
+      });
+    }
+
+    container.appendChild(header);
+    container.appendChild(content);
+    container.appendChild(actions);
+    overlay.appendChild(container);
+
+    // Close on overlay click
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        this.closeModal();
+        if (options.onCancel) options.onCancel();
+      }
+    });
+
+    // Close on escape key
+    const escapeHandler = (e) => {
+      if (e.key === "Escape") {
+        this.closeModal();
+        if (options.onCancel) options.onCancel();
+        document.removeEventListener("keydown", escapeHandler);
+      }
+    };
+    document.addEventListener("keydown", escapeHandler);
+
+    document.body.appendChild(overlay);
+    this.currentModal = overlay;
+
+    // Animate in
+    setTimeout(() => {
+      overlay.classList.add("show");
+    }, 10);
+
+    return overlay;
+  }
+
+  closeModal() {
+    if (this.currentModal) {
+      this.currentModal.classList.remove("show");
+      setTimeout(() => {
+        if (this.currentModal && this.currentModal.parentNode) {
+          this.currentModal.parentNode.removeChild(this.currentModal);
+        }
+        this.currentModal = null;
+      }, 300);
+    }
+  }
+
+  // Custom alert replacement
+  showAlert(title, message, type = "info") {
+    return new Promise((resolve) => {
+      this.createModal({
+        title,
+        message,
+        type,
+        icon: type === "warning" ? "⚠️" : type === "info" ? "ℹ️" : "✅",
+        buttons: [
+          {
+            text: "OK",
+            class: "primary",
+            callback: resolve,
+          },
+        ],
+      });
+    });
+  }
+
+  // Custom confirm replacement
+  showConfirm(title, message, type = "confirm") {
+    return new Promise((resolve) => {
+      this.createModal({
+        title,
+        message,
+        type,
+        icon: type === "prestige" ? "⚡" : type === "danger" ? "⚠️" : "❓",
+        buttons: [
+          {
+            text: "Cancel",
+            class: "secondary",
+            callback: () => resolve(false),
+          },
+          {
+            text: "Confirm",
+            class:
+              type === "prestige"
+                ? "prestige"
+                : type === "danger"
+                ? "danger"
+                : "primary",
+            callback: () => resolve(true),
+          },
+        ],
+        onCancel: () => resolve(false),
+      });
+    });
+  }
+
+  // Prestige-specific modal
+  showPrestigeConfirm(reward) {
+    return new Promise((resolve) => {
+      this.createModal({
+        title: "Prestige Confirmation",
+        message: `
+          <p>Are you sure you want to prestige?</p>
+          <p><strong>You will gain:</strong> ${reward} Core Shards</p>
+          <p><strong>You will lose:</strong> All resources, money, unlocks, and shop upgrades</p>
+          <p><strong>You will keep:</strong> Core upgrades and their bonuses</p>
+          <p>This action cannot be undone!</p>
+        `,
+        type: "prestige",
+        icon: "⚡",
+        buttons: [
+          {
+            text: "Cancel",
+            class: "secondary",
+            callback: () => resolve(false),
+          },
+          {
+            text: `Prestige (+${reward} Core Shards)`,
+            class: "prestige",
+            callback: () => resolve(true),
+          },
+        ],
+        onCancel: () => resolve(false),
+      });
+    });
+  }
+
+  // Unlock requirement modal
+  showUnlockRequirement(resourceName, cost) {
+    return this.showAlert(
+      "Unlock Required",
+      `You need <strong>$${fmt(
+        cost
+      )}</strong> to unlock <strong>${resourceName}</strong>!`,
+      "warning"
+    );
+  }
+}
+
+// Initialize modal system
+const modalSystem = new ModalSystem();
+
+// ───────────────────────────────────────────────────────────────────────────
+// HELPER FUNCTIONS
+// ───────────────────────────────────────────────────────────────────────────
+
+// Performance: DOM element cache to avoid repeated queries
+const domCache = new Map();
+function getCachedElement(id) {
+  if (!domCache.has(id)) {
+    domCache.set(id, document.getElementById(id));
+  }
+  return domCache.get(id);
+}
+
+// Performance: Animation frame manager to prevent excessive visual updates
+let animationFrameId = null;
+function scheduleVisualUpdate(callback) {
+  if (animationFrameId) return; // Debounce
+  animationFrameId = requestAnimationFrame(() => {
+    callback();
+    animationFrameId = null;
+  });
+}
+
+// Performance: Centralized localStorage manager with batch operations
+class LocalStorageManager {
+  constructor() {
+    this.batchedWrites = new Map();
+    this.flushTimeout = null;
+    this.isAvailable = this.testAvailability();
+  }
+
+  testAvailability() {
+    try {
+      const test = "__localStorage_test__";
+      localStorage.setItem(test, "test");
+      localStorage.removeItem(test);
+      return true;
+    } catch {
+      console.warn("localStorage is not available");
+      return false;
+    }
+  }
+
+  get(key, defaultValue = null) {
+    if (!this.isAvailable) return defaultValue;
+    try {
+      const value = localStorage.getItem(key);
+      return value !== null ? value : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  }
+
+  set(key, value) {
+    if (!this.isAvailable) return false;
+
+    // Batch writes to reduce localStorage access
+    this.batchedWrites.set(key, value);
+
+    if (this.flushTimeout) {
+      clearTimeout(this.flushTimeout);
+    }
+
+    this.flushTimeout = setTimeout(() => this.flush(), 50); // 50ms debounce
+    return true;
+  }
+
+  setImmediate(key, value) {
+    if (!this.isAvailable) return false;
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  flush() {
+    if (!this.isAvailable || this.batchedWrites.size === 0) return;
+
+    try {
+      for (const [key, value] of this.batchedWrites) {
+        localStorage.setItem(key, value);
+      }
+      this.batchedWrites.clear();
+    } catch (e) {
+      console.warn("Failed to flush localStorage batch:", e);
+    }
+
+    this.flushTimeout = null;
+  }
+
+  remove(key) {
+    if (!this.isAvailable) return false;
+    try {
+      localStorage.removeItem(key);
+      this.batchedWrites.delete(key); // Remove from batch if pending
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+// Performance: Object pool for visual effects to reduce garbage collection
+const effectPool = {
+  particles: [],
+  feedbacks: [],
+  pulses: [],
+
+  getParticle() {
+    return this.particles.pop() || document.createElement("div");
+  },
+
+  returnParticle(element) {
+    if (this.particles.length < 10) {
+      // Limit pool size
+      element.className = "";
+      element.style.cssText = "";
+      element.innerHTML = "";
+      this.particles.push(element);
+    }
+  },
+
+  getFeedback() {
+    return this.feedbacks.pop() || document.createElement("div");
+  },
+
+  returnFeedback(element) {
+    if (this.feedbacks.length < 5) {
+      element.className = "";
+      element.style.cssText = "";
+      element.innerHTML = "";
+      this.feedbacks.push(element);
+    }
+  },
+};
+
+const storageManager = new LocalStorageManager();
+
+// Helper function to update unlock UI for any resource
+function updateResourceUnlockUI(resourceId) {
+  const buttons = resourceButtons[resourceId];
+  if (!buttons) return;
+
+  const panel = document.querySelector(`[data-resource="${resourceId}"]`);
+
+  // Check unlock status using the specific unlock variables
+  const isUnlocked = getResourceUnlockStatus(resourceId);
+
+  if (isUnlocked) {
+    panel?.classList.remove("locked");
+    buttons.mine?.classList.remove("disabled");
+    buttons.sell?.classList.remove("disabled");
+    if (buttons.mine) buttons.mine.disabled = false;
+    if (buttons.sell) buttons.sell.disabled = false;
+  } else {
+    panel?.classList.add("locked");
+    buttons.mine?.classList.add("disabled");
+    buttons.sell?.classList.add("disabled");
+    if (buttons.mine) buttons.mine.disabled = true;
+    if (buttons.sell) buttons.sell.disabled = true;
+  }
+} // Helper to check resource unlock status
+function getResourceUnlockStatus(resourceId) {
+  switch (resourceId) {
+    case "iron":
+      return true; // Iron is always unlocked
+    case "copper":
+      return copperUnlocked;
+    case "nickel":
+      return nickelUnlocked;
+    case "bronze":
+      return bronzeUnlocked;
+    case "silver":
+      return silverUnlocked;
+    case "cobalt":
+      return cobaltUnlocked;
+    case "gold":
+      return goldUnlocked;
+    case "palladium":
+      return palladiumUnlocked;
+    case "platinum":
+      return platinumUnlocked;
+    case "titanium":
+      return titaniumUnlocked;
+    case "adamantium":
+      return adamantiumUnlocked;
+    default:
+      return false;
+  }
+}
+
+// Generic unlock function for any resource
+function unlockResourceUI(resourceId, expandPanel = true) {
+  updateResourceUnlockUI(resourceId);
+
+  const panel = document.querySelector(`[data-resource="${resourceId}"]`);
+
+  // Panel expansion logic
+  if (expandPanel) {
+    panel?.classList.remove("collapsed");
+    try {
+      localStorage.setItem(`panel-collapsed-${resourceId}`, "0");
+    } catch {}
+  } else {
+    // When loading saves, ensure collapse state matches localStorage
+    try {
+      const shouldBeCollapsed =
+        localStorage.getItem(`panel-collapsed-${resourceId}`) === "1";
+      if (shouldBeCollapsed) {
+        panel?.classList.add("collapsed");
+      } else {
+        panel?.classList.remove("collapsed");
+      }
+    } catch {}
+  }
+
+  // Remove lock overlay and unlock shop tab
+  document.getElementById(`lock-overlay-${resourceId}`)?.remove();
+  document
+    .getElementById(`tab-resource-${resourceId}`)
+    ?.classList.remove("locked");
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// CENTRALIZED DOM INITIALIZATION
 // ───────────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize shop items first
+  ensureShopItemsInitialized();
+
+  // 1. Resource Panel Collapse/Expand System
   document.querySelectorAll(".collapse-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const res = btn.getAttribute("data-res");
@@ -17,22 +441,116 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 200);
 
       // Persist collapsed state in localStorage
-      try {
-        const collapsed = panel.classList.contains("collapsed");
-        localStorage.setItem(`panel-collapsed-${res}`, collapsed ? "1" : "0");
-      } catch {}
+      const collapsed = panel.classList.contains("collapsed");
+      storageManager.set(`panel-collapsed-${res}`, collapsed ? "1" : "0");
     });
     // On load, restore collapsed state
     const res = btn.getAttribute("data-res");
-    try {
-      const collapsed = localStorage.getItem(`panel-collapsed-${res}`) === "1";
-      if (collapsed) {
-        const panel = document.querySelector(
-          `.resource-panel[data-resource='${res}']`
-        );
-        if (panel) panel.classList.add("collapsed");
+    const collapsed = storageManager.get(`panel-collapsed-${res}`, "0") === "1";
+    if (collapsed) {
+      const panel = document.querySelector(
+        `.resource-panel[data-resource='${res}']`
+      );
+      if (panel) panel.classList.add("collapsed");
+    }
+  });
+
+  // 2. Stats Tab Switching
+  const tabBtns = document.querySelectorAll(".stats-tab-btn");
+  const mainTab = document.getElementById("stats-main-tab");
+  const milestonesTab = document.getElementById("stats-milestones-tab");
+  const prestigeTab = document.getElementById("stats-prestige-tab");
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      tabBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      // Hide all tabs first
+      mainTab.classList.add("hidden");
+      milestonesTab.classList.add("hidden");
+      if (prestigeTab) prestigeTab.classList.add("hidden");
+
+      // Show the selected tab
+      if (btn.dataset.tab === "main") {
+        mainTab.classList.remove("hidden");
+      } else if (btn.dataset.tab === "milestones") {
+        milestonesTab.classList.remove("hidden");
+        updateMilestoneList();
+      } else if (btn.dataset.tab === "prestige" && prestigeTab) {
+        prestigeTab.classList.remove("hidden");
+        updatePrestigeTab();
       }
-    } catch {}
+    });
+  });
+
+  // 3. Initial Save State Check
+  const hasSave =
+    isLocalStorageAvailable() && !!localStorage.getItem("idleMinerSave");
+  if (btnContinue) btnContinue.disabled = !hasSave;
+  if (gameUI) gameUI.style.display = "none";
+  if (mainMenu) mainMenu.style.display = "flex";
+  gameStarted = false;
+
+  if (!hasSave) {
+    // fresh boot: relock everything above iron
+    relockResource("copper");
+    relockResource("nickel");
+    relockResource("bronze");
+    relockResource("silver");
+    relockResource("cobalt");
+    relockResource("gold");
+    relockResource("palladium");
+    relockResource("platinum");
+    relockResource("titanium");
+    relockResource("adamantium");
+  }
+
+  // 4. Initialize locked resources as collapsed
+  const lockedResources = [
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+  lockedResources.forEach((res) => {
+    if (!isUnlocked(res)) {
+      const panel = document.querySelector(
+        `.resource-panel[data-resource="${res}"]`
+      );
+      if (panel && !panel.classList.contains("collapsed")) {
+        panel.classList.add("collapsed");
+      }
+    }
+  });
+
+  // 5. Initialize prestige UI as hidden
+  updatePrestigeUI();
+
+  // 6. Initialize unlock button event listeners for hardcoded HTML buttons
+  const unlockResources = [
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+
+  unlockResources.forEach((res) => {
+    const btn = document.getElementById(`unlock-${res}-btn`);
+    if (btn) {
+      btn.addEventListener("click", () => attemptUnlock(res));
+    }
   });
 });
 // ───────────────────────────────────────────────────────────────────────────
@@ -88,9 +606,7 @@ if (themeSelect) {
 
   // On load, set theme from localStorage or default
   let savedTheme = "classic";
-  try {
-    savedTheme = localStorage.getItem("idleforge-theme") || "classic";
-  } catch {}
+  savedTheme = storageManager.get("idleforge-theme", "classic");
   setTheme(savedTheme);
   themeSelect.value = savedTheme;
 }
@@ -108,7 +624,7 @@ import palladium from "./resources/palladium.js";
 import platinum from "./resources/platinum.js"; // New resource
 import titanium from "./resources/titanium.js";
 import adamantium from "./resources/adamantium.js";
-import { shopItems } from "./shop/items.js";
+import { createShopItems } from "./shop/items.js";
 
 /* ────────────────────────────────────────────────────────────────────────────
    DATA MODEL
@@ -126,7 +642,26 @@ export const resources = {
   titanium,
   adamantium,
   money: { id: "money", count: 0 },
+  coreShards: { id: "coreShards", count: 0 },
 };
+
+// Initialize shop items with resources - declare but initialize later
+export let shopItems;
+
+// Helper function to ensure shop items are initialized
+function ensureShopItemsInitialized() {
+  if (!shopItems) {
+    shopItems = createShopItems(resources);
+    console.log("Shop items lazy-initialized:", shopItems.length, "items");
+    if (shopItems.length > 0) {
+      console.log("Sample shop item:", shopItems[0]);
+    } else {
+      console.error("No shop items were created!");
+    }
+  }
+  return shopItems;
+}
+
 const RES_IDS = [
   "iron",
   "copper",
@@ -176,16 +711,16 @@ export const stats = {
 
 /* Unlock costs (balanced for 5-hour progression) */
 const UNLOCK_COST = {
-  copper: 50000, // Base
-  nickel: 200000, // 4x copper (early game)
-  bronze: 800000, // 4x nickel (early game)
-  silver: 3200000, // 4x bronze (early game)
-  cobalt: 19200000, // 6x silver (mid game start)
-  gold: 115200000, // 6x cobalt (mid game)
-  palladium: 691200000, // 6x gold (mid game)
-  platinum: 7603200000, // 11x palladium (late game start)
-  titanium: 83635200000, // 11x platinum (late game)
-  adamantium: 920187200000, // 11x titanium (late game)
+  copper: 200000, // Base
+  nickel: 800000, // 4x copper (early game)
+  bronze: 3200000, // 4x nickel (early game)
+  silver: 12800000, // 4x bronze (early game)
+  cobalt: 76800000, // 6x silver (mid game start)
+  gold: 460800000, // 6x cobalt (mid game)
+  palladium: 2764800000, // 6x gold (mid game)
+  platinum: 30412800000, // 11x palladium (late game start)
+  titanium: 334540800000, // 11x platinum (late game)
+  adamantium: 3679948800000, // 11x titanium (late game)
 };
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -210,36 +745,36 @@ const resourceTabs = document.querySelectorAll(".resource-tab");
 const tabMine = document.getElementById("tab-mine");
 const tabShop = document.getElementById("tab-shop");
 const tabStats = document.getElementById("tab-stats");
+const tabCore = document.getElementById("tab-forgecore");
 
 const screenMine = document.getElementById("screen-mine");
 const screenShop = document.getElementById("screen-shop");
 const screenStats = document.getElementById("screen-stats");
+const screenCore = document.getElementById("screen-forgecore");
+
+const coreShardsCountEl = document.getElementById("core-shards-count");
+const prestigeBtn = document.getElementById("prestige-btn");
 
 const overlay = document.getElementById("overlay") || null;
 
-/* Mine / Sell buttons */
-const mineIronBtn = document.getElementById("mine-iron-btn");
-const sellIronBtn = document.getElementById("sell-iron-btn");
-const mineCopperBtn = document.getElementById("mine-copper-btn");
-const sellCopperBtn = document.getElementById("sell-copper-btn");
-const mineNickelBtn = document.getElementById("mine-nickel-btn");
-const sellNickelBtn = document.getElementById("sell-nickel-btn");
-const mineBronzeBtn = document.getElementById("mine-bronze-btn");
-const sellBronzeBtn = document.getElementById("sell-bronze-btn");
-const mineSilverBtn = document.getElementById("mine-silver-btn");
-const sellSilverBtn = document.getElementById("sell-silver-btn");
-const mineCobaltBtn = document.getElementById("mine-cobalt-btn");
-const sellCobaltBtn = document.getElementById("sell-cobalt-btn");
-const mineGoldBtn = document.getElementById("mine-gold-btn");
-const sellGoldBtn = document.getElementById("sell-gold-btn");
-const minePalladiumBtn = document.getElementById("mine-palladium-btn");
-const sellPalladiumBtn = document.getElementById("sell-palladium-btn");
-const minePlatinumBtn = document.getElementById("mine-platinum-btn"); // New resource
-const sellPlatinumBtn = document.getElementById("sell-platinum-btn"); // New resource
-const mineTitaniumBtn = document.getElementById("mine-titanium-btn");
-const sellTitaniumBtn = document.getElementById("sell-titanium-btn");
-const mineAdamantiumBtn = document.getElementById("mine-adamantium-btn");
-const sellAdamantiumBtn = document.getElementById("sell-adamantium-btn");
+/* ────────────────────────────────────────────────────────────────────────────
+   RESOURCE BUTTON ELEMENTS & EVENT LISTENERS
+──────────────────────────────────────────────────────────────────────────── */
+// Generate resource button elements dynamically
+const resourceButtons = {};
+RES_IDS.forEach((resId) => {
+  resourceButtons[resId] = {
+    mine: document.getElementById(`mine-${resId}-btn`),
+    sell: document.getElementById(`sell-${resId}-btn`),
+  };
+});
+
+// Bulk event listener setup for all resources
+RES_IDS.forEach((resId) => {
+  const { mine, sell } = resourceButtons[resId];
+  if (mine) mine.addEventListener("click", () => mineResource(resId));
+  if (sell) sell.addEventListener("click", () => sellAll(resId));
+});
 
 /* Menus / Save */
 const mainMenu = document.getElementById("main-menu");
@@ -344,6 +879,28 @@ let platinumUnlocked = false; // New resource
 let titaniumUnlocked = false;
 let adamantiumUnlocked = false;
 
+// Prestige system
+let prestigeUnlocked = false;
+let totalPrestiges = 0;
+
+// Core upgrades system
+const coreUpgrades = {
+  globalMineRate: {
+    level: 0,
+    maxLevel: 10,
+    baseCost: 1,
+    costScale: 2,
+    effect: 0.25,
+  },
+  globalSellValue: {
+    level: 0,
+    maxLevel: 50,
+    baseCost: 2,
+    costScale: 2.5,
+    effect: 0.1,
+  },
+};
+
 let autoSaveInterval = null;
 let gameStarted = false;
 
@@ -354,22 +911,20 @@ screenShop.classList.add("hidden");
 if (overlay) overlay.classList.add("hidden");
 tabMine.classList.add("active");
 
-mineCopperBtn.disabled = sellCopperBtn.disabled = true;
-mineNickelBtn.disabled = sellNickelBtn.disabled = true;
-mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
-mineSilverBtn.disabled = sellSilverBtn.disabled = true;
-mineCobaltBtn.disabled = sellCobaltBtn.disabled = true;
-mineGoldBtn.disabled = sellGoldBtn.disabled = true;
-minePalladiumBtn.disabled = sellPalladiumBtn.disabled = true;
-minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
-mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = true;
-mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = true;
+// Disable all resource buttons using dynamic resourceButtons object
+Object.keys(resourceButtons).forEach((resourceId) => {
+  if (resourceId !== "iron") {
+    // Iron starts unlocked
+    const buttons = resourceButtons[resourceId];
+    if (buttons?.mine) buttons.mine.disabled = true;
+    if (buttons?.sell) buttons.sell.disabled = true;
+  }
+});
 
 /* ────────────────────────────────────────────────────────────────────────────
    HELPERS
 ──────────────────────────────────────────────────────────────────────────── */
 function fmt(num) {
-  if (num > 0 && num < 10) return num.toPrecision(2);
   if (num < 1_000) return Math.floor(num).toString();
   if (num < 1_000_000)
     return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "k";
@@ -431,12 +986,405 @@ function spendMoney(amount) {
   stats.spentMoney += amount;
 }
 
+/** Add core shards */
+function addCoreShards(amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  resources.coreShards.count += amount;
+}
+
+/** Spend core shards */
+function spendCoreShards(amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  if (resources.coreShards.count < amount) return false;
+  resources.coreShards.count -= amount;
+  return true;
+}
+
+/** Calculate prestige core shards reward */
+function calculatePrestigeReward() {
+  // Base calculation on total money earned and milestones achieved
+  let baseReward = Math.floor(Math.sqrt(stats.earnedMoney / 1000000));
+
+  // Bonus for milestones
+  let milestoneBonus = 0;
+  RES_IDS.forEach((res) => {
+    const mined = stats.mined[res] || 0;
+    MILESTONE_THRESHOLDS.forEach((threshold) => {
+      if (mined >= threshold) milestoneBonus++;
+    });
+  });
+
+  // Minimum 1 shard if nickel is unlocked
+  return Math.max(1, baseReward + Math.floor(milestoneBonus / 3));
+}
+
+/** Check if prestige is available */
+function checkPrestigeUnlock() {
+  // Prestige button is only unlocked when nickel is currently unlocked
+  // Even if player has prestiged before, they need to reach nickel again
+  if (!prestigeUnlocked && nickelUnlocked) {
+    prestigeUnlocked = true;
+    updatePrestigeUI();
+  }
+}
+
+/** Update prestige UI visibility */
+function updatePrestigeUI() {
+  // Prestige button visibility - only show when nickel is unlocked
+  if (prestigeBtn) {
+    prestigeBtn.style.display = prestigeUnlocked ? "block" : "none";
+  }
+
+  // Core tab visibility - show if player has ever prestiged (has core shards or total prestiges > 0)
+  const hasEverPrestiged = totalPrestiges > 0 || resources.coreShards.count > 0;
+  if (tabCore) {
+    tabCore.style.display = hasEverPrestiged ? "block" : "none";
+  }
+
+  // Core shards display - show if player has ever prestiged
+  const coreShardsDisplay = document.getElementById("core-shards-display");
+  if (coreShardsDisplay) {
+    coreShardsDisplay.style.display = hasEverPrestiged ? "block" : "none";
+  }
+
+  const totalPrestgesEl = document.getElementById("total-prestiges");
+  if (totalPrestgesEl) {
+    totalPrestgesEl.textContent = totalPrestiges;
+  }
+}
+
+/** Update prestige tab content */
+function updatePrestigeTab() {
+  // Update core shards display
+  const coreShardsEl = document.getElementById("prestige-core-shards");
+  if (coreShardsEl) {
+    coreShardsEl.textContent = fmt(resources.coreShards.count);
+  }
+
+  // Update total prestiges
+  const totalPrestigesEl = document.getElementById("prestige-total-count");
+  if (totalPrestigesEl) {
+    totalPrestigesEl.textContent = totalPrestiges;
+  }
+
+  // Update next reward calculation
+  const nextRewardEl = document.getElementById("prestige-next-reward");
+  if (nextRewardEl) {
+    const nextReward = calculatePrestigeReward();
+    nextRewardEl.textContent = nextReward;
+  }
+
+  // Update prestige button state
+  const prestigeActionBtn = document.getElementById("prestige-action-btn");
+  const prestigeLockedMsg = document.getElementById("prestige-locked-message");
+
+  if (prestigeActionBtn && prestigeLockedMsg) {
+    if (prestigeUnlocked) {
+      const reward = calculatePrestigeReward();
+      prestigeActionBtn.style.display = "block";
+      prestigeLockedMsg.style.display = "none";
+      prestigeActionBtn.textContent = `Prestige (+${reward} Core Shards)`;
+      prestigeActionBtn.disabled = reward < 1;
+    } else {
+      prestigeActionBtn.style.display = "none";
+      prestigeLockedMsg.style.display = "block";
+    }
+  }
+}
+
+/** Perform prestige */
+async function performPrestige() {
+  const reward = calculatePrestigeReward();
+
+  if (reward < 1) {
+    await modalSystem.showAlert(
+      "Cannot Prestige",
+      "You need to progress further before you can prestige!",
+      "warning"
+    );
+    return;
+  }
+
+  const confirmed = await modalSystem.showPrestigeConfirm(reward);
+  if (!confirmed) return;
+
+  // Award core shards
+  addCoreShards(reward);
+  totalPrestiges++;
+
+  // Reset game progress
+  resetGameForPrestige();
+
+  // Update UI to reflect reset state (hide prestige button, etc.)
+  updatePrestigeUI();
+  updateUI();
+  renderShop();
+
+  // Switch to mine tab since player needs to progress again
+  showScreen("mine");
+
+  // Show success notification
+  await modalSystem.showAlert(
+    "Prestige Complete!",
+    `You gained <strong>${reward} Core Shards</strong>! Use them to purchase permanent upgrades in the Core tab.`,
+    "info"
+  );
+}
+
+/** Reset game state for prestige */
+function resetGameForPrestige() {
+  // Stop and clear all auto-sell and countdown timers
+  RES_IDS.forEach((resId) => {
+    stopAutoSell(resId);
+    clearInterval(autoSellTimers[resId]);
+    clearInterval(countdownTimers[resId]);
+    autoSellTimers[resId] = null;
+    countdownTimers[resId] = null;
+    nextSellTimes[resId] = null;
+    document.getElementById(`sell-timer-${resId}`)?.classList.add("hidden");
+    const toggle = document.getElementById(`auto-sell-toggle-${resId}`);
+    if (toggle) toggle.checked = false;
+    // Reset countdown display
+    const countdownEl = document.getElementById(`sell-countdown-${resId}`);
+    if (countdownEl) countdownEl.textContent = "";
+  });
+
+  // Reset resources (keep core shards and Core upgrades)
+  const savedShards = resources.coreShards.count;
+  const savedTotalPrestiges = totalPrestiges;
+  const savedCoreUpgrades = {};
+
+  // Save Core upgrades before reset
+  Object.keys(coreUpgrades).forEach((upgradeId) => {
+    savedCoreUpgrades[upgradeId] = { ...coreUpgrades[upgradeId] };
+  });
+
+  RES_IDS.forEach((resId) => {
+    resources[resId].count = 0;
+    resources[resId].perSecond = 0;
+    resources[resId].perClick = 1;
+  });
+  resources.money.count = 0;
+  resources.coreShards.count = savedShards;
+
+  // Reset stats (keep prestige-related data)
+  Object.keys(stats.mined).forEach((res) => (stats.mined[res] = 0));
+  Object.keys(stats.sold).forEach((res) => (stats.sold[res] = 0));
+  stats.earnedMoney = 0;
+  stats.spentMoney = 0;
+  stats.clicks = { mine: 0, sell: 0, shopBuy: 0, unlock: 0 };
+
+  // Reset unlock states (including prestige button, but keep Core tab available)
+  copperUnlocked = false;
+  nickelUnlocked = false;
+  bronzeUnlocked = false;
+  silverUnlocked = false;
+  cobaltUnlocked = false;
+  goldUnlocked = false;
+  palladiumUnlocked = false;
+  platinumUnlocked = false;
+  titaniumUnlocked = false;
+  adamantiumUnlocked = false;
+
+  // Lock prestige button again until nickel is re-unlocked
+  // But keep Core tab visible since player has Core Shards to spend
+  prestigeUnlocked = false;
+
+  // Reset shop items but preserve the reference
+  ensureShopItemsInitialized().forEach((item) => {
+    item.count = 0;
+    item.price = item.basePrice;
+  });
+
+  // Reset milestone multipliers
+  RES_IDS.forEach((res) => {
+    milestoneMultipliers[res] = 1;
+  });
+
+  // Restore Core upgrades (prestige should not reset these)
+  Object.keys(savedCoreUpgrades).forEach((upgradeId) => {
+    if (coreUpgrades[upgradeId]) {
+      coreUpgrades[upgradeId] = savedCoreUpgrades[upgradeId];
+    }
+  });
+
+  // Relock all resources above iron (same as startNewGame logic)
+  relockResource("copper");
+  relockResource("nickel");
+  relockResource("bronze");
+  relockResource("silver");
+  relockResource("cobalt");
+  relockResource("gold");
+  relockResource("palladium");
+  relockResource("platinum");
+  relockResource("titanium");
+  relockResource("adamantium");
+
+  // Lock resource tabs in shop
+  document.getElementById("tab-resource-copper")?.classList.add("locked");
+  document.getElementById("tab-resource-nickel")?.classList.add("locked");
+  document.getElementById("tab-resource-bronze")?.classList.add("locked");
+  document.getElementById("tab-resource-silver")?.classList.add("locked");
+  document.getElementById("tab-resource-cobalt")?.classList.add("locked");
+  document.getElementById("tab-resource-gold")?.classList.add("locked");
+  document.getElementById("tab-resource-palladium")?.classList.add("locked");
+  document.getElementById("tab-resource-platinum")?.classList.add("locked");
+  document.getElementById("tab-resource-titanium")?.classList.add("locked");
+  document.getElementById("tab-resource-adamantium")?.classList.add("locked");
+
+  // Reset UI buttons using dynamic resourceButtons object
+  Object.keys(resourceButtons).forEach((resourceId) => {
+    if (resourceId !== "iron") {
+      // Iron starts unlocked
+      const buttons = resourceButtons[resourceId];
+      if (buttons?.mine) buttons.mine.disabled = true;
+      if (buttons?.sell) buttons.sell.disabled = true;
+    }
+  });
+
+  // Reset current resource and tabs
+  currentResource = "iron";
+  resourceTabs.forEach((tab) =>
+    tab.classList.toggle("active", tab.dataset.resource === "iron")
+  );
+
+  // Remove all sell-pop elements
+  document.querySelectorAll(".sell-pop").forEach((el) => el.remove());
+
+  // Reset money animation state
+  if (typeof updateUI.lastMoney !== "undefined") updateUI.lastMoney = 0;
+
+  // Collapse all resource panels except Iron by default
+  const resourcesToCollapse = [
+    "copper",
+    "nickel",
+    "bronze",
+    "silver",
+    "cobalt",
+    "gold",
+    "palladium",
+    "platinum",
+    "titanium",
+    "adamantium",
+  ];
+  resourcesToCollapse.forEach((resId) => {
+    const panel = document.querySelector(
+      `.resource-panel[data-resource='${resId}']`
+    );
+    if (panel) {
+      panel.classList.add("collapsed");
+      // Update localStorage to reflect the collapsed state
+      try {
+        localStorage.setItem(`panel-collapsed-${resId}`, "1");
+      } catch {}
+    }
+  });
+
+  // Ensure Iron panel is expanded
+  const ironPanel = document.querySelector(
+    `.resource-panel[data-resource='iron']`
+  );
+  if (ironPanel) {
+    ironPanel.classList.remove("collapsed");
+    try {
+      localStorage.setItem(`panel-collapsed-iron`, "0");
+    } catch {}
+  }
+
+  // Reset scroll positions
+  mineScrollY = 0;
+  shopScrollY = 0;
+  window.scrollTo(0, 0);
+
+  // Reset UI
+  updateUI();
+  updateStatsUI();
+  showScreen("mine");
+}
+
+/** Get Core upgrade cost */
+function getForgeCoreCost(upgradeId) {
+  const upgrade = coreUpgrades[upgradeId];
+  if (!upgrade || upgrade.level >= upgrade.maxLevel) return Infinity;
+  return Math.floor(
+    upgrade.baseCost * Math.pow(upgrade.costScale, upgrade.level)
+  );
+}
+
+/** Get Core bonus value */
+function getForgeCoreBonusValue(upgradeId) {
+  const upgrade = coreUpgrades[upgradeId];
+  if (!upgrade) return 0;
+  return upgrade.level * upgrade.effect;
+}
+
+/** Purchase Core upgrade */
+function purchaseForgeCore(upgradeId) {
+  const upgrade = coreUpgrades[upgradeId];
+  if (!upgrade || upgrade.level >= upgrade.maxLevel) {
+    console.log(
+      "Cannot purchase upgrade: max level reached or invalid upgrade"
+    );
+    return false;
+  }
+
+  const cost = getForgeCoreCost(upgradeId);
+  if (!spendCoreShards(cost)) {
+    console.log("Cannot purchase upgrade: insufficient core shards");
+    return false;
+  }
+
+  upgrade.level++;
+  console.log(`Purchased ${upgradeId} upgrade level ${upgrade.level}`);
+
+  // Create purchase feedback effect
+  createUpgradePurchaseFeedback(upgradeId);
+
+  updateCoreUI();
+  updateUI(); // Refresh to apply new bonuses
+  return true;
+}
+
+// Make purchaseCore globally accessible
+window.purchaseForgeCore = purchaseForgeCore;
+
+/** Create visual feedback for upgrade purchase */
+function createUpgradePurchaseFeedback(upgradeId) {
+  // Find the upgrade container
+  const upgradeContainers = document.querySelectorAll(".forgecore-upgrade");
+  upgradeContainers.forEach((container) => {
+    const button = container.querySelector(`button[onclick*="${upgradeId}"]`);
+    if (button) {
+      // Add a temporary success animation
+      container.style.transform = "scale(1.02)";
+      container.style.boxShadow = "0 0 20px rgba(106, 90, 205, 0.6)";
+
+      setTimeout(() => {
+        container.style.transform = "";
+        container.style.boxShadow = "";
+      }, 300);
+    }
+  });
+}
+
+/** Apply Core bonuses to mining */
+function applyForgeCoreBonuses() {
+  const globalMineBonus = 1 + getForgeCoreBonusValue("globalMineRate");
+
+  return {
+    mineRate: globalMineBonus,
+  };
+}
+
 /** Sell all */
 function sellAll(resId, isAutoSell = false) {
   if (!isUnlocked(resId)) return 0;
   const qty = resources[resId].count;
   if (qty <= 0) return 0;
-  const cash = Math.floor(qty * resources[resId].sellPrice);
+
+  // Apply ForgeCore sell value bonus
+  const globalSellBonus = 1 + getForgeCoreBonusValue("globalSellValue");
+  const cash = Math.floor(qty * resources[resId].sellPrice * globalSellBonus);
   addMoney(cash);
   stats.sold[resId] += qty;
   resources[resId].count = 0;
@@ -460,7 +1408,8 @@ function sellAll(resId, isAutoSell = false) {
 /** Manual mine */
 function mineResource(resId) {
   if (!isUnlocked(resId)) return;
-  const gain = resources[resId].perClick;
+  const bonuses = applyForgeCoreBonuses();
+  const gain = resources[resId].perClick * bonuses.mineRate;
   addOre(resId, gain);
   stats.clicks.mine++;
 
@@ -742,7 +1691,7 @@ const MILESTONE_THRESHOLDS = [100, 1000, 10000, 100000, 1000000];
 const MILESTONE_LABELS = ["100", "1K", "10K", "100K", "1M"];
 
 // Multipliers for each milestone tier
-const MILESTONE_MULTIPLIERS = [1.2, 1.5, 2, 3, 5];
+const MILESTONE_MULTIPLIERS = [1.2, 1.5, 1.8, 2, 2.5];
 
 // Track which rewards have been applied per resource & tier
 export const milestoneRewardsApplied = RES_IDS.reduce((acc, res) => {
@@ -854,69 +1803,90 @@ function updateMilestoneList() {
   });
 }
 
-// Stats tab switching
-document.addEventListener("DOMContentLoaded", () => {
-  const tabBtns = document.querySelectorAll(".stats-tab-btn");
-  const mainTab = document.getElementById("stats-main-tab");
-  const milestonesTab = document.getElementById("stats-milestones-tab");
-  tabBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      tabBtns.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      if (btn.dataset.tab === "main") {
-        mainTab.classList.remove("hidden");
-        milestonesTab.classList.add("hidden");
-      } else {
-        mainTab.classList.add("hidden");
-        milestonesTab.classList.remove("hidden");
-        updateMilestoneList();
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTO-MINE LOOP (OPTIMIZED)
+──────────────────────────────────────────────────────────────────────────── */
+// Performance: Use single game loop with RAF instead of multiple setInterval
+let gameLoopRunning = false;
+let lastTimestamp = 0;
+
+// Performance: Throttle expensive operations to improve frame rate
+const throttledOperations = {
+  updateShopButtons: null,
+  updateStatsUI: null,
+
+  throttle(func, limit) {
+    let inThrottle;
+    return function () {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  },
+};
+
+// Initialize throttled functions
+throttledOperations.updateShopButtons = throttledOperations.throttle(
+  updateShopButtons,
+  100
+);
+throttledOperations.updateStatsUI = throttledOperations.throttle(
+  updateStatsUI,
+  200
+);
+
+function gameLoop(timestamp) {
+  if (!gameStarted || !gameLoopRunning) return;
+
+  // Initialize lastTimestamp on first run
+  if (lastTimestamp === 0) {
+    lastTimestamp = timestamp;
+    requestAnimationFrame(gameLoop);
+    return;
+  }
+
+  // Calculate delta time (limit to max 100ms to prevent huge jumps)
+  const deltaTime = Math.min(timestamp - lastTimestamp, 100);
+  lastTimestamp = timestamp;
+
+  if (deltaTime > 0) {
+    // Auto-mining: Update at 60fps but calculate proper time-based increments
+    RES_IDS.forEach((id) => {
+      if (!isUnlocked(id)) return;
+      const ratePerSecond = resources[id].perSecond * milestoneMultipliers[id];
+      if (ratePerSecond > 0) {
+        const gain = (ratePerSecond * deltaTime) / 1000; // Convert ms to seconds
+        addOre(id, gain);
       }
     });
-  });
-});
 
-/* ────────────────────────────────────────────────────────────────────────────
-   BUTTON LISTENERS
-──────────────────────────────────────────────────────────────────────────── */
-mineIronBtn.addEventListener("click", () => mineResource("iron"));
-sellIronBtn.addEventListener("click", () => sellAll("iron"));
-mineCopperBtn.addEventListener("click", () => mineResource("copper"));
-sellCopperBtn.addEventListener("click", () => sellAll("copper"));
-mineNickelBtn.addEventListener("click", () => mineResource("nickel"));
-sellNickelBtn.addEventListener("click", () => sellAll("nickel"));
-mineBronzeBtn.addEventListener("click", () => mineResource("bronze"));
-sellBronzeBtn.addEventListener("click", () => sellAll("bronze"));
-mineSilverBtn.addEventListener("click", () => mineResource("silver"));
-sellSilverBtn.addEventListener("click", () => sellAll("silver"));
-mineCobaltBtn.addEventListener("click", () => mineResource("cobalt"));
-sellCobaltBtn.addEventListener("click", () => sellAll("cobalt"));
-mineGoldBtn.addEventListener("click", () => mineResource("gold"));
-sellGoldBtn.addEventListener("click", () => sellAll("gold"));
-minePalladiumBtn.addEventListener("click", () => mineResource("palladium"));
-sellPalladiumBtn.addEventListener("click", () => sellAll("palladium"));
-minePlatinumBtn.addEventListener("click", () => mineResource("platinum")); // New resource
-sellPlatinumBtn.addEventListener("click", () => sellAll("platinum")); // New resource
-mineTitaniumBtn.addEventListener("click", () => mineResource("titanium"));
-sellTitaniumBtn.addEventListener("click", () => sellAll("titanium"));
-mineAdamantiumBtn.addEventListener("click", () => mineResource("adamantium"));
-sellAdamantiumBtn.addEventListener("click", () => sellAll("adamantium"));
+    // Update UI every frame for smooth feedback
+    scheduleVisualUpdate(() => {
+      updateUI();
+      if (!screenStats.classList.contains("hidden"))
+        throttledOperations.updateStatsUI();
+      if (!screenShop.classList.contains("hidden"))
+        throttledOperations.updateShopButtons();
+    });
+  }
 
-/* ────────────────────────────────────────────────────────────────────────────
-   AUTO-MINE LOOP
-──────────────────────────────────────────────────────────────────────────── */
-setInterval(() => {
-  // 10 ticks/sec
-  RES_IDS.forEach((id) => {
-    if (!isUnlocked(id)) return;
-    const gain = (resources[id].perSecond * milestoneMultipliers[id]) / 10;
-    if (gain > 0) addOre(id, gain);
-  });
+  requestAnimationFrame(gameLoop);
+}
+function startGameLoop() {
+  if (!gameLoopRunning) {
+    gameLoopRunning = true;
+    lastTimestamp = 0; // Reset to ensure proper initialization in gameLoop
+    requestAnimationFrame(gameLoop);
+  }
+}
 
-  updateUI();
-
-  if (!screenStats.classList.contains("hidden")) updateStatsUI();
-  if (!screenShop.classList.contains("hidden")) updateShopButtons();
-}, 100);
+function stopGameLoop() {
+  gameLoopRunning = false;
+}
 
 /* ────────────────────────────────────────────────────────────────────────────
    UNLOCK LOGIC (FIXED)
@@ -924,9 +1894,8 @@ setInterval(() => {
 function attemptUnlock(res) {
   const cost = UNLOCK_COST[res];
   if (resources.money.count < cost) {
-    alert(
-      `You need $${fmt(cost)} to unlock ${res[0].toUpperCase() + res.slice(1)}!`
-    );
+    const resourceName = res.charAt(0).toUpperCase() + res.slice(1);
+    modalSystem.showUnlockRequirement(resourceName, cost);
     return;
   }
   spendMoney(cost);
@@ -984,8 +1953,11 @@ shopList.addEventListener("click", (e) => {
   const isBuy = e.target.classList.contains("shop-btn") && !isMax;
   if (!isMax && !isBuy) return;
 
+  // Ensure shop items are initialized
+  const items = ensureShopItemsInitialized();
+
   const id = e.target.dataset.itemId || e.target.id;
-  const item = shopItems.find((i) => i.id === id);
+  const item = items.find((i) => i.id === id);
   if (!item) return;
 
   let n = 1;
@@ -1056,6 +2028,18 @@ resourceTabs.forEach((tab) => {
 tabMine.addEventListener("click", () => showScreen("mine"));
 tabShop.addEventListener("click", () => showScreen("shop"));
 tabStats.addEventListener("click", () => showScreen("stats"));
+if (tabCore) tabCore.addEventListener("click", () => showScreen("forgecore"));
+
+// Prestige button
+if (prestigeBtn) {
+  prestigeBtn.addEventListener("click", performPrestige);
+}
+
+// Prestige action button in prestige tab
+const prestigeActionBtn = document.getElementById("prestige-action-btn");
+if (prestigeActionBtn) {
+  prestigeActionBtn.addEventListener("click", performPrestige);
+}
 
 // Track scroll positions for mine and shop screens (using window scroll if screens are not independently scrollable)
 let mineScrollY = 0;
@@ -1073,10 +2057,12 @@ function showScreen(which) {
   tabMine.classList.remove("active");
   tabShop.classList.remove("active");
   tabStats.classList.remove("active");
+  if (tabCore) tabCore.classList.remove("active");
 
   screenMine.classList.add("hidden");
   screenShop.classList.add("hidden");
   screenStats.classList.add("hidden");
+  if (screenCore) screenCore.classList.add("hidden");
 
   switch (which) {
     case "mine":
@@ -1097,8 +2083,79 @@ function showScreen(which) {
       screenStats.classList.remove("hidden");
       updateStatsUI();
       break;
+    case "forgecore":
+      if (tabCore) tabCore.classList.add("active");
+      if (screenCore) screenCore.classList.remove("hidden");
+      updateCoreUI();
+      break;
   }
   // Removed analytics tracking
+}
+
+/** Update Core UI */
+function updateCoreUI() {
+  if (!screenCore) return;
+
+  const container = document.getElementById("forgecore-upgrades");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  Object.entries(coreUpgrades).forEach(([upgradeId, upgrade]) => {
+    const cost = getForgeCoreCost(upgradeId);
+    const canAfford =
+      resources.coreShards.count >= cost && upgrade.level < upgrade.maxLevel;
+
+    const upgradeDiv = document.createElement("div");
+    upgradeDiv.className = "forgecore-upgrade";
+
+    const upgradeNames = {
+      globalMineRate: "Global Mine Rate",
+      globalSellValue: "Global Sell Value",
+    };
+
+    const upgradeDescriptions = {
+      globalMineRate: "Increases manual mining yield",
+      globalSellValue: "Increases resource sell prices",
+    };
+
+    // Calculate current and next effect values
+    const currentEffect = getForgeCoreBonusValue(upgradeId);
+    const nextEffect = currentEffect + upgrade.effect;
+
+    // Format effect display (all remaining upgrades are percentage-based)
+    let effectDisplay = `Current: +${(currentEffect * 100).toFixed(1)}%`;
+    if (upgrade.level < upgrade.maxLevel) {
+      effectDisplay += ` | Next: +${(nextEffect * 100).toFixed(1)}%`;
+    }
+
+    upgradeDiv.innerHTML = `
+      <div class="forgecore-upgrade-header">
+        <h3 class="forgecore-upgrade-name">${upgradeNames[upgradeId]}</h3>
+        <span class="forgecore-upgrade-level">${upgrade.level}/${
+      upgrade.maxLevel
+    }</span>
+      </div>
+      <p class="forgecore-upgrade-desc">${upgradeDescriptions[upgradeId]}</p>
+      <div class="forgecore-upgrade-effect">
+        ${effectDisplay}
+      </div>
+      <div class="forgecore-upgrade-cost">
+        Cost: ${
+          upgrade.level >= upgrade.maxLevel ? "MAXED" : `${cost} Core Shards`
+        }
+      </div>
+      <button 
+        class="forgecore-upgrade-btn" 
+        ${!canAfford || upgrade.level >= upgrade.maxLevel ? "disabled" : ""}
+        onclick="purchaseForgeCore('${upgradeId}')"
+      >
+        ${upgrade.level >= upgrade.maxLevel ? "MAXED" : "Purchase"}
+      </button>
+    `;
+
+    container.appendChild(upgradeDiv);
+  });
 }
 
 function switchResource(res) {
@@ -1111,23 +2168,46 @@ function switchResource(res) {
   updateUI();
 }
 
-/** Update only dynamic bits in existing cards (price, button, bar) */
+/** Update only dynamic bits in existing cards (price, button, bar) - OPTIMIZED */
 function updateShopButtons() {
-  shopItems
+  // Ensure shop items are initialized
+  const items = ensureShopItemsInitialized();
+
+  // Performance: Cache shop elements to avoid repeated queries
+  if (!updateShopButtons.elementCache) {
+    updateShopButtons.elementCache = new Map();
+  }
+
+  const cache = updateShopButtons.elementCache;
+  const currentMoney = resources.money.count;
+
+  items
     .filter((item) => item.category === currentResource)
     .forEach((item) => {
-      const buyBtn = document.querySelector(
-        `.shop-btn[data-item-id="${item.id}"]:not(.shop-btn-max)`
-      );
+      // Cache DOM elements for this item
+      if (!cache.has(item.id)) {
+        cache.set(item.id, {
+          buyBtn: document.querySelector(
+            `.shop-btn[data-item-id="${item.id}"]:not(.shop-btn-max)`
+          ),
+          maxBtn: document.querySelector(
+            `.shop-btn-max[data-item-id="${item.id}"]`
+          ),
+          priceEl: getCachedElement(`price-${item.id}`),
+          ownedEl: getCachedElement(`owned-${item.id}`),
+          barEl: getCachedElement(`bar-${item.id}`),
+        });
+      }
+
+      const elements = cache.get(item.id);
+      const { buyBtn, maxBtn, priceEl, ownedEl, barEl } = elements;
+
       if (buyBtn) {
-        const canAfford = resources.money.count >= item.price;
+        const canAfford = currentMoney >= item.price;
         buyBtn.disabled = !canAfford || item.count >= item.max;
         buyBtn.textContent = item.count >= item.max ? "Maxed" : "Buy";
       }
 
-      const maxBtn = document.querySelector(
-        `.shop-btn-max[data-item-id="${item.id}"]`
-      );
       if (maxBtn) {
         const maxN = buyMaxCount(item);
         const locked = item.count >= item.max;
@@ -1139,20 +2219,26 @@ function updateShopButtons() {
           : "Buy Max";
       }
 
-      const priceEl = document.getElementById(`price-${item.id}`);
       if (priceEl) priceEl.textContent = `$${fmt(item.price)}`;
-      const ownedEl = document.getElementById(`owned-${item.id}`);
       if (ownedEl) ownedEl.textContent = `${item.count}/${item.max}`;
-      const barEl = document.getElementById(`bar-${item.id}`);
       if (barEl) barEl.style.width = (item.count / item.max) * 100 + "%";
     });
 }
 
 /** Build the shop list with descriptions */
 function renderShop() {
-  if (!shopList) return;
+  if (!shopList) {
+    console.error("shopList element not found!");
+    return;
+  }
 
-  const items = shopItems.filter((i) => i.category === currentResource);
+  // Ensure shop items are initialized
+  const allItems = ensureShopItemsInitialized();
+
+  // Always rebuild the cache to ensure fresh data
+  // Remove the complex caching logic that might be causing issues
+  const items = allItems.filter((i) => i.category === currentResource);
+
   if (!items.length) {
     shopList.innerHTML = `<li class="shop-empty">No upgrades for "${currentResource}"</li>`;
     return;
@@ -1242,170 +2328,114 @@ function renderShop() {
 /* ────────────────────────────────────────────────────────────────────────────
    GENERAL UI UPDATE
 ──────────────────────────────────────────────────────────────────────────── */
+/* ────────────────────────────────────────────────────────────────────────────
+   GENERAL UI UPDATE (OPTIMIZED)
+──────────────────────────────────────────────────────────────────────────── */
 function updateUI() {
-  ironCountEl.textContent = fmt(resources.iron.count);
-  copperCountEl.textContent = fmt(resources.copper.count);
-  nickelCountEl.textContent = fmt(resources.nickel.count || 0);
-  bronzeCountEl.textContent = fmt(resources.bronze.count);
-  silverCountEl.textContent = fmt(resources.silver.count);
-  cobaltCountEl.textContent = fmt(resources.cobalt.count || 0);
-  goldCountEl.textContent = fmt(resources.gold.count);
-  palladiumCountEl.textContent = fmt(resources.palladium.count || 0);
-  platinumCountEl.textContent = fmt(resources.platinum.count || 0); // New resource
-  titaniumCountEl.textContent = fmt(resources.titanium.count || 0);
-  adamantiumCountEl.textContent = fmt(resources.adamantium.count || 0);
+  // Performance: Early exit if not started
+  if (!gameStarted) return;
 
-  // Update resource price tags (show only if unlocked)
-  RES_IDS.forEach((res) => {
-    const pricetag = document.getElementById(`pricetag-${res}`);
-    if (pricetag) {
-      if (isUnlocked(res)) {
-        pricetag.style.display = "inline-block";
-        pricetag.textContent = `$${fmt(resources[res].sellPrice)}`;
-      } else {
-        pricetag.style.display = "none";
-      }
+  // Check for prestige unlock
+  checkPrestigeUnlock();
+
+  // Performance: Batch DOM updates to minimize reflows
+  const updates = new Map();
+
+  // Collect all updates first
+  RES_IDS.forEach((resId) => {
+    const resObj = resources[resId];
+
+    updates.set(`${resId}-count`, fmt(resObj.count || 0));
+
+    // Auto-mining rate
+    const rate = resObj.perSecond * milestoneMultipliers[resId] || 0;
+    updates.set(`auto-rate-${resId}`, fmt(rate));
+    updates.set(`collapsed-auto-${resId}`, fmt(rate) + "/s");
+
+    // Sell button state
+    const sellBtn = resourceButtons[resId]?.sell;
+    if (sellBtn) {
+      sellBtn.disabled = resObj.count <= 0;
+    }
+
+    // Price tags
+    if (isUnlocked(resId)) {
+      const basePrice = resources[resId].sellPrice;
+      const globalSellBonus = 1 + getForgeCoreBonusValue("globalSellValue");
+      const finalPrice = Math.floor(basePrice * globalSellBonus);
+      updates.set(`pricetag-${resId}`, {
+        display: "inline-block",
+        text: `$${fmt(finalPrice)}`,
+      });
+    } else {
+      updates.set(`pricetag-${resId}`, { display: "none" });
     }
   });
 
-  // Animate money counter box if it increases
-  if (!updateUI.lastMoney) updateUI.lastMoney = resources.money.count;
-  const prevMoney = updateUI.lastMoney;
+  // Apply all updates in one batch
+  for (const [elementId, value] of updates) {
+    const element = getCachedElement(elementId);
+    if (!element) continue;
+
+    if (typeof value === "object" && value !== null) {
+      // Handle complex updates
+      if (value.display) element.style.display = value.display;
+      if (value.text) element.textContent = value.text;
+    } else {
+      // Simple text updates
+      element.textContent = value;
+    }
+  }
+
+  // Money display with animation optimization
+  updateMoneyDisplay();
+
+  // Core shards display
+  if (coreShardsCountEl) {
+    coreShardsCountEl.textContent = fmt(resources.coreShards.count);
+  }
+
+  // Update prestige button
+  if (prestigeBtn && prestigeUnlocked) {
+    const reward = calculatePrestigeReward();
+    prestigeBtn.textContent = `Prestige (+${reward} Core Shards)`;
+    prestigeBtn.disabled = reward < 1;
+  }
+
+  // Update prestige tab if stats screen and prestige tab are visible
+  const statsScreen = document.getElementById("screen-stats");
+  const prestigeTab = document.getElementById("stats-prestige-tab");
+  if (
+    statsScreen &&
+    prestigeTab &&
+    !statsScreen.classList.contains("hidden") &&
+    !prestigeTab.classList.contains("hidden")
+  ) {
+    updatePrestigeTab();
+  }
+}
+
+// Separate money display function to reduce main updateUI complexity
+function updateMoneyDisplay() {
+  if (!updateMoneyDisplay.lastMoney)
+    updateMoneyDisplay.lastMoney = resources.money.count;
+  const prevMoney = updateMoneyDisplay.lastMoney;
   const newMoney = resources.money.count;
+
   moneyCountEl.textContent = `$${fmt(newMoney)}`;
-  const moneyBox = document.getElementById("money-display");
-  if (newMoney > prevMoney && moneyBox) {
-    moneyBox.classList.remove("money-bounce");
-    // Force reflow to restart animation
-    void moneyBox.offsetWidth;
-    moneyBox.classList.add("money-bounce");
-  }
-  updateUI.lastMoney = newMoney;
 
-  sellIronBtn.disabled = resources.iron.count <= 0;
-  sellCopperBtn.disabled = resources.copper.count <= 0;
-  sellNickelBtn.disabled = resources.nickel.count <= 0;
-  sellBronzeBtn.disabled = resources.bronze.count <= 0;
-  sellSilverBtn.disabled = resources.silver.count <= 0;
-  sellCobaltBtn.disabled = resources.cobalt.count <= 0;
-  sellGoldBtn.disabled = resources.gold.count <= 0;
-  sellPalladiumBtn.disabled = resources.palladium.count <= 0;
-  sellPlatinumBtn.disabled = resources.platinum.count <= 0; // New resource
-  sellTitaniumBtn.disabled = resources.titanium.count <= 0;
-  sellAdamantiumBtn.disabled = resources.adamantium.count <= 0;
-
-  setText(
-    "auto-rate-iron",
-    resources.iron.perSecond * milestoneMultipliers.iron
-  );
-  // Update collapsed automine display with formatted value + "/s"
-  const collapsedAutoIron = document.getElementById("collapsed-auto-iron");
-  if (collapsedAutoIron) {
-    const rate = resources.iron.perSecond * milestoneMultipliers.iron || 0;
-    collapsedAutoIron.textContent = fmt(rate) + "/s";
+  // Only animate if money increased significantly (avoid micro-animations)
+  if (newMoney > prevMoney + 1) {
+    const moneyBox = getCachedElement("money-display");
+    if (moneyBox) {
+      moneyBox.classList.remove("money-bounce");
+      // Use RAF instead of forcing reflow
+      requestAnimationFrame(() => {
+        moneyBox.classList.add("money-bounce");
+      });
+    }
   }
-  setText(
-    "auto-rate-copper",
-    resources.copper.perSecond * milestoneMultipliers.copper
-  );
-  const collapsedAutoCopper = document.getElementById("collapsed-auto-copper");
-  if (collapsedAutoCopper) {
-    const rate = resources.copper.perSecond * milestoneMultipliers.copper || 0;
-    collapsedAutoCopper.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-nickel",
-    resources.nickel.perSecond * milestoneMultipliers.nickel
-  );
-  const collapsedAutoNickel = document.getElementById("collapsed-auto-nickel");
-  if (collapsedAutoNickel) {
-    const rate = resources.nickel.perSecond * milestoneMultipliers.nickel || 0;
-    collapsedAutoNickel.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-bronze",
-    resources.bronze.perSecond * milestoneMultipliers.bronze
-  );
-  const collapsedAutoBronze = document.getElementById("collapsed-auto-bronze");
-  if (collapsedAutoBronze) {
-    const rate = resources.bronze.perSecond * milestoneMultipliers.bronze || 0;
-    collapsedAutoBronze.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-silver",
-    resources.silver.perSecond * milestoneMultipliers.silver
-  );
-  const collapsedAutoSilver = document.getElementById("collapsed-auto-silver");
-  if (collapsedAutoSilver) {
-    const rate = resources.silver.perSecond * milestoneMultipliers.silver || 0;
-    collapsedAutoSilver.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-cobalt",
-    resources.cobalt.perSecond * milestoneMultipliers.cobalt
-  );
-  const collapsedAutoCobalt = document.getElementById("collapsed-auto-cobalt");
-  if (collapsedAutoCobalt) {
-    const rate = resources.cobalt.perSecond * milestoneMultipliers.cobalt || 0;
-    collapsedAutoCobalt.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-gold",
-    resources.gold.perSecond * milestoneMultipliers.gold
-  );
-  const collapsedAutoGold = document.getElementById("collapsed-auto-gold");
-  if (collapsedAutoGold) {
-    const rate = resources.gold.perSecond * milestoneMultipliers.gold || 0;
-    collapsedAutoGold.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-palladium",
-    resources.palladium.perSecond * milestoneMultipliers.palladium
-  );
-  const collapsedAutoPalladium = document.getElementById(
-    "collapsed-auto-palladium"
-  );
-  if (collapsedAutoPalladium) {
-    const rate =
-      resources.palladium.perSecond * milestoneMultipliers.palladium || 0;
-    collapsedAutoPalladium.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-platinum",
-    resources.platinum.perSecond * milestoneMultipliers.platinum
-  ); // New resource
-  const collapsedAutoPlatinum = document.getElementById(
-    "collapsed-auto-platinum"
-  );
-  if (collapsedAutoPlatinum) {
-    const rate =
-      resources.platinum.perSecond * milestoneMultipliers.platinum || 0;
-    collapsedAutoPlatinum.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-titanium",
-    resources.titanium.perSecond * milestoneMultipliers.titanium
-  );
-  const collapsedAutoTitanium = document.getElementById(
-    "collapsed-auto-titanium"
-  );
-  if (collapsedAutoTitanium) {
-    const rate =
-      resources.titanium.perSecond * milestoneMultipliers.titanium || 0;
-    collapsedAutoTitanium.textContent = fmt(rate) + "/s";
-  }
-  setText(
-    "auto-rate-adamantium",
-    resources.adamantium.perSecond * milestoneMultipliers.adamantium
-  );
-  const collapsedAutoAdamantium = document.getElementById(
-    "collapsed-auto-adamantium"
-  );
-  if (collapsedAutoAdamantium) {
-    const rate =
-      resources.adamantium.perSecond * milestoneMultipliers.adamantium || 0;
-    collapsedAutoAdamantium.textContent = fmt(rate) + "/s";
-  }
+  updateMoneyDisplay.lastMoney = newMoney;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -1430,8 +2460,11 @@ function calculateAutoSellInterval(resId) {
   const baseInterval = 15000; // 15 seconds base
   const minInterval = 3000; // 3 seconds minimum
 
+  // Ensure shop items are initialized
+  const items = ensureShopItemsInitialized();
+
   // Find autosell speed upgrades for this resource
-  const speedUpgrades = shopItems.filter(
+  const speedUpgrades = items.filter(
     (item) => item.category === resId && item.id.endsWith("-autosell-speed")
   );
 
@@ -1447,7 +2480,11 @@ function calculateAutoSellInterval(resId) {
 
 function startAutoSell(resId) {
   stopAutoSell(resId);
-  const seller = shopItems.find(
+
+  // Ensure shop items are initialized
+  const items = ensureShopItemsInitialized();
+
+  const seller = items.find(
     (i) => i.category === resId && i.id.endsWith("-autoseller")
   );
   if (!seller || seller.count === 0) return;
@@ -1620,7 +2657,8 @@ function createAutoSellFeedback(button, cash, quantity, resId) {
     return; // Button is not properly positioned, likely hidden
   }
 
-  const feedback = document.createElement("div");
+  // Performance: Use object pool for feedback elements
+  const feedback = effectPool.getFeedback();
   feedback.className = "autosell-feedback";
   feedback.innerHTML = `
     <div class="autosell-feedback-main">+$${fmt(cash)}</div>
@@ -1642,10 +2680,11 @@ function createAutoSellFeedback(button, cash, quantity, resId) {
     feedback.style.opacity = "0";
   }, 10);
 
-  // Remove element after animation
+  // Remove element after animation and return to pool
   setTimeout(() => {
     if (feedback.parentNode) {
       feedback.parentNode.removeChild(feedback);
+      effectPool.returnFeedback(feedback);
     }
   }, 1000);
 }
@@ -2065,6 +3104,7 @@ function getSaveData() {
     titanium: resources.titanium.count,
     adamantium: resources.adamantium.count,
     money: resources.money.count,
+    coreShards: resources.coreShards.count,
 
     copperUnlocked,
     nickelUnlocked,
@@ -2089,7 +3129,7 @@ function getSaveData() {
     titaniumPerSecond: resources.titanium.perSecond,
     adamantiumPerSecond: resources.adamantium.perSecond,
 
-    upgrades: shopItems.map((i) => ({
+    upgrades: ensureShopItemsInitialized().map((i) => ({
       id: i.id,
       count: i.count,
       price: i.price,
@@ -2098,6 +3138,16 @@ function getSaveData() {
     stats,
 
     collapseStates,
+
+    // Prestige data
+    totalPrestiges,
+    prestigeUnlocked,
+    coreUpgrades: Object.fromEntries(
+      Object.entries(coreUpgrades).map(([key, upgrade]) => [
+        key,
+        { level: upgrade.level },
+      ])
+    ),
 
     lastSave: Date.now(),
     lastActive: Date.now(), // Track when player was last active
@@ -2134,8 +3184,10 @@ function calculateOfflineRewards(saveData) {
 
       if (totalRate > 0) {
         const mined = totalRate * rewardTime;
-        const price = getResourceSellPrice(resId);
-        const moneyFromResource = mined * price;
+        const basePrice = getResourceSellPrice(resId);
+        const globalSellBonus = 1 + getForgeCoreBonusValue("globalSellValue");
+        const finalPrice = Math.floor(basePrice * globalSellBonus);
+        const moneyFromResource = mined * finalPrice;
 
         offlineRewards[resId] = {
           mined: mined,
@@ -2276,6 +3328,7 @@ function loadGame() {
     resources.titanium.count = data.titanium || 0;
     resources.adamantium.count = data.adamantium || 0;
     resources.money.count = data.money || 0;
+    resources.coreShards.count = data.coreShards || 0;
 
     copperUnlocked = !!data.copperUnlocked;
     nickelUnlocked = !!data.nickelUnlocked;
@@ -2365,6 +3418,23 @@ function loadGame() {
       Object.assign(stats.clicks, data.stats.clicks || {});
     }
 
+    // Load prestige data
+    if (data.totalPrestiges !== undefined) {
+      totalPrestiges = data.totalPrestiges;
+    }
+    if (data.prestigeUnlocked !== undefined) {
+      prestigeUnlocked = data.prestigeUnlocked;
+    }
+    if (data.coreUpgrades || data.forgeCoreUpgrades) {
+      // Support both old and new format for backward compatibility
+      const upgradeData = data.coreUpgrades || data.forgeCoreUpgrades;
+      Object.entries(upgradeData).forEach(([key, saveData]) => {
+        if (coreUpgrades[key] && saveData.level !== undefined) {
+          coreUpgrades[key].level = saveData.level;
+        }
+      });
+    }
+
     // re-init autosellers with random timing variation to prevent synchronization
     shopItems
       .filter((i) => i.id.endsWith("-autoseller") && i.count > 0)
@@ -2385,6 +3455,9 @@ function loadGame() {
 
     console.log("Game loaded successfully");
     updateStatsUI();
+    checkPrestigeUnlock(); // Check prestige unlock status after loading
+    updatePrestigeUI();
+    updateCoreUI();
     return true;
   } catch (e) {
     console.error("Failed to load game:", e);
@@ -2397,306 +3470,49 @@ function loadGame() {
 ──────────────────────────────────────────────────────────────────────────── */
 function unlockCopperUI(expandPanel = true) {
   copperUnlocked = true;
-  mineCopperBtn.disabled = sellCopperBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="copper"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-copper", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-copper") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-copper")?.remove();
-  document.getElementById("tab-resource-copper")?.classList.remove("locked");
+  unlockResourceUI("copper", expandPanel);
 }
 
 function unlockNickelUI(expandPanel = true) {
   nickelUnlocked = true;
-  mineNickelBtn.disabled = sellNickelBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="nickel"]'
-  );
-  panel?.classList.remove("locked");
+  unlockResourceUI("nickel", expandPanel);
 
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-nickel", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-nickel") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-nickel")?.remove();
-  document.getElementById("tab-resource-nickel")?.classList.remove("locked");
+  // Check if prestige should be unlocked
+  checkPrestigeUnlock();
 }
 function unlockBronzeUI(expandPanel = true) {
   bronzeUnlocked = true;
-  mineBronzeBtn.disabled = sellBronzeBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="bronze"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-bronze", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-bronze") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-bronze")?.remove();
-  document.getElementById("tab-resource-bronze")?.classList.remove("locked");
+  unlockResourceUI("bronze", expandPanel);
 }
 function unlockSilverUI(expandPanel = true) {
   silverUnlocked = true;
-  mineSilverBtn.disabled = sellSilverBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="silver"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-silver", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-silver") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-silver")?.remove();
-  document.getElementById("tab-resource-silver")?.classList.remove("locked");
+  unlockResourceUI("silver", expandPanel);
 }
 
 function unlockCobaltUI(expandPanel = true) {
   cobaltUnlocked = true;
-  mineCobaltBtn.disabled = sellCobaltBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="cobalt"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-cobalt", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-cobalt") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-cobalt")?.remove();
-  document.getElementById("tab-resource-cobalt")?.classList.remove("locked");
+  unlockResourceUI("cobalt", expandPanel);
 }
 function unlockGoldUI(expandPanel = true) {
   goldUnlocked = true;
-  mineGoldBtn.disabled = sellGoldBtn.disabled = false;
-  const panel = document.querySelector('.resource-panel[data-resource="gold"]');
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-gold", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-gold") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-gold")?.remove();
-  document.getElementById("tab-resource-gold")?.classList.remove("locked");
+  unlockResourceUI("gold", expandPanel);
 }
 
 function unlockPalladiumUI(expandPanel = true) {
   palladiumUnlocked = true;
-  minePalladiumBtn.disabled = sellPalladiumBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="palladium"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-palladium", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-palladium") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-palladium")?.remove();
-  document.getElementById("tab-resource-palladium")?.classList.remove("locked");
+  unlockResourceUI("palladium", expandPanel);
 }
 function unlockPlatinumUI(expandPanel = true) {
   platinumUnlocked = true;
-  minePlatinumBtn.disabled = sellPlatinumBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="platinum"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-platinum", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-platinum") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-platinum")?.remove();
-  document.getElementById("tab-resource-platinum")?.classList.remove("locked");
+  unlockResourceUI("platinum", expandPanel);
 }
 function unlockTitaniumUI(expandPanel = true) {
   titaniumUnlocked = true;
-  mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="titanium"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-titanium", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-titanium") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-titanium")?.remove();
-  document.getElementById("tab-resource-titanium")?.classList.remove("locked");
+  unlockResourceUI("titanium", expandPanel);
 }
 function unlockAdamantiumUI(expandPanel = true) {
   adamantiumUnlocked = true;
-  mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = false;
-  const panel = document.querySelector(
-    '.resource-panel[data-resource="adamantium"]'
-  );
-  panel?.classList.remove("locked");
-
-  // Only force expansion for fresh unlocks, not when loading saves
-  if (expandPanel) {
-    panel?.classList.remove("collapsed");
-    try {
-      localStorage.setItem("panel-collapsed-adamantium", "0");
-    } catch {}
-  } else {
-    // When loading saves, ensure collapse state matches localStorage
-    try {
-      const shouldBeCollapsed =
-        localStorage.getItem("panel-collapsed-adamantium") === "1";
-      if (shouldBeCollapsed) {
-        panel?.classList.add("collapsed");
-      } else {
-        panel?.classList.remove("collapsed");
-      }
-    } catch {}
-  }
-
-  document.getElementById("lock-overlay-adamantium")?.remove();
-  document
-    .getElementById("tab-resource-adamantium")
-    ?.classList.remove("locked");
+  unlockResourceUI("adamantium", expandPanel);
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -2740,7 +3556,7 @@ function startNewGame() {
   adamantiumUnlocked = false;
 
   // Reset shop items
-  shopItems.forEach((item) => {
+  ensureShopItemsInitialized().forEach((item) => {
     item.count = 0;
     item.price = item.basePrice;
   });
@@ -2752,23 +3568,36 @@ function startNewGame() {
   stats.spentMoney = 0;
   stats.clicks = { mine: 0, sell: 0, shopBuy: 0, unlock: 0 };
 
+  // Reset prestige system for true new game
+  prestigeUnlocked = false;
+  totalPrestiges = 0;
+  resources.coreShards.count = 0;
+
+  // Reset Core upgrades
+  Object.keys(coreUpgrades).forEach((upgradeId) => {
+    coreUpgrades[upgradeId].level = 0;
+  });
+
+  // Reset milestone multipliers
+  RES_IDS.forEach((res) => {
+    milestoneMultipliers[res] = 1;
+  });
+
   // Remove save and highscore
   if (isLocalStorageAvailable()) {
     localStorage.removeItem("idleMinerSave");
     localStorage.removeItem("idleMinerHighscore");
   }
 
-  // Reset UI buttons
-  mineCopperBtn.disabled = sellCopperBtn.disabled = true;
-  mineNickelBtn.disabled = sellNickelBtn.disabled = true;
-  mineBronzeBtn.disabled = sellBronzeBtn.disabled = true;
-  mineSilverBtn.disabled = sellSilverBtn.disabled = true;
-  mineCobaltBtn.disabled = sellCobaltBtn.disabled = true;
-  mineGoldBtn.disabled = sellGoldBtn.disabled = true;
-  minePalladiumBtn.disabled = sellPalladiumBtn.disabled = true;
-  minePlatinumBtn.disabled = sellPlatinumBtn.disabled = true; // New resource
-  mineTitaniumBtn.disabled = sellTitaniumBtn.disabled = true;
-  mineAdamantiumBtn.disabled = sellAdamantiumBtn.disabled = true;
+  // Reset UI buttons using dynamic resourceButtons object
+  Object.keys(resourceButtons).forEach((resourceId) => {
+    if (resourceId !== "iron") {
+      // Iron starts unlocked
+      const buttons = resourceButtons[resourceId];
+      if (buttons?.mine) buttons.mine.disabled = true;
+      if (buttons?.sell) buttons.sell.disabled = true;
+    }
+  });
 
   // Reset current resource and tabs
   currentResource = "iron";
@@ -2815,10 +3644,12 @@ function startNewGame() {
   // Reset UI screens
   if (screenShop) screenShop.classList.add("hidden");
   if (screenStats) screenStats.classList.add("hidden");
+  if (screenCore) screenCore.classList.add("hidden");
   if (screenMine) screenMine.classList.remove("hidden");
   tabMine.classList.add("active");
   tabShop.classList.remove("active");
   tabStats.classList.remove("active");
+  if (tabCore) tabCore.classList.remove("active");
 
   // Stop autosave
   stopAutoSave();
@@ -2864,6 +3695,7 @@ function startNewGame() {
   updateUI();
   renderShop();
   updateStatsUI();
+  updatePrestigeUI(); // Ensure prestige elements are hidden for new game
 
   console.log("New game started - all data wiped");
 }
@@ -2872,6 +3704,9 @@ function startNewGame() {
    START GAME
 ──────────────────────────────────────────────────────────────────────────── */
 function startGame() {
+  // Initialize shop items if not already done
+  ensureShopItemsInitialized();
+
   mainMenu.style.display = "none";
   settingsMenu.style.display = "none";
   gameUI.style.display = "flex";
@@ -2887,8 +3722,16 @@ function startGame() {
 
   updateUI();
   updateStatsUI();
+  updatePrestigeUI(); // Ensure prestige elements are properly hidden on start
   switchResource(currentResource);
+
+  // Ensure shop is rendered
+  renderShop();
+
   showScreen("mine");
+
+  // Start optimized game loop
+  startGameLoop();
 
   if (toggleAutoSave?.checked) startAutoSave();
 }
@@ -2980,30 +3823,28 @@ btnSaveMenu?.addEventListener("click", () => {
   if (gameUI) gameUI.style.display = "none";
   if (mainMenu) mainMenu.style.display = "flex";
   gameStarted = false;
+
+  // Clean up to prevent memory leaks
+  stopGameLoop();
   stopAutoSave();
-});
 
-/* ────────────────────────────────────────────────────────────────────────────
-   ON LOAD
-──────────────────────────────────────────────────────────────────────────── */
-document.addEventListener("DOMContentLoaded", () => {
-  const hasSave =
-    isLocalStorageAvailable() && !!localStorage.getItem("idleMinerSave");
-  // Removed analytics tracking
-  if (btnContinue) btnContinue.disabled = !hasSave;
-  if (gameUI) gameUI.style.display = "none";
-  if (mainMenu) mainMenu.style.display = "flex";
-  gameStarted = false;
+  // Clear all caches and pools to free memory
+  if (updateShopButtons.elementCache) {
+    updateShopButtons.elementCache.clear();
+  }
+  if (renderShop.itemCache) {
+    renderShop.itemCache.clear();
+  }
+  domCache.clear();
 
-  if (!hasSave) {
-    // fresh boot: relock everything above iron
-    relockResource("copper");
-    relockResource("bronze");
-    relockResource("silver");
-    relockResource("gold");
-    relockResource("platinum"); // New resource
-    relockResource("titanium");
-    relockResource("adamantium");
+  // Reset effect pools
+  effectPool.particles.length = 0;
+  effectPool.feedbacks.length = 0;
+  effectPool.pulses.length = 0;
+
+  // Force garbage collection hint
+  if (window.gc) {
+    window.gc();
   }
 });
 
@@ -3045,32 +3886,6 @@ function showAutoSaveIndicator() {
   cogIndicator.classList.add("show");
 }
 
-// Initialize locked resources as collapsed on page load
-document.addEventListener("DOMContentLoaded", () => {
-  // Ensure all locked resources start collapsed
-  const lockedResources = [
-    "copper",
-    "nickel",
-    "bronze",
-    "silver",
-    "cobalt",
-    "gold",
-    "palladium",
-    "platinum",
-    "titanium",
-    "adamantium",
-  ];
-  lockedResources.forEach((res) => {
-    if (!isUnlocked(res)) {
-      const panel = document.querySelector(
-        `.resource-panel[data-resource="${res}"]`
-      );
-      if (panel && !panel.classList.contains("collapsed")) {
-        panel.classList.add("collapsed");
-      }
-    }
-  });
-});
 function hideAutoSaveIndicator() {
   document.getElementById("autosave-cog")?.classList.remove("show");
 }
