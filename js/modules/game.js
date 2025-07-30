@@ -55,28 +55,24 @@ export function getForgeCoreBonusValue(upgradeId) {
   return upgrade.level * upgrade.effect;
 }
 
-/** Sell all resources of a given type */
+/** Sell all resources of given type */
 export function sellAll(resId, isAutoSell = false) {
-  if (!isUnlocked(resId)) return 0;
-  const qty = resources[resId].count;
-  if (qty <= 0) return 0;
+  const resource = resources[resId];
+  if (!resource || resource.count <= 0) return 0;
 
   // Apply ForgeCore sell value bonus
   const globalSellBonus = 1 + getForgeCoreBonusValue("globalSellValue");
-  const cash = Math.floor(qty * resources[resId].sellPrice * globalSellBonus);
-  addMoney(cash);
-  stats.sold[resId] += qty;
-  resources[resId].count = 0;
-  stats.clicks.sell++;
-
-  // TODO: Add visual effects for sell
-  // if (isAutoSell) {
-  //   createAutoSellEffects(resId, cash, qty);
-  // } else {
-  //   createSellPop(resId);
-  // }
-
-  // TODO: Update UI
-  // updateUI();
-  return cash;
+  const totalValue = Math.floor(resource.count * resource.sellPrice * globalSellBonus);
+  const quantity = resource.count;
+  
+  addMoney(totalValue);
+  resource.count = 0;
+  
+  stats.sold[resId] += quantity;
+  if (!isAutoSell) {
+    stats.clicks.sell++;
+  }
+  
+  console.log(`Sold ${quantity} ${resId} for $${totalValue}`);
+  return totalValue;
 }

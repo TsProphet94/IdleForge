@@ -21,6 +21,19 @@ export const unlockState = {
 export let prestigeUnlocked = false;
 export let totalPrestiges = 0;
 
+// Helper functions to update prestige state
+export function setPrestigeUnlocked(value) {
+  prestigeUnlocked = value;
+}
+
+export function setTotalPrestiges(value) {
+  totalPrestiges = value;
+}
+
+export function incrementPrestiges() {
+  totalPrestiges++;
+}
+
 // Core upgrades state
 export const coreUpgrades = {
   globalMineRate: { level: 0, maxLevel: 10, baseCost: 1, costScale: 2, effect: 0.25 },
@@ -30,5 +43,16 @@ export const coreUpgrades = {
 // Auto-save interval
 export let autoSaveInterval = null;
 
-// Game started flag
+// Game started flag  
 export let gameStarted = false;
+
+// Helper function to update game started state
+export function setGameStarted(value) {
+  gameStarted = value;
+}
+
+// Make prestige state globally accessible for backwards compatibility
+if (typeof window !== 'undefined') {
+  window.prestigeUnlocked = prestigeUnlocked;
+  window.totalPrestiges = totalPrestiges;
+}

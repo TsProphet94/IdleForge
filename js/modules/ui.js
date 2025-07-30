@@ -3,6 +3,7 @@
 import { resources, RES_IDS } from './data.js';
 import { fmt, setText, isUnlocked } from './helpers.js';
 import { stats } from './data.js';
+import { updatePrestigeUI, updatePrestigeTab, updateCoreUI, updateMilestoneList } from './prestige.js';
 
 /**
  * Master UI update function, calls individual updates in order.
@@ -13,6 +14,9 @@ export function updateUI() {
   updateShopUI();
   updateStatsUI();
   updatePrestigeUI();
+  updatePrestigeTab();
+  updateCoreUI();
+  updateMilestoneList();
 }
 
 // Update money display separately for performance
