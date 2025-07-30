@@ -11,7 +11,7 @@ import palladium from "../../resources/palladium.js";
 import platinum from "../../resources/platinum.js";
 import titanium from "../../resources/titanium.js";
 import adamantium from "../../resources/adamantium.js";
-import { createShopItems } from "../shop/items.js";
+import { createShopItems } from "../../shop/items.js";
 
 // Resource definitions
 export const resources = {

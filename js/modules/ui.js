@@ -3,13 +3,12 @@
 import { resources } from './data.js';
 import { fmt, setText, isUnlocked } from './helpers.js';
 import { stats } from './data.js';
-import { updateMoneyDisplay as uiUpdateMoneyDisplay, updateResourceUI, updateShopUI, updateStatsUI, updatePrestigeUI } from './ui.js';
 
 /**
  * Master UI update function, calls individual updates in order.
  */
 export function updateUI() {
-  uiUpdateMoneyDisplay();
+  updateMoneyDisplay();
   updateResourceUI();
   updateShopUI();
   updateStatsUI();
@@ -17,9 +16,7 @@ export function updateUI() {
 }
 
 // Update money display separately for performance
-export async function updateMoneyDisplay() {
-  const { fmt } = await import('./helpers.js');
-  const { getCachedElement } = await import('./helpers.js');
+export function updateMoneyDisplay() {
   if (!updateMoneyDisplay.lastMoney) updateMoneyDisplay.lastMoney = resources.money.count;
   const prevMoney = updateMoneyDisplay.lastMoney;
   const newMoney = resources.money.count;
@@ -28,7 +25,7 @@ export async function updateMoneyDisplay() {
   if (moneyCountEl) moneyCountEl.textContent = `$${fmt(newMoney)}`;
 
   if (newMoney > prevMoney + 1) {
-    const moneyBox = getCachedElement('money-display');
+    const moneyBox = document.getElementById('money-display');
     if (moneyBox) {
       moneyBox.classList.remove('money-bounce');
       requestAnimationFrame(() => {

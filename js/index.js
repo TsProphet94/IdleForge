@@ -1,5 +1,3 @@
-// Entry point for IdleForge game
-// Import ES6 modules
 // Entry point for IdleForge game using ES6 modules
 // Storage and Persistence (must load first)
 import './modules/storage.js';
@@ -19,3 +17,4 @@ import './modules/shop.js';
 import './modules/ui.js';
 // Event Handlers (initialize DOM interactions)
 import './modules/events.js';
+// Note: main.js removed to avoid loading legacy script.js

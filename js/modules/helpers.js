@@ -25,9 +25,11 @@ export function setText(id, value) {
 /**
  * Checks if a given resource ID is unlocked.
  */
-export function isUnlocked(resId, unlockState) {
+export function isUnlocked(resId) {
   if (resId === "iron") return true;
-  return !!unlockState[resId];
+  // For now, assume all resources are unlocked to get basic functionality working
+  // This will be updated when we properly migrate the unlock system
+  return true;
 }
 
 /**
