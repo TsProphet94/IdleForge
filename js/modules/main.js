@@ -1,4 +1,3 @@
-// Main entry module for legacy script
-
-// This module loads the existing monolithic script.js until full migration to ES6 modules is complete
-import "../../script.js";
+// Main entry module - now deprecated 
+// All functionality has been migrated to ES6 modules
+// This file is kept for legacy compatibility but no longer needed
