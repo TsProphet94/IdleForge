@@ -11,6 +11,8 @@ import { gameStarted } from './state.js';
 import { startNewGame, startGame, continueGame, newGameConfirmed, attemptUnlock, startGameLoop } from './gameLoop.js';
 import { initSettings, initDevPanel, showScreen } from './settings.js';
 import { modalSystem } from './modal.js';
+import { initAutoSellHandlers } from './autosell.js';
+import { performPrestige } from './prestige.js';
 
 // Game UI elements
 let mainMenu, settingsMenu, gameUI;
@@ -29,6 +31,7 @@ function initializeEventHandlers() {
   initSettings();
   initDevPanel();
   initShop();
+  initAutoSellHandlers();
   
   // Set up menu event handlers
   setupMenuEventHandlers();
@@ -41,6 +44,9 @@ function initializeEventHandlers() {
   
   // Set up panel collapse/expand
   setupPanelEventHandlers();
+  
+  // Set up prestige event handlers
+  setupPrestigeEventHandlers();
   
   console.log("✅ Event handlers initialized");
 }
@@ -186,6 +192,23 @@ function setupPanelEventHandlers() {
       if (panel) panel.classList.add("collapsed");
     }
   });
+}
+
+// Prestige event handlers
+function setupPrestigeEventHandlers() {
+  // Main prestige button (in Core tab)
+  const prestigeBtn = document.getElementById('prestige-btn');
+  if (prestigeBtn) {
+    prestigeBtn.addEventListener('click', performPrestige);
+  }
+  
+  // Prestige action button (in Stats -> Prestige tab)
+  const prestigeActionBtn = document.getElementById('prestige-action-btn');
+  if (prestigeActionBtn) {
+    prestigeActionBtn.addEventListener('click', performPrestige);
+  }
+  
+  console.log("⚡ Prestige event handlers initialized");
 }
 
 // Screen transition functions

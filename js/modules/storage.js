@@ -299,22 +299,95 @@ function hideAutoSaveIndicator() {
   }
 }
 
+// ──────────────────────────────────────────────────────────────────────────
+// 🚀 DEPLOYMENT SAVE WIPE FUNCTIONS - FOR MAJOR UPDATES
+// ──────────────────────────────────────────────────────────────────────────
+
+// 🔥 EMERGENCY SAVE RESET - Use these functions for deployments
+const DEPLOYMENT_SAVE_WIPE = {
+  // 🚨 MAIN RESET FUNCTION - Use this for major updates
+  resetAllSaves: () => {
+    if (typeof Storage !== "undefined") {
+      localStorage.removeItem("idleMinerSave");
+      localStorage.removeItem("idleMinerHighscore");
+      localStorage.removeItem("idleforge-theme");
+      localStorage.removeItem("idleForge_autoSave");
+      
+      // Clear any panel collapsed states
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("panel-collapsed-")) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      console.log("🔥 DEPLOYMENT SAVE WIPE COMPLETE - All saves reset");
+      console.log("💡 Reload the page to start fresh");
+      return true;
+    }
+    return false;
+  },
+
+  // 📊 Check what would be reset
+  checkSaveState: () => {
+    const saves = {
+      mainSave: !!localStorage.getItem("idleMinerSave"),
+      highscore: !!localStorage.getItem("idleMinerHighscore"),
+      theme: !!localStorage.getItem("idleforge-theme"),
+      autoSave: !!localStorage.getItem("idleForge_autoSave"),
+      panelStates: Object.keys(localStorage).filter((k) =>
+        k.startsWith("panel-collapsed-")
+      ).length,
+    };
+    console.log("📊 Current save state:", saves);
+    return saves;
+  },
+
+  // ⚡ Quick reset and reload
+  resetAndReload: () => {
+    DEPLOYMENT_SAVE_WIPE.resetAllSaves();
+    setTimeout(() => location.reload(), 500);
+  },
+};
+
+// Version control constants
+const GAME_VERSION = "0.1.37"; // ⚡ UPDATE THIS WITH EACH RELEASE
+const RESET_SAVES_ON_VERSION_CHANGE = false; // ⚡ Set to true for major updates, false for minor
+
+// Log version info
+console.log(
+  `🎯 VERSION CONTROL: Game v${GAME_VERSION} | Save Reset: ${
+    RESET_SAVES_ON_VERSION_CHANGE ? "ENABLED" : "DISABLED"
+  }`
+);
+
 // Developer functions (for console access)
 export function resetSaves() {
-  if (!confirm("Are you sure you want to reset ALL save data? This cannot be undone!")) {
-    return;
-  }
-  
-  localStorage.removeItem("idleMinerSave");
-  localStorage.removeItem("idleMinerHighscore");
-  console.log("All saves cleared!");
+  return DEPLOYMENT_SAVE_WIPE.resetAllSaves();
 }
 
 export function resetAndReload() {
-  resetSaves();
-  location.reload();
+  return DEPLOYMENT_SAVE_WIPE.resetAndReload();
+}
+
+export function checkSaveState() {
+  return DEPLOYMENT_SAVE_WIPE.checkSaveState();
 }
 
 // Make functions globally available for console access
-window.resetSaves = resetSaves;
-window.resetAndReload = resetAndReload;
+if (typeof window !== 'undefined') {
+  window.DEPLOYMENT_SAVE_WIPE = DEPLOYMENT_SAVE_WIPE;
+  window.resetSaves = resetSaves;
+  window.resetAndReload = resetAndReload;
+  window.checkSaveState = checkSaveState;
+  
+  // Log available commands
+  console.log("🚀 DEPLOYMENT SAVE WIPE FUNCTIONS LOADED");
+  console.log("📝 Quick commands:");
+  console.log("  resetSaves() - Reset all saves");
+  console.log("  resetAndReload() - Reset and reload page");
+  console.log("  checkSaveState() - Check current saves");
+  console.log("  DEPLOYMENT_SAVE_WIPE.checkSaveState() - Check current saves");
+}
+
+// Export constants
+export { GAME_VERSION, RESET_SAVES_ON_VERSION_CHANGE };

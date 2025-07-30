@@ -163,6 +163,11 @@ export async function attemptPrestige() {
   console.log(`Prestige completed! Gained ${reward} core shards. Total prestiges: ${totalPrestiges}`);
 }
 
+// Perform prestige (called by button handlers)
+export async function performPrestige() {
+  return attemptPrestige();
+}
+
 // Apply milestone rewards
 export function applyMilestoneRewards() {
   const milestoneMultiplier = getMilestoneMultiplier();
