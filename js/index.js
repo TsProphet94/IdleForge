@@ -11,6 +11,8 @@ import './modules/theme.js';
 // Game Mechanics
 import './modules/game.js';
 import './modules/prestige.js';
+import './modules/gameLoop.js';
+import './modules/settings.js';
 import './modules/autosell.js';
 // Shop Logic
 import './modules/shop.js';

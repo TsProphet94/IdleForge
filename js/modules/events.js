@@ -8,105 +8,134 @@ import { initShop } from './shop.js';
 import { initTheme } from './theme.js';
 import { storageManager } from './storage.js';
 import { gameStarted } from './state.js';
+import { startNewGame, startGame, continueGame, newGameConfirmed, attemptUnlock, startGameLoop } from './gameLoop.js';
+import { initSettings, initDevPanel, showScreen } from './settings.js';
+import { modalSystem } from './modal.js';
 
 // Game UI elements
 let mainMenu, settingsMenu, gameUI;
 
-// Screen switching functionality
-function showScreen(screenName) {
-  // Hide all screens
-  const screens = document.querySelectorAll('.screen-panel');
-  screens.forEach(screen => screen.classList.add('hidden'));
+// Initialize all event handlers
+function initializeEventHandlers() {
+  console.log("🎯 Initializing event handlers...");
   
-  // Show the requested screen
-  const targetScreen = document.getElementById(`screen-${screenName}`);
-  if (targetScreen) {
-    targetScreen.classList.remove('hidden');
-  }
-  
-  // Update tab active states
-  const tabButtons = document.querySelectorAll('nav.header-nav button');
-  tabButtons.forEach(btn => btn.classList.remove('active'));
-  
-  // Set active state on the correct tab
-  const activeTab = document.getElementById(`tab-${screenName}`);
-  if (activeTab) {
-    activeTab.classList.add('active');
-  }
-}
-
-// Initialize game functionality
-function startGame() {
-  // Initialize shop items if not already done
-  ensureShopItemsInitialized();
-
-  mainMenu.style.display = "none";
-  settingsMenu.style.display = "none";
-  gameUI.style.display = "flex";
-  // gameStarted = true; // TODO: need to make this writable
-
-  updateUI();
-
-  // Show the mine screen by default
-  showScreen('mine');
-
-  // TODO: implement additional game start logic
-  // switchResource(currentResource);
-  // renderShop();
-  // startGameLoop();
-  // if (toggleAutoSave?.checked) startAutoSave();
-}
-
-// Attach DOM event listeners
-document.addEventListener('DOMContentLoaded', () => {
-  // Cache DOM elements
+  // Get UI elements
   mainMenu = document.getElementById('main-menu');
   settingsMenu = document.getElementById('settings-menu');
   gameUI = document.getElementById('game-ui');
 
-  // Initialize theme picker
+  // Initialize systems
   initTheme();
-
-  // Initialize shop module
+  initSettings();
+  initDevPanel();
   initShop();
+  
+  // Set up menu event handlers
+  setupMenuEventHandlers();
+  
+  // Set up game event handlers
+  setupGameEventHandlers();
+  
+  // Set up navigation event handlers
+  setupNavigationEventHandlers();
+  
+  // Set up panel collapse/expand
+  setupPanelEventHandlers();
+  
+  console.log("✅ Event handlers initialized");
+}
 
+// Menu event handlers
+function setupMenuEventHandlers() {
   // New Game button
-  const btnNew = document.getElementById('btn-new');
-  if (btnNew) {
-    btnNew.addEventListener('click', () => {
-      // TODO: show confirmation modal for new game
-      startGame();
+  const btnNewGame = document.getElementById('btn-new');
+  if (btnNewGame) {
+    btnNewGame.addEventListener('click', () => {
+      // Check if there's existing save data
+      const existingSave = localStorage.getItem('idleMinerSave');
+      if (existingSave) {
+        // Show confirmation modal
+        if (confirm("This will overwrite your current save. Are you sure?")) {
+          transitionToGame();
+          newGameConfirmed();
+        }
+      } else {
+        transitionToGame();
+        newGameConfirmed();
+      }
     });
   }
-
+  
   // Continue button
   const btnContinue = document.getElementById('btn-continue');
   if (btnContinue) {
     btnContinue.addEventListener('click', () => {
-      // TODO: load saved game first
-      startGame();
+      transitionToGame();
+      continueGame();
     });
   }
-
+  
   // Settings button
   const btnSettings = document.getElementById('btn-settings');
   if (btnSettings) {
     btnSettings.addEventListener('click', () => {
-      mainMenu.style.display = 'none';
-      settingsMenu.style.display = 'flex';
+      if (mainMenu) mainMenu.style.display = 'none';
+      if (settingsMenu) settingsMenu.style.display = 'flex';
     });
   }
-
+  
   // Back to main menu from settings
   const btnBackToMenu = document.getElementById('btn-back-to-menu');
   if (btnBackToMenu) {
     btnBackToMenu.addEventListener('click', () => {
-      settingsMenu.style.display = 'none';
-      mainMenu.style.display = 'flex';
+      if (settingsMenu) settingsMenu.style.display = 'none';
+      if (mainMenu) mainMenu.style.display = 'flex';
     });
   }
+}
 
-  // Tab navigation
+// Game event handlers
+function setupGameEventHandlers() {
+  // Mining buttons
+  RES_IDS.forEach(resId => {
+    const mineBtn = document.getElementById(`mine-${resId}-btn`);
+    if (mineBtn) {
+      mineBtn.addEventListener('click', () => {
+        mineResource(resId);
+        updateUI();
+      });
+    }
+    
+    // Selling buttons
+    const sellBtn = document.getElementById(`sell-${resId}-btn`);
+    if (sellBtn) {
+      sellBtn.addEventListener('click', () => {
+        sellAll(resId);
+        updateUI();
+      });
+    }
+    
+    // Unlock buttons
+    const unlockBtn = document.getElementById(`unlock-${resId}-btn`);
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', () => {
+        attemptUnlock(resId);
+      });
+    }
+  });
+  
+  // Menu button (in game)
+  const menuBtn = document.getElementById('menu-btn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      transitionToMenu();
+    });
+  }
+}
+
+// Navigation event handlers
+function setupNavigationEventHandlers() {
+  // Tab buttons
   const tabs = document.querySelectorAll('nav.header-nav button');
   tabs.forEach(btn => {
     btn.addEventListener('click', e => {
@@ -123,22 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
       updateUI();
     });
   });
+}
 
-  // Resource mine/sell buttons
-  RES_IDS.forEach(resId => {
-    const mineBtn = document.getElementById(`mine-${resId}-btn`);
-    const sellBtn = document.getElementById(`sell-${resId}-btn`);
-    if (mineBtn) mineBtn.addEventListener('click', () => {
-      // Use mineResource which includes click tracking
-      mineResource(resId);
-      updateUI();
-    });
-    if (sellBtn) sellBtn.addEventListener('click', () => {
-      sellAll(resId);
-      updateUI();
-    });
-  });
-
+// Panel collapse/expand event handlers
+function setupPanelEventHandlers() {
   // Resource Panel Collapse/Expand System
   document.querySelectorAll(".collapse-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -169,13 +186,44 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panel) panel.classList.add("collapsed");
     }
   });
+}
 
-  // TODO: migrate more event handlers from script.js
-  // - Stats tab switching
-  // - Developer panel
-  // - Settings toggles
-  // - Prestige system
-  // - Shop functionality
+// Screen transition functions
+function transitionToGame() {
+  if (mainMenu) mainMenu.style.display = "none";
+  if (settingsMenu) settingsMenu.style.display = "none";
+  if (gameUI) gameUI.style.display = "flex";
+  
+  // Show the mine screen by default
+  showScreen('mine');
+}
+
+function transitionToMenu() {
+  if (gameUI) gameUI.style.display = "none";
+  if (settingsMenu) settingsMenu.style.display = "none";
+  if (mainMenu) mainMenu.style.display = "flex";
+}
+
+// Screen switching functionality
+export function switchToScreen(screenName) {
+  showScreen(screenName);
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("📄 DOM loaded, initializing IdleForge...");
+  
+  try {
+    initializeEventHandlers();
+    
+    // Initialize shop items
+    ensureShopItemsInitialized();
+    
+    // Update UI to show initial state
+    updateUI();
+    
+    console.log("🎮 IdleForge initialized successfully!");
+  } catch (error) {
+    console.error("❌ Failed to initialize IdleForge:", error);
+  }
 });
-
-export { startGame };

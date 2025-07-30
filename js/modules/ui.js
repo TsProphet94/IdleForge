@@ -106,7 +106,3 @@ export function updateStatsUI() {
     highscoreEl.textContent = '$' + fmt(highscore);
   }
 }
-
-export function updatePrestigeUI() {
-  // TODO: implement prestige UI updates
-}
