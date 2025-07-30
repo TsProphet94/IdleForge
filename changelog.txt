@@ -1,0 +1,185 @@
+v0.1.37 – Mobile UX Fixes & Developer Save Reset Tools!
+
+•   FIXED: Resolved mobile header double-height issue that was causing layout problems on iPhone and Android devices.
+•   FIXED: Eliminated horizontal scrolling in shop interface - shop content now properly contains within viewport boundaries.
+•   FIXED: Enhanced mobile safe area handling to prevent content overlap with device notches and status bars.
+•   IMPROVED: Better mobile touch interaction with properly sized touch targets and eliminated accidental swipe gestures.
+•   IMPROVED: Optimized CSS responsive design with comprehensive overflow controls for smoother mobile experience.
+•   NEW: Developer Save Reset System! Added prominent deployment functions for managing save data during major updates.
+•   NEW: Quick console commands for developers: resetSaves(), resetAndReload(), and DEPLOYMENT_SAVE_WIPE object with comprehensive save management.
+•   NEW: Prominent version control configuration section at top of script.js - no more scrolling to find GAME_VERSION and RESET_SAVES_ON_VERSION_CHANGE settings.
+•   NEW: Deployment checklist and console logging for easier version management and update deployment.
+•   TECHNICAL: Moved version control settings from buried location (line 3136+) to prominent top section for better developer workflow.
+•   TECHNICAL: Enhanced DEPLOYMENT_GUIDE.md with multiple save reset methods and emergency procedures for comprehensive deployment support.
+•   TECHNICAL: Added visual markers and emojis in code for easy identification of deployment-critical sections.
+•   TECHNICAL: Improved localStorage management with batch operations and comprehensive save state checking.
+
+-------------------------------------
+
+v0.1.35 – Prestige System & New CSS Modals!
+
+•   NEW: Prestige System! Players can now reset their progress in exchange for powerful permanent bonuses, adding a new layer of long-term progression and replayability.
+•   NEW: Prestige modal dialog with detailed information, confirmation step, and summary of rewards earned.
+•   NEW: Modular CSS modal system implemented for all in-game dialogs (Prestige, Welcome Back, Settings, etc.) for consistent, modern UI/UX.
+•   IMPROVED: All modal dialogs now feature smooth animations, responsive layouts, and theme support for seamless integration with the game's visual style.
+•   TECHNICAL: Added modals.css to the styles/ directory, encapsulating all modal-related styles for maintainability and scalability.
+•   TECHNICAL: Refactored modal logic for easier extension and future modal additions.
+
+-------------------------------------
+
+v0.1.31 – Major CSS Architecture Refactor & Shop Visual Enhancements!
+
+•   REFACTORED: Complete modularization of CSS architecture - split monolithic 3,000+ line styles.css into organized modular structure.
+•   NEW: Created styles/ directory with 6 specialized CSS modules: base.css, themes.css, layout.css, components.css, interactions.css, responsive.css.
+•   NEW: Professional PNG resource icons replace emoji icons in shop tabs - each resource now displays its proper metallic logo with visual state effects.
+•   IMPROVED: Enhanced shop tab icons with sophisticated CSS styling - brightness/saturation filters for normal, active, and locked states.
+•   IMPROVED: Enhanced maintainability with clear separation of concerns - each CSS file has single responsibility (themes, layout, components, etc.).
+•   IMPROVED: Better development workflow - easier to locate, modify, and debug specific styles without affecting unrelated code.
+•   IMPROVED: Scalable architecture ready for future theme additions, new components, and responsive breakpoints.
+•   IMPROVED: Enhanced autosell visual feedback system with resource-specific effects, progress bars, and mobile haptic feedback support.
+•   IMPROVED: Sophisticated autosell timing system with speed upgrade integration and smooth countdown animations.
+•   TECHNICAL: Preserved all existing functionality - no visual changes or breaking changes to game appearance or behavior.
+•   TECHNICAL: Optimized CSS load order with @import statements ensuring proper cascade and theme application.
+•   TECHNICAL: Added comprehensive CSS documentation (CSS_REFACTOR_SUMMARY.md) explaining new architecture and benefits.
+•   TECHNICAL: Enhanced autosell progress bar system with collapsed panel support and visual urgency indicators.
+•   TECHNICAL: Improved autosell effects with resource-specific colors, particle systems for premium resources, and screen pulse feedback.
+•   TECHNICAL: Removed redundant deploy-gh-pages.sh script - consolidated deployment workflow through release.sh for better automation.
+
+--------------------------------------
+
+v0.1.29 – Perfect iPhone PWA Experience!
+
+•   FIXED: Complete overhaul of iPhone safe area handling - removed ugly top bar that was disrupting full-screen PWA experience.
+•   FIXED: Main menu now maintains perfect edge-to-edge display with seamless background extending to screen edges.
+•   IMPROVED: Game header-only safe area padding ensures content stays below iPhone notch/Dynamic Island without affecting main menu.
+•   IMPROVED: Targeted CSS approach - only game screens get safe area padding, preserving immersive main menu experience.
+•   IMPROVED: Removed excessive body padding that was creating visible bars and disrupting PWA's native app feel.
+•   TECHNICAL: Streamlined safe area implementation using specific #game-ui header targeting instead of global body padding.
+•   TECHNICAL: Cleaned up development debugging code for cleaner production deployment.
+
+--------------------------------------
+
+v0.1.28 – Enhanced iPhone Safe Area & PWA Polish!
+
+•   FIXED: Major improvement to iPhone PWA safe area handling - content now properly respects the notch/Dynamic Island area on all iPhone models.
+•   FIXED: Removed conflicting CSS that was pulling the header back into the status bar area on iPhone PWA installations.
+•   IMPROVED: Enhanced safe area detection with multiple fallback methods for maximum iPhone compatibility (X, 11, 12, 13, 14, 15 series).
+•   IMPROVED: Added minimum 44px top padding fallback for devices that don't support CSS env() functions properly.
+•   IMPROVED: Better PWA standalone mode detection with iPhone-specific WebKit optimizations.
+•   TECHNICAL: Added comprehensive safe area debugging tools for development (iPhone viewport, display mode, CSS support detection).
+•   TECHNICAL: Implemented multiple CSS strategies (@supports, @media queries, !important overrides) for bulletproof safe area handling.
+•   TECHNICAL: Enhanced PWA display mode CSS with proper header positioning and overlay safe area support.
+
+--------------------------------------
+
+v0.1.27 – PWA Safe Area Fix & Resource Panel State Fix!
+
+•   FIXED: Mobile header layout issue where menu button was cut off on iPhone screens - completely restructured header with two-row responsive design.
+•   NEW: Progressive Web App (PWA) support! IdleForge can now be installed as a mobile app directly from your browser.
+•   NEW: Complete PWA manifest with proper app icons, theme colors, and display settings for native app experience.
+•   NEW: Service worker implementation for offline functionality and faster loading through intelligent caching.
+•   NEW: PWA app icons in multiple sizes (192x192, 512x512) for perfect display across all devices and platforms.
+•   IMPROVED: Enhanced mobile navigation with better touch targets and improved header spacing for small screens.
+•   IMPROVED: Optimized caching strategy for all game assets including compressed images for lightning-fast offline play.
+•   TECHNICAL: Added comprehensive PWA meta tags for proper mobile app integration and installation prompts.
+•   TECHNICAL: Implemented background sync and cache-first strategies for seamless offline gaming experience.
+•   DEPLOYMENT: Cleaned production codebase removing all development scripts and files for optimized GitHub Pages deployment.
+•   FIXED: PWA header positioning on iPhone - content now displays below status bar instead of being covered by battery/time indicators.
+•   FIXED: Resource panels now properly maintain their collapsed state when continuing saved games - no more unwanted expansion of locked resources!
+•   IMPROVED: Added comprehensive CSS safe area inset support for all iPhone models including those with notches (iPhone X, 11, 12, 13, 14, 15 series).
+•   IMPROVED: Background color now extends seamlessly to screen edges while content respects safe areas - no ugly bars at the top.
+•   IMPROVED: Enhanced PWA display mode detection with optimized standalone app experience.
+•   IMPROVED: Better landscape orientation support for PWA mode with centered content layout.
+•   TECHNICAL: Fixed order of operations in loadGame() function - collapse states are now restored before unlocking resources for proper UI state management.
+•   TECHNICAL: Added dynamic viewport height (100dvh) support for modern mobile browsers.
+•   TECHNICAL: Implemented CSS env() functions for safe-area-inset handling across all UI elements.
+•   TECHNICAL: Added device-specific optimizations using CSS @supports queries for enhanced compatibility.
+
+--------------------------------------
+
+v0.1.25 – New Resources, Offline Rewards & UI Polish!
+
+•   NEW: Nickel resource! A mid-tier metal that bridges the gap between Bronze and Silver in the progression chain.
+•   NEW: Cobalt resource! A valuable blue metal that unlocks between Silver and Gold for enhanced late-game progression.
+•   NEW: Palladium resource! A rare precious metal that sits between Gold and Platinum, adding depth to end-game mining.
+•   NEW: Offline Rewards System! Earn 10% of your mining rate while away from the game (minimum 1 minute offline, maximum 3 hours of rewards).
+•   NEW:"Welcome Back" modal shows exactly what you earned while offline, including breakdown by resource and total money gained.
+•   FIXED: Locked resource panels now properly maintain their collapsed state when loading a saved game - no more unwanted expansion!
+•   IMPROVED: Complete Shop Panel redesign with professional header, emoji resource tab icons, and helpful footer tips for better navigation.
+•   IMPROVED: Enhanced Stats Panel with organized grid layout, featured highscore display, comprehensive financial summary, and integrated milestone tracking.
+•   IMPROVED: All three main panels (Shop, Stats, Milestones) now feature card-based design with improved visual hierarchy and mobile responsiveness.
+•   IMPROVED: Enhanced font styling with Rubik font family for better readability and modern gaming aesthetic.
+•   IMPROVED: Smart unlock system that expands panels only for fresh unlocks, preserving player UI preferences on game load.
+•   OPTIMIZED: Dramatically reduced image file sizes! All resource background images compressed from 2.7-3.3MB down to ~650KB each (75-80% size reduction).
+•   OPTIMIZED: Faster page loading times and reduced bandwidth usage thanks to image compression improvements.
+•   TECHNICAL: Added comprehensive CSS styling system for enhanced panel layouts with responsive design and hover effects.
+•   TECHNICAL: Added lastActive timestamp tracking for accurate offline time calculation.
+•   TECHNICAL: Optimized resource price integration for offline rewards calculation.
+
+--------------------------------------
+
+v0.1.22 – Theme Options & New Resources!
+
+•   New theme options added! Customize your mining experience with different visual styles.
+•   Added 4 vibrant neon themes: Neon Cyan, Neon Purple, Neon Pink, and Cyberpunk for an electrifying visual experience!
+•   Introduced Titanium! A new high-tier resource to mine and upgrade.
+•   Added Adamantium! The ultimate end-game resource with the highest value and unlock cost.
+•   Enhanced Platinum integration with improved progression and balance.
+•   Added collapsible resource panels for better screen space management and cleaner UI.
+•   Major Phase 1 Balance Update: Smooth 5x unlock cost progression, standardized 2.5x resource value scaling, and reduced upgrade cost scaling for better affordability.
+•   Complete iPhone & mobile optimization: Enhanced touch targets, single-column resource layout on mobile, iOS Safari improvements, and smooth scrolling for perfect mobile gameplay.
+•   Fixed background rendering issue and optimized mobile resource panel layout.
+
+--------------------------------------
+
+v0.1.21- Milestone Rewards, Platimum, Rebalance!
+
+•   New milestone rewards added for each resource, giving extra goals and bonuses as you progress.
+•   New resource: Platinum! Unlock, mine, and upgrade this high-value late-game metal.
+•   Major balance update: All resource sell prices increased for smoother progression. Upgrade base prices and scaling reduced across all resources—upgrades are now more affordable and rewarding. Late-game unlock costs and platinum/gold progression tuned for less grind and more satisfying ramp.
+•   New Main Menu Background!
+•   Passive income and per-click upgrades now scale better with resource value.
+•   Early, mid, and late game progression rebalanced for a fair challenge and less paywall cliff.
+•   Fixed new game logic, ensuring (mine per click) is reset to 1.
+•   Fixed autoseller toggle logic.
+•   Added rescource price tag, indicating its value.
+•   Added IdleForge logo to main menu.
+•   Added Highscore feature.
+
+--------------------------------------
+
+v0.1.17– Gold icon fix 
+
+--------------------------------------
+
+v0.1.14– Milestone Tab & UI Enhancements
+
+•   New Milestone Tab! Each resource now has its own clearly separated section with labeled headings, making it easier to track your progress at a glance.
+
+•   Fix: Switching between Shop and Mine tabs now preserves their individual scroll positions. No more jarring scroll jumps!
+
+•	Improvements: Minor code cleanup and streamlined UI logic for better maintainability and responsiveness. New animations on shop and money counters.
+
+---------------------------------------
+
+v0.1.13 – “Bulk or Bust”
+
+Shop Overhaul
+•	Shop moved from a slide-out drawer to its own full screen. Cleaner grid, easier scrolling, way less claustrophobic.
+•	Buy Max button added.
+•	Button label trimmed: Buy Max, uprgade progress bar.
+
+Economy & Balance Pass
+•	Full rebalance of unlock costs and upgrade curves across all resources.
+•	Progression tuned for a smooth ramp, not a sheer paywall cliff.
+•	Early game still snappy; late game less trivial. Passive income properly considered.
+
+QoL & Polish
+•	Unified styling for both Buy buttons (same gradient, hover, disabled states).
+•	Dynamic labels/disable states update in-place without janky refreshes.
+•	Unlock overlays reliably rebuild after wipes/new games.
+•	New stat panel showing global game stats.
+
+Under the Hood
+•	Bulk math helpers (bulkCost, bulkAffordable, etc.) centralized and reused.
+•	Save/load, autosell timers, and stat tracking cleaned up for fewer edge-case gremlins.

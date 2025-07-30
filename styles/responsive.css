@@ -1,0 +1,632 @@
+/* ==========================================================================
+   RESPONSIVE & MOBILE OPTIMIZATION
+   ========================================================================== */
+
+/* iPhone-specific optimizations */
+@media (max-width: 480px) {
+  /* Prevent any horizontal scrolling on mobile */
+  body,
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Top safe area boundary - colored to match background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background: var(--color-bg);
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  /* Theme-specific safe area colors */
+  .theme-midnight body::before {
+    background: var(--color-bg);
+  }
+
+  .theme-emerald body::before,
+  .theme-sunset body::before,
+  .theme-neon-cyan body::before,
+  .theme-neon-purple body::before,
+  .theme-neon-pink body::before,
+  .theme-cyberpunk body::before,
+  .theme-aurora body::before,
+  .theme-dragon-fire body::before {
+    background: var(--color-bg);
+  }
+
+  /* Safe area padding for iPhone with notch - only top safe area */
+  #game-ui {
+    padding-top: env(safe-area-inset-top);
+    /* Remove bottom safe area padding */
+    padding-bottom: 0;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Header safe area adjustments - ensure it stays sticky and visible */
+  header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
+    padding-left: max(var(--space-md), env(safe-area-inset-left));
+    padding-right: max(var(--space-md), env(safe-area-inset-right));
+    /* Remove safe area padding from header to prevent double spacing */
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    /* Ensure header scrolls with content and stays visible */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Main content safe area */
+  main {
+    padding-left: max(var(--space-sm), env(safe-area-inset-left));
+    padding-right: max(var(--space-sm), env(safe-area-inset-right));
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Force single column layout on mobile */
+  .resources-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--space-md);
+  }
+
+  .resource-panel {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  /* Improve touch targets for mobile */
+  .collapse-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: var(--space-sm);
+    font-size: 1.2rem;
+  }
+
+  /* Better button sizing for touch */
+  nav button {
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.9rem;
+  }
+
+  /* Header navigation specifically */
+  .header-nav {
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .header-nav button {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Better touch targets for all interactive elements */
+  button,
+  .switch,
+  .resource-tab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Ensure proper spacing between interactive elements */
+  .resource-actions {
+    gap: var(--space-sm);
+  }
+
+  .shop-btn-row {
+    gap: var(--space-sm);
+  }
+
+  /* Prevent horizontal scrolling in shop */
+  #screen-shop {
+    overflow-x: hidden !important;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Ensure all screen panels don't cause horizontal scroll */
+  .screen-panel {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Resource filter dropdown mobile optimization */
+  .resource-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .resource-filter-label {
+    font-size: 0.9rem;
+  }
+
+  .resource-filter-select {
+    min-width: 100%;
+    font-size: 0.95rem;
+  }
+
+  /* Optimize resource panels for mobile */
+  .resource-panel {
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .resource-actions {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .resource-actions button {
+    min-width: 100%;
+    min-height: 50px;
+    font-size: 1rem;
+  }
+
+  /* Better resource display for mobile */
+  .resource-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    text-align: left;
+  }
+
+  .resource-display h3 {
+    font-size: 1.5rem;
+  }
+
+  /* Shop optimization for mobile */
+  #shop-list {
+    gap: var(--space-sm);
+    grid-template-columns: 1fr;
+  }
+
+  #shop-list li {
+    padding: var(--space-md);
+  }
+
+  .shop-btn {
+    min-height: 48px;
+    font-size: 0.95rem;
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Theme selector mobile optimization */
+  .theme-select-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .theme-select-container select {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  /* Stats adjustments */
+  .stats-list li {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.4rem;
+    min-height: 32px;
+  }
+
+  .stats-money p {
+    font-size: 0.85rem;
+  }
+
+  /* Force single column layout for stats on mobile */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile ForgeCore adjustments */
+  .forgecore-upgrades {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile prestige stats */
+  .prestige-stats {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  /* Mobile milestone grid */
+  .milestone-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stats tabs mobile optimization */
+  .stats-tabs {
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+
+  .stats-tab-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .stats-tab-btn .material-icons {
+    font-size: 1.1rem;
+  }
+
+  /* Milestone list mobile optimization */
+  .milestone-resource-list {
+    font-size: 0.85rem;
+  }
+
+  /* Header adjustments - prevent double height */
+  header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
+    padding: var(--space-sm) var(--space-md);
+    /* Override any conflicting safe area padding that causes double height */
+    padding-top: max(var(--space-sm), env(safe-area-inset-top));
+    /* Ensure header stays sticky and visible */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    -webkit-position: sticky;
+    will-change: transform;
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Mobile-specific header adjustments */
+  .header-top {
+    margin-bottom: var(--space-xs);
+  }
+
+  .header-top .logo {
+    font-size: 1.2rem;
+    margin-right: var(--space-sm);
+  }
+
+  .logo01 {
+    width: 36px;
+    height: 36px;
+    margin-right: var(--space-sm);
+  }
+
+  .money-top {
+    font-size: 0.95rem;
+    padding: var(--space-xs) var(--space-sm);
+    min-width: 70px;
+  }
+
+  .header-nav button {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.8rem;
+    min-height: 40px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .header-nav button .material-icons {
+    font-size: 1rem;
+  }
+
+  /* Mobile optimization for offline rewards */
+  .offline-rewards-modal {
+    padding: var(--space-md);
+  }
+
+  .offline-rewards-content {
+    padding: var(--space-lg);
+    max-width: 100%;
+  }
+
+  .offline-rewards-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .offline-rewards-list {
+    max-height: 150px;
+  }
+
+  .offline-rewards-list li {
+    font-size: 0.9rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}
+
+/* Very small screens (iPhone SE, etc.) */
+@media (max-width: 360px) {
+  /* Compress header navigation even more */
+  nav {
+    gap: var(--space-xs);
+    margin-left: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  nav button {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.75rem;
+    min-height: 40px;
+  }
+
+  .header-nav {
+    gap: 2px;
+  }
+
+  .header-nav button {
+    padding: var(--space-xs);
+    font-size: 0.7rem;
+    min-height: 40px;
+  }
+
+  /* Even more compressed resource panels */
+  .resource-panel {
+    padding: var(--space-sm);
+  }
+
+  .resource-actions button {
+    min-height: 48px;
+    font-size: 0.9rem;
+  }
+
+  /* Smaller shop items on tiny screens */
+  #shop-list li {
+    padding: var(--space-sm);
+  }
+
+  .shop-item-name {
+    font-size: 0.9rem;
+  }
+
+  .shop-item-desc {
+    font-size: 0.8rem;
+  }
+
+  /* Extra small screens header */
+  .header-top .logo {
+    font-size: 1.1rem;
+  }
+
+  .logo01 {
+    width: 32px;
+    height: 32px;
+  }
+
+  .money-top {
+    font-size: 0.85rem;
+    padding: var(--space-xs);
+    min-width: 60px;
+  }
+
+  .header-nav button {
+    font-size: 0.7rem;
+    padding: var(--space-xs);
+    gap: 2px;
+  }
+
+  .header-nav button .material-icons {
+    font-size: 0.9rem;
+  }
+
+  /* Resource tabs - make them stack better on tiny screens */
+  .resource-tab {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 0;
+  }
+
+  .tab-icon-img {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+  }
+
+  /* Extra small stats tabs */
+  .stats-tab-btn {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.85rem;
+    gap: var(--space-xs);
+  }
+
+  .stats-tab-btn .material-icons {
+    font-size: 1rem;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Compress header in landscape to save vertical space */
+  header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
+    padding: var(--space-xs) var(--space-sm);
+    /* Ensure header stays sticky and visible in landscape */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    -webkit-position: sticky;
+    will-change: transform;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .logo01 {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-top {
+    margin-bottom: var(--space-xs);
+  }
+
+  .header-nav button {
+    min-height: 36px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.8rem;
+  }
+
+  .money-top {
+    padding: var(--space-xs);
+    font-size: 0.85rem;
+  }
+
+  /* Optimize content spacing */
+  .resources-container {
+    gap: var(--space-md);
+  }
+
+  .resource-panel {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  /* Horizontal layout for landscape */
+  .resource-actions {
+    flex-direction: row;
+  }
+
+  .resource-actions button {
+    min-width: auto;
+    flex: 1;
+    min-height: 44px;
+  }
+
+  /* Compact stats in landscape */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: var(--space-sm);
+  }
+}
+
+/* Large mobile/small tablet - Keep single column for better mobile experience */
+@media (min-width: 481px) and (max-width: 767px) {
+  .resources-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .resource-panel {
+    min-height: auto;
+    width: 100%;
+  }
+
+  /* Allow 2-column layout for shop on larger phones */
+  #shop-list {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-sm);
+  }
+
+  /* Allow 2-column layout for stats on larger phones */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  }
+
+  /* Better resource layout for larger phones */
+  .resource-actions {
+    flex-direction: row;
+    gap: var(--space-sm);
+  }
+
+  .resource-actions button {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Stats tabs can be horizontal on larger phones */
+  .stats-tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  .stats-tab-btn {
+    flex: 1;
+    min-width: 0;
+    max-width: 150px;
+    justify-content: center;
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .resource-panel {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  /* Mobile responsiveness for enhanced panels */
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-tabs {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+
+  .stats-tabs {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .stats-tab-btn {
+    flex: 0 1 auto;
+    min-width: 120px;
+    max-width: 200px;
+  }
+
+  .milestone-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .score-value {
+    font-size: 1.8rem;
+  }
+
+  .shop-header h2,
+  .stats-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .resources-container {
+    gap: var(--space-xl);
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+}
