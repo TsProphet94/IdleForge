@@ -633,10 +633,14 @@ nav button:active {
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: var(--space-xs);
   /* Prevent tabs from affecting parent scroll */
   width: 100%;
+  max-width: 100%;
   -webkit-overflow-scrolling: touch;
+  /* Ensure the container itself doesn't cause horizontal scroll */
+  box-sizing: border-box;
 }
 
 .resource-tab {

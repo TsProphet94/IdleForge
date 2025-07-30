@@ -4,24 +4,42 @@
 
 /* iPhone-specific optimizations */
 @media (max-width: 480px) {
+  /* Prevent any horizontal scrolling on mobile */
+  body,
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
   /* Safe area padding for iPhone with notch */
   #game-ui {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
   }
 
-  /* Header safe area adjustments */
+  /* Header safe area adjustments - prevent double height on mobile */
   header {
     padding-left: max(var(--space-md), env(safe-area-inset-left));
     padding-right: max(var(--space-md), env(safe-area-inset-right));
+    /* Remove any duplicate safe area padding that causes double height */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: 0;
   }
 
   /* Main content safe area */
   main {
     padding-left: max(var(--space-sm), env(safe-area-inset-left));
     padding-right: max(var(--space-sm), env(safe-area-inset-right));
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   /* Force single column layout on mobile */
   .resources-container {
@@ -79,6 +97,34 @@
 
   .shop-btn-row {
     gap: var(--space-sm);
+  }
+
+  /* Prevent horizontal scrolling in shop */
+  #screen-shop {
+    overflow-x: hidden !important;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Ensure all screen panels don't cause horizontal scroll */
+  .screen-panel {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .resource-tabs {
+    /* Ensure tabs don't cause parent overflow */
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .resource-tab {
+    /* Allow tabs to shrink if needed */
+    flex-shrink: 0;
+    min-width: 60px;
+    white-space: nowrap;
   }
 
   /* Optimize resource panels for mobile */
@@ -212,9 +258,11 @@
     font-size: 0.85rem;
   }
 
-  /* Header adjustments */
+  /* Header adjustments - prevent double height */
   header {
     padding: var(--space-sm) var(--space-md);
+    /* Override any conflicting safe area padding that causes double height */
+    padding-top: max(var(--space-sm), env(safe-area-inset-top));
   }
 
   header h1 {

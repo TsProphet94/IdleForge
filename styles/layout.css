@@ -165,7 +165,8 @@ footer .footer-content a:hover {
   }
 
   #game-ui header {
-    padding-top: max(env(safe-area-inset-top), 20px);
+    /* Avoid double safe area padding - handled in responsive.css */
+    padding-top: var(--space-md);
   }
 }
 
@@ -173,12 +174,14 @@ footer .footer-content a:hover {
 @supports (-webkit-appearance: none) {
   @media (display-mode: standalone) {
     #game-ui header {
-      padding-top: max(env(safe-area-inset-top), 24px);
+      /* Avoid double safe area padding - handled in responsive.css */
+      padding-top: var(--space-md);
     }
 
     @media (max-width: 414px) and (max-height: 896px) {
       #game-ui header {
-        padding-top: max(env(safe-area-inset-top), 20px);
+        /* Avoid double safe area padding - handled in responsive.css */
+        padding-top: var(--space-md);
       }
     }
   }

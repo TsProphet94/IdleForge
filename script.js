@@ -486,6 +486,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Initial Save State Check
   const hasSave =
     isLocalStorageAvailable() && !!localStorage.getItem("idleMinerSave");
+
+  // Log version information for deployment monitoring
+  console.log(
+    `IdleForge v${GAME_VERSION} - Save reset: ${
+      RESET_SAVES_ON_VERSION_CHANGE ? "ENABLED" : "DISABLED"
+    }`
+  );
+  if (hasSave) {
+    const versionInfo = getSaveVersionInfo();
+    console.log("Save version info:", versionInfo);
+  }
+
   if (btnContinue) btnContinue.disabled = !hasSave;
   if (gameUI) gameUI.style.display = "none";
   if (mainMenu) mainMenu.style.display = "flex";
@@ -788,6 +800,82 @@ const toggleAutoSave = document.getElementById("toggle-auto-save");
 const btnSaveMenu = document.getElementById("btn-save-menu");
 const saveIndicator = document.getElementById("save-indicator");
 
+/* ────────────────────────────────────────────────────────────────────────────
+   🚀 DEPLOYMENT SAVE WIPE FUNCTIONS - FOR MAJOR UPDATES
+──────────────────────────────────────────────────────────────────────────── */
+
+// 🔥 EMERGENCY SAVE RESET - Use these functions for deployments
+window.DEPLOYMENT_SAVE_WIPE = {
+  // 🚨 MAIN RESET FUNCTION - Use this for major updates
+  resetAllSaves: () => {
+    if (typeof Storage !== "undefined") {
+      localStorage.removeItem("idleMinerSave");
+      localStorage.removeItem("idleMinerHighscore");
+      localStorage.removeItem("idleforge-theme");
+      // Clear any panel collapsed states
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("panel-collapsed-")) {
+          localStorage.removeItem(key);
+        }
+      });
+      console.log("🔥 DEPLOYMENT SAVE WIPE COMPLETE - All saves reset");
+      console.log("💡 Reload the page to start fresh");
+      return true;
+    }
+    return false;
+  },
+
+  // 📊 Check what would be reset
+  checkSaveState: () => {
+    const saves = {
+      mainSave: !!localStorage.getItem("idleMinerSave"),
+      highscore: !!localStorage.getItem("idleMinerHighscore"),
+      theme: !!localStorage.getItem("idleforge-theme"),
+      panelStates: Object.keys(localStorage).filter((k) =>
+        k.startsWith("panel-collapsed-")
+      ).length,
+    };
+    console.log("📊 Current save state:", saves);
+    return saves;
+  },
+
+  // ⚡ Quick reset and reload
+  resetAndReload: () => {
+    window.DEPLOYMENT_SAVE_WIPE.resetAllSaves();
+    setTimeout(() => location.reload(), 500);
+  },
+};
+
+// 🔥 Quick access aliases for deployment
+window.resetSaves = window.DEPLOYMENT_SAVE_WIPE.resetAllSaves;
+window.resetAndReload = window.DEPLOYMENT_SAVE_WIPE.resetAndReload;
+
+console.log("🚀 DEPLOYMENT SAVE WIPE FUNCTIONS LOADED");
+console.log("📝 Quick commands:");
+console.log("  resetSaves() - Reset all saves");
+console.log("  resetAndReload() - Reset and reload page");
+console.log("  DEPLOYMENT_SAVE_WIPE.checkSaveState() - Check current saves");
+
+/* ────────────────────────────────────────────────────────────────────────────
+   🎯 VERSION CONTROL & SAVE RESET CONFIGURATION - MODIFY FOR DEPLOYMENTS
+──────────────────────────────────────────────────────────────────────────── */
+
+// 🚨 DEPLOYMENT SETTINGS - Update these for each release
+const GAME_VERSION = "0.1.36"; // ⚡ UPDATE THIS WITH EACH RELEASE
+const RESET_SAVES_ON_VERSION_CHANGE = true; // ⚡ Set to true for major updates, false for minor
+
+console.log(
+  `🎯 VERSION CONTROL: Game v${GAME_VERSION} | Save Reset: ${
+    RESET_SAVES_ON_VERSION_CHANGE ? "ENABLED" : "DISABLED"
+  }`
+);
+
+// 📋 Quick deployment checklist:
+// 1. Update GAME_VERSION above
+// 2. Set RESET_SAVES_ON_VERSION_CHANGE (true for major updates, false for patches)
+// 3. Test with resetSaves() if needed
+// 4. Deploy and monitor console for version info
+
 /* Dev tools */
 const isDev = false;
 const devPanel = document.getElementById("dev-panel");
@@ -795,7 +883,7 @@ const devAddIron = document.getElementById("dev-add-iron");
 const devAddCopper = document.getElementById("dev-add-copper");
 const devAddNickel = document.getElementById("dev-add-nickel");
 const devAddBronze = document.getElementById("dev-add-bronze");
-const devAddSilver = document.getElementById("dev-add-silver");
+const devAddSilver = document.getElementById("dev-silver");
 const devAddCobalt = document.getElementById("dev-add-cobalt");
 const devAddGold = document.getElementById("dev-add-gold");
 const devAddPalladium = document.getElementById("dev-add-palladium");
@@ -3065,8 +3153,81 @@ fetch("changelog.txt")
   });
 
 /* ────────────────────────────────────────────────────────────────────────────
-   SAVE / LOAD
+   SAVE / LOAD & VERSION CONTROL FUNCTIONS
 ──────────────────────────────────────────────────────────────────────────── */
+
+// Version comparison helper
+function compareVersions(version1, version2) {
+  const v1parts = version1.split(".").map(Number);
+  const v2parts = version2.split(".").map(Number);
+
+  for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
+    const v1part = v1parts[i] || 0;
+    const v2part = v2parts[i] || 0;
+
+    if (v1part > v2part) return 1;
+    if (v1part < v2part) return -1;
+  }
+  return 0;
+}
+
+// Check if save should be reset based on version
+function shouldResetSave(saveData) {
+  if (!RESET_SAVES_ON_VERSION_CHANGE) return false;
+
+  const savedVersion = saveData.gameVersion || "0.0.0";
+  const versionChanged = compareVersions(GAME_VERSION, savedVersion) !== 0;
+
+  if (versionChanged) {
+    console.log(
+      `Version changed from ${savedVersion} to ${GAME_VERSION} - save reset enabled`
+    );
+    return true;
+  }
+
+  return false;
+}
+
+// Get save version information for debugging
+function getSaveVersionInfo() {
+  if (!isLocalStorageAvailable()) return { hasSave: false };
+
+  try {
+    const raw = localStorage.getItem("idleMinerSave");
+    if (!raw) return { hasSave: false };
+
+    const data = JSON.parse(raw);
+    return {
+      hasSave: true,
+      savedVersion: data.gameVersion || "unknown",
+      currentVersion: GAME_VERSION,
+      resetEnabled: RESET_SAVES_ON_VERSION_CHANGE,
+      wouldReset: shouldResetSave(data),
+    };
+  } catch (e) {
+    return { hasSave: false, error: e.message };
+  }
+}
+
+// Developer console commands for version management
+window.IdleForgeDebug = {
+  getVersionInfo: getSaveVersionInfo,
+  forceResetSave: () => {
+    if (isLocalStorageAvailable()) {
+      localStorage.removeItem("idleMinerSave");
+      localStorage.removeItem("idleMinerHighscore");
+      console.log("Save manually reset");
+      location.reload();
+    }
+  },
+  getCurrentVersion: () => GAME_VERSION,
+  getResetSetting: () => RESET_SAVES_ON_VERSION_CHANGE,
+};
+
+// 🚨 FOR DEPLOYMENTS: Use DEPLOYMENT_SAVE_WIPE functions above for major updates
+console.log(
+  "🔧 IdleForgeDebug loaded - For deployments use: resetSaves() or DEPLOYMENT_SAVE_WIPE"
+);
 function isLocalStorageAvailable() {
   try {
     const test = "__localStorage_test__";
@@ -3092,6 +3253,7 @@ function getSaveData() {
   });
 
   return {
+    gameVersion: GAME_VERSION, // Track game version with save data
     iron: resources.iron.count,
     copper: resources.copper.count,
     nickel: resources.nickel.count,
@@ -3315,6 +3477,25 @@ function loadGame() {
     const raw = localStorage.getItem("idleMinerSave");
     if (!raw) return false;
     const data = JSON.parse(raw);
+
+    // Check if save should be reset due to version change
+    if (shouldResetSave(data)) {
+      console.log("Save reset triggered due to version change");
+      localStorage.removeItem("idleMinerSave");
+      localStorage.removeItem("idleMinerHighscore");
+
+      // Show notification to user about the reset
+      if (typeof modalSystem !== "undefined") {
+        setTimeout(() => {
+          modalSystem.showAlert(
+            "Save Reset",
+            `Your save has been reset due to a major game update (v${GAME_VERSION}). This ensures compatibility with new features and improvements.`
+          );
+        }, 1000);
+      }
+
+      return false; // No save to load after reset
+    }
 
     resources.iron.count = data.iron || 0;
     resources.copper.count = data.copper || 0;

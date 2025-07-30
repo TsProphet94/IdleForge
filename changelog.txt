@@ -1,3 +1,21 @@
+v0.1.36 – Mobile UX Fixes & Developer Save Reset Tools!
+
+•   FIXED: Resolved mobile header double-height issue that was causing layout problems on iPhone and Android devices.
+•   FIXED: Eliminated horizontal scrolling in shop interface - shop content now properly contains within viewport boundaries.
+•   FIXED: Enhanced mobile safe area handling to prevent content overlap with device notches and status bars.
+•   IMPROVED: Better mobile touch interaction with properly sized touch targets and eliminated accidental swipe gestures.
+•   IMPROVED: Optimized CSS responsive design with comprehensive overflow controls for smoother mobile experience.
+•   NEW: Developer Save Reset System! Added prominent deployment functions for managing save data during major updates.
+•   NEW: Quick console commands for developers: resetSaves(), resetAndReload(), and DEPLOYMENT_SAVE_WIPE object with comprehensive save management.
+•   NEW: Prominent version control configuration section at top of script.js - no more scrolling to find GAME_VERSION and RESET_SAVES_ON_VERSION_CHANGE settings.
+•   NEW: Deployment checklist and console logging for easier version management and update deployment.
+•   TECHNICAL: Moved version control settings from buried location (line 3136+) to prominent top section for better developer workflow.
+•   TECHNICAL: Enhanced DEPLOYMENT_GUIDE.md with multiple save reset methods and emergency procedures for comprehensive deployment support.
+•   TECHNICAL: Added visual markers and emojis in code for easy identification of deployment-critical sections.
+•   TECHNICAL: Improved localStorage management with batch operations and comprehensive save state checking.
+
+-------------------------------------
+
 v0.1.35 – Prestige System & New CSS Modals!
 
 •   NEW: Prestige System! Players can now reset their progress in exchange for powerful permanent bonuses, adding a new layer of long-term progression and replayability.
