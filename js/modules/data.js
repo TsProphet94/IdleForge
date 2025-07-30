@@ -60,4 +60,10 @@ export const stats = {
   sold: Object.fromEntries(RES_IDS.map((res) => [res, 0])),
   earnedMoney: 0,
   spentMoney: 0,
+  clicks: {
+    mine: 0,
+    sell: 0,
+    shopBuy: 0,
+    unlock: 0
+  }
 };

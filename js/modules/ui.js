@@ -1,6 +1,6 @@
 // UI Rendering Module
 
-import { resources } from './data.js';
+import { resources, RES_IDS } from './data.js';
 import { fmt, setText, isUnlocked } from './helpers.js';
 import { stats } from './data.js';
 
@@ -38,17 +38,29 @@ export function updateMoneyDisplay() {
 
 // Additional UI update functions (resources, shop, stats, prestige)
 export function updateResourceUI() {
-  // ...existing code...
+  // Update resource counts and sell button states
+  RES_IDS.forEach(resId => {
+    const countEl = document.getElementById(`${resId}-count`);
+    if (countEl) {
+      countEl.textContent = fmt(resources[resId].count);
+    }
+    
+    // Update sell button state
+    const sellBtn = document.getElementById(`sell-${resId}-btn`);
+    if (sellBtn) {
+      sellBtn.disabled = resources[resId].count <= 0;
+    }
+  });
 }
 
 export function updateShopUI() {
-  // ...existing code...
+  // TODO: implement shop UI updates
 }
 
 export function updateStatsUI() {
-  // ...existing code...
+  // TODO: implement stats UI updates
 }
 
 export function updatePrestigeUI() {
-  // ...existing code...
+  // TODO: implement prestige UI updates
 }

@@ -4,11 +4,20 @@ import { coreUpgrades } from './state.js';
 import { setText, fmt } from './helpers.js';
 import { isUnlocked } from './helpers.js';
 
-/** Add ore & track mined */
+/** Add ore & track mined (this is for manual mining clicks) */
 export function addOre(resId, amount) {
   if (!Number.isFinite(amount) || amount <= 0) return;
   resources[resId].count += amount;
   stats.mined[resId] += amount;
+}
+
+/** Mine resource manually (including click tracking) */
+export function mineResource(resId, amount = null) {
+  if (!Number.isFinite(amount)) {
+    amount = resources[resId].perClick;
+  }
+  addOre(resId, amount);
+  stats.clicks.mine++;
 }
 
 /** Add money gained */
