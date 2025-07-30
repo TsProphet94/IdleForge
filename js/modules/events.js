@@ -12,6 +12,29 @@ import { gameStarted } from './state.js';
 // Game UI elements
 let mainMenu, settingsMenu, gameUI;
 
+// Screen switching functionality
+function showScreen(screenName) {
+  // Hide all screens
+  const screens = document.querySelectorAll('.screen-panel');
+  screens.forEach(screen => screen.classList.add('hidden'));
+  
+  // Show the requested screen
+  const targetScreen = document.getElementById(`screen-${screenName}`);
+  if (targetScreen) {
+    targetScreen.classList.remove('hidden');
+  }
+  
+  // Update tab active states
+  const tabButtons = document.querySelectorAll('nav.header-nav button');
+  tabButtons.forEach(btn => btn.classList.remove('active'));
+  
+  // Set active state on the correct tab
+  const activeTab = document.getElementById(`tab-${screenName}`);
+  if (activeTab) {
+    activeTab.classList.add('active');
+  }
+}
+
 // Initialize game functionality
 function startGame() {
   // Initialize shop items if not already done
@@ -23,13 +46,13 @@ function startGame() {
   // gameStarted = true; // TODO: need to make this writable
 
   updateUI();
-  // updateStatsUI(); // TODO: implement
-  // updatePrestigeUI(); // TODO: implement
+
+  // Show the mine screen by default
+  showScreen('mine');
 
   // TODO: implement additional game start logic
   // switchResource(currentResource);
   // renderShop();
-  // showScreen("mine");
   // startGameLoop();
   // if (toggleAutoSave?.checked) startAutoSave();
 }
@@ -87,7 +110,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('nav.header-nav button');
   tabs.forEach(btn => {
     btn.addEventListener('click', e => {
-      // TODO: handle tab switching and update UI
+      const btnId = btn.id;
+      if (btnId === 'tab-mine') {
+        showScreen('mine');
+      } else if (btnId === 'tab-shop') {
+        showScreen('shop');
+      } else if (btnId === 'tab-stats') {
+        showScreen('stats');
+      } else if (btnId === 'tab-forgecore') {
+        showScreen('forgecore');
+      }
       updateUI();
     });
   });

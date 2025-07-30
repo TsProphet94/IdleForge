@@ -58,7 +58,49 @@ export function updateShopUI() {
 }
 
 export function updateStatsUI() {
-  // TODO: implement stats UI updates
+  // Update financial stats
+  const earnedEl = document.getElementById('stat-earned');
+  if (earnedEl) earnedEl.textContent = '$' + fmt(stats.earnedMoney);
+  
+  const spentEl = document.getElementById('stat-spent');
+  if (spentEl) spentEl.textContent = '$' + fmt(stats.spentMoney);
+  
+  const netEl = document.getElementById('stat-net');
+  if (netEl) netEl.textContent = '$' + fmt(stats.earnedMoney - stats.spentMoney);
+
+  // Update resource stats
+  RES_IDS.forEach((res) => {
+    const minedEl = document.getElementById(`stat-mined-${res}`);
+    if (minedEl) minedEl.textContent = fmt(stats.mined[res] || 0);
+    
+    const soldEl = document.getElementById(`stat-sold-${res}`);
+    if (soldEl) soldEl.textContent = fmt(stats.sold[res] || 0);
+  });
+
+  // Update click stats
+  const mineClicksEl = document.getElementById('stat-click-mine');
+  if (mineClicksEl) mineClicksEl.textContent = fmt(stats.clicks.mine);
+  
+  const sellClicksEl = document.getElementById('stat-click-sell');
+  if (sellClicksEl) sellClicksEl.textContent = fmt(stats.clicks.sell);
+  
+  const shopClicksEl = document.getElementById('stat-click-shop');
+  if (shopClicksEl) shopClicksEl.textContent = fmt(stats.clicks.shopBuy);
+
+  // Update highscore
+  const minedTotal = RES_IDS.reduce(
+    (sum, res) => sum + (stats.mined[res] || 0),
+    0
+  );
+  const score = Math.floor(stats.earnedMoney + minedTotal * 2);
+  
+  // TODO: Load and update highscore from localStorage
+  const highscoreEl = document.getElementById('stat-highscore');
+  if (highscoreEl) {
+    let highscore = score; // For now, use current score
+    // TODO: Compare with localStorage highscore
+    highscoreEl.textContent = '$' + fmt(highscore);
+  }
 }
 
 export function updatePrestigeUI() {
