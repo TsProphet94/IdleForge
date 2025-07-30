@@ -1,4 +1,4 @@
-v0.1.36 – Mobile UX Fixes & Developer Save Reset Tools!
+v0.1.37 – Mobile UX Fixes & Developer Save Reset Tools!
 
 •   FIXED: Resolved mobile header double-height issue that was causing layout problems on iPhone and Android devices.
 •   FIXED: Eliminated horizontal scrolling in shop interface - shop content now properly contains within viewport boundaries.

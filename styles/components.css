@@ -627,69 +627,80 @@ nav button:active {
   display: none;
 } /* no drawer overlay anymore */
 
-/* Resource filter tabs */
-.resource-tabs {
+/* Resource filter dropdown */
+.resource-filter-container {
   display: flex;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: var(--space-md);
   margin-bottom: var(--space-lg);
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: var(--space-xs);
-  /* Prevent tabs from affecting parent scroll */
-  width: 100%;
-  max-width: 100%;
-  -webkit-overflow-scrolling: touch;
-  /* Ensure the container itself doesn't cause horizontal scroll */
-  box-sizing: border-box;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
-.resource-tab {
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--color-surface);
-  border: none;
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
+.resource-filter-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-weight: 600;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.resource-filter-label .material-icons {
+  font-size: 1.2rem;
+  color: var(--color-accent);
+}
+
+.resource-filter-select {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
-  white-space: nowrap;
-  min-height: 44px;
 
-  /* Smoother background blending */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.02);
-
-  /* Better visual integration */
-  position: relative;
-  isolation: isolate;
+  /* Custom dropdown styling */
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--space-sm) center;
+  background-size: 1.2rem;
+  padding-right: calc(var(--space-md) + 1.5rem);
 }
-.resource-tab.active {
-  background: var(--grad-primary);
+
+.resource-filter-select:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.1);
+}
+
+.resource-filter-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.2);
+}
+
+.resource-filter-select option {
+  background: var(--color-surface);
   color: var(--color-text-primary);
-  box-shadow: var(--shadow-md);
-}
-.resource-tab.locked {
-  display: none;
+  padding: var(--space-sm);
 }
 
-.tab-icon-img {
-  width: 18px;
-  height: 18px;
-  margin-right: var(--space-xs);
-  vertical-align: middle;
-  object-fit: contain;
-  filter: brightness(0.8) saturate(0.9);
-  transition: all var(--transition-fast);
+.resource-filter-select option:disabled {
+  color: var(--color-text-secondary);
+  opacity: 0.6;
 }
 
-.resource-tab.active .tab-icon-img {
-  filter: brightness(1.1) saturate(1.2);
-}
-
-.resource-tab.locked .tab-icon-img {
-  filter: grayscale(1) brightness(0.5);
+.resource-filter-select option.locked-option {
+  font-style: italic;
 }
 
 /* === Update Notification System === */

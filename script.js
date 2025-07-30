@@ -411,11 +411,21 @@ function unlockResourceUI(resourceId, expandPanel = true) {
     } catch {}
   }
 
-  // Remove lock overlay and unlock shop tab
+  // Remove lock overlay and unlock shop dropdown option
   document.getElementById(`lock-overlay-${resourceId}`)?.remove();
-  document
-    .getElementById(`tab-resource-${resourceId}`)
-    ?.classList.remove("locked");
+
+  // Enable the dropdown option for this resource
+  if (resourceFilterSelect) {
+    const option = resourceFilterSelect.querySelector(
+      `option[value="${resourceId}"]`
+    );
+    if (option) {
+      option.disabled = false;
+      option.classList.remove("locked-option");
+      // Remove "(Locked)" from the text
+      option.textContent = option.textContent.replace(" (Locked)", "");
+    }
+  }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -752,7 +762,7 @@ const adamantiumCountEl = document.getElementById("adamantium-count");
 const moneyCountEl = document.getElementById("money-count");
 
 const shopList = document.getElementById("shop-list");
-const resourceTabs = document.querySelectorAll(".resource-tab");
+const resourceFilterSelect = document.getElementById("resource-filter-select");
 
 const tabMine = document.getElementById("tab-mine");
 const tabShop = document.getElementById("tab-shop");
@@ -862,7 +872,7 @@ console.log("  DEPLOYMENT_SAVE_WIPE.checkSaveState() - Check current saves");
 
 // 🚨 DEPLOYMENT SETTINGS - Update these for each release
 const GAME_VERSION = "0.1.36"; // ⚡ UPDATE THIS WITH EACH RELEASE
-const RESET_SAVES_ON_VERSION_CHANGE = true; // ⚡ Set to true for major updates, false for minor
+const RESET_SAVES_ON_VERSION_CHANGE = false; // ⚡ Set to true for major updates, false for minor
 
 console.log(
   `🎯 VERSION CONTROL: Game v${GAME_VERSION} | Save Reset: ${
@@ -1308,17 +1318,34 @@ function resetGameForPrestige() {
   relockResource("titanium");
   relockResource("adamantium");
 
-  // Lock resource tabs in shop
-  document.getElementById("tab-resource-copper")?.classList.add("locked");
-  document.getElementById("tab-resource-nickel")?.classList.add("locked");
-  document.getElementById("tab-resource-bronze")?.classList.add("locked");
-  document.getElementById("tab-resource-silver")?.classList.add("locked");
-  document.getElementById("tab-resource-cobalt")?.classList.add("locked");
-  document.getElementById("tab-resource-gold")?.classList.add("locked");
-  document.getElementById("tab-resource-palladium")?.classList.add("locked");
-  document.getElementById("tab-resource-platinum")?.classList.add("locked");
-  document.getElementById("tab-resource-titanium")?.classList.add("locked");
-  document.getElementById("tab-resource-adamantium")?.classList.add("locked");
+  // Lock resource options in shop dropdown
+  if (resourceFilterSelect) {
+    const resourcesToLock = [
+      "copper",
+      "nickel",
+      "bronze",
+      "silver",
+      "cobalt",
+      "gold",
+      "palladium",
+      "platinum",
+      "titanium",
+      "adamantium",
+    ];
+    resourcesToLock.forEach((res) => {
+      const option = resourceFilterSelect.querySelector(
+        `option[value="${res}"]`
+      );
+      if (option) {
+        option.disabled = true;
+        option.classList.add("locked-option");
+        // Add "(Locked)" to the text if not already present
+        if (!option.textContent.includes("(Locked)")) {
+          option.textContent = option.textContent + " (Locked)";
+        }
+      }
+    });
+  }
 
   // Reset UI buttons using dynamic resourceButtons object
   Object.keys(resourceButtons).forEach((resourceId) => {
@@ -1330,11 +1357,11 @@ function resetGameForPrestige() {
     }
   });
 
-  // Reset current resource and tabs
+  // Reset current resource and dropdown selection
   currentResource = "iron";
-  resourceTabs.forEach((tab) =>
-    tab.classList.toggle("active", tab.dataset.resource === "iron")
-  );
+  if (resourceFilterSelect) {
+    resourceFilterSelect.value = "iron";
+  }
 
   // Remove all sell-pop elements
   document.querySelectorAll(".sell-pop").forEach((el) => el.remove());
@@ -2095,22 +2122,23 @@ shopList.addEventListener("click", (e) => {
   }
 });
 
-/* Resource filter tabs inside shop */
-resourceTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    const res = tab.dataset.resource;
+/* Resource filter dropdown inside shop */
+if (resourceFilterSelect) {
+  resourceFilterSelect.addEventListener("change", (e) => {
+    const res = e.target.value;
     if (!RES_IDS.includes(res)) return;
 
     if (!isUnlocked(res)) {
       attemptUnlock(res);
+      // Reset dropdown to previous valid selection
+      resourceFilterSelect.value = currentResource;
       return;
     }
 
     currentResource = res;
-    resourceTabs.forEach((t) => t.classList.toggle("active", t === tab));
     switchResource(currentResource);
   });
-});
+}
 
 /* TOP NAV TABS */
 tabMine.addEventListener("click", () => showScreen("mine"));
@@ -3780,11 +3808,11 @@ function startNewGame() {
     }
   });
 
-  // Reset current resource and tabs
+  // Reset current resource and dropdown selection
   currentResource = "iron";
-  resourceTabs.forEach((tab) =>
-    tab.classList.toggle("active", tab.dataset.resource === "iron")
-  );
+  if (resourceFilterSelect) {
+    resourceFilterSelect.value = "iron";
+  }
 
   // Relock all resources above iron
   relockResource("copper");
@@ -3797,16 +3825,35 @@ function startNewGame() {
   relockResource("platinum"); // New resource
   relockResource("titanium");
   relockResource("adamantium");
-  document.getElementById("tab-resource-copper")?.classList.add("locked");
-  document.getElementById("tab-resource-nickel")?.classList.add("locked");
-  document.getElementById("tab-resource-bronze")?.classList.add("locked");
-  document.getElementById("tab-resource-silver")?.classList.add("locked");
-  document.getElementById("tab-resource-cobalt")?.classList.add("locked");
-  document.getElementById("tab-resource-gold")?.classList.add("locked");
-  document.getElementById("tab-resource-palladium")?.classList.add("locked");
-  document.getElementById("tab-resource-platinum")?.classList.add("locked");
-  document.getElementById("tab-resource-titanium")?.classList.add("locked");
-  document.getElementById("tab-resource-adamantium")?.classList.add("locked");
+
+  // Lock resource options in shop dropdown
+  if (resourceFilterSelect) {
+    const resourcesToLock = [
+      "copper",
+      "nickel",
+      "bronze",
+      "silver",
+      "cobalt",
+      "gold",
+      "palladium",
+      "platinum",
+      "titanium",
+      "adamantium",
+    ];
+    resourcesToLock.forEach((res) => {
+      const option = resourceFilterSelect.querySelector(
+        `option[value="${res}"]`
+      );
+      if (option) {
+        option.disabled = true;
+        option.classList.add("locked-option");
+        // Add "(Locked)" to the text if not already present
+        if (!option.textContent.includes("(Locked)")) {
+          option.textContent = option.textContent + " (Locked)";
+        }
+      }
+    });
+  }
 
   // Hide overlays, modals, and popups
   if (overlay) overlay.classList.add("hidden");

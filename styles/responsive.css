@@ -12,10 +12,40 @@
     max-width: 100%;
   }
 
-  /* Safe area padding for iPhone with notch */
+  /* Top safe area boundary - colored to match background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background: var(--color-bg);
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  /* Theme-specific safe area colors */
+  .theme-midnight body::before {
+    background: var(--color-bg);
+  }
+
+  .theme-emerald body::before,
+  .theme-sunset body::before,
+  .theme-neon-cyan body::before,
+  .theme-neon-purple body::before,
+  .theme-neon-pink body::before,
+  .theme-cyberpunk body::before,
+  .theme-aurora body::before,
+  .theme-dragon-fire body::before {
+    background: var(--color-bg);
+  }
+
+  /* Safe area padding for iPhone with notch - only top safe area */
   #game-ui {
     padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    /* Remove bottom safe area padding */
+    padding-bottom: 0;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     overflow-x: hidden;
@@ -23,13 +53,20 @@
     max-width: 100%;
   }
 
-  /* Header safe area adjustments - prevent double height on mobile */
+  /* Header safe area adjustments - ensure it stays sticky and visible */
   header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
     padding-left: max(var(--space-md), env(safe-area-inset-left));
     padding-right: max(var(--space-md), env(safe-area-inset-right));
-    /* Remove any duplicate safe area padding that causes double height */
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: 0;
+    /* Remove safe area padding from header to prevent double spacing */
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    /* Ensure header scrolls with content and stays visible */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   /* Main content safe area */
@@ -114,17 +151,21 @@
     box-sizing: border-box;
   }
 
-  .resource-tabs {
-    /* Ensure tabs don't cause parent overflow */
-    min-width: 0;
-    flex-shrink: 1;
+  /* Resource filter dropdown mobile optimization */
+  .resource-filter-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
   }
 
-  .resource-tab {
-    /* Allow tabs to shrink if needed */
-    flex-shrink: 0;
-    min-width: 60px;
-    white-space: nowrap;
+  .resource-filter-label {
+    font-size: 0.9rem;
+  }
+
+  .resource-filter-select {
+    min-width: 100%;
+    font-size: 0.95rem;
   }
 
   /* Optimize resource panels for mobile */
@@ -170,22 +211,6 @@
     min-height: 48px;
     font-size: 0.95rem;
     padding: var(--space-sm) var(--space-md);
-  }
-
-  /* Resource tabs mobile optimization */
-  .resource-tabs {
-    gap: var(--space-xs);
-  }
-
-  .resource-tab {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: 0.85rem;
-    flex-shrink: 0;
-  }
-
-  .tab-icon-img {
-    width: 16px;
-    height: 16px;
   }
 
   /* Theme selector mobile optimization */
@@ -260,9 +285,18 @@
 
   /* Header adjustments - prevent double height */
   header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
     padding: var(--space-sm) var(--space-md);
     /* Override any conflicting safe area padding that causes double height */
     padding-top: max(var(--space-sm), env(safe-area-inset-top));
+    /* Ensure header stays sticky and visible */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    -webkit-position: sticky;
+    will-change: transform;
   }
 
   header h1 {
@@ -432,7 +466,16 @@
 @media (max-height: 500px) and (orientation: landscape) {
   /* Compress header in landscape to save vertical space */
   header {
+    position: sticky;
+    top: env(safe-area-inset-top);
+    z-index: 150;
     padding: var(--space-xs) var(--space-sm);
+    /* Ensure header stays sticky and visible in landscape */
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    -webkit-position: sticky;
+    will-change: transform;
   }
 
   header h1 {

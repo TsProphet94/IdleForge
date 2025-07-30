@@ -871,128 +871,95 @@
             </p>
           </div>
 
-          <!-- Resource filter tabs (inside the shop screen) -->
-          <div id="resource-tabs" class="resource-tabs">
-            <button data-resource="iron" class="resource-tab active">
-              <img src="images/iron/fe.png" alt="Iron" class="tab-icon-img" />
-              Iron
-            </button>
-            <button
-              data-resource="copper"
-              id="tab-resource-copper"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/copper/cu.png"
-                alt="Copper"
-                class="tab-icon-img"
-              />
-              Copper
-            </button>
-            <button
-              data-resource="nickel"
-              id="tab-resource-nickel"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/nickel/Ni.png"
-                alt="Nickel"
-                class="tab-icon-img"
-              />
-              Nickel
-            </button>
-            <button
-              data-resource="bronze"
-              id="tab-resource-bronze"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/bronze/bronze.png"
-                alt="Bronze"
-                class="tab-icon-img"
-              />
-              Bronze
-            </button>
-            <button
-              data-resource="silver"
-              id="tab-resource-silver"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/silver/Ag.png"
-                alt="Silver"
-                class="tab-icon-img"
-              />
-              Silver
-            </button>
-            <button
-              data-resource="cobalt"
-              id="tab-resource-cobalt"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/cobalt/Co.png"
-                alt="Cobalt"
-                class="tab-icon-img"
-              />
-              Cobalt
-            </button>
-            <button
-              data-resource="gold"
-              id="tab-resource-gold"
-              class="resource-tab locked"
-            >
-              <img src="images/gold/Au.png" alt="Gold" class="tab-icon-img" />
-              Gold
-            </button>
-            <button
-              data-resource="palladium"
-              id="tab-resource-palladium"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/palladium/Pd.png"
-                alt="Palladium"
-                class="tab-icon-img"
-              />
-              Palladium
-            </button>
-            <button
-              data-resource="platinum"
-              id="tab-resource-platinum"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/platinum/Pt.png"
-                alt="Platinum"
-                class="tab-icon-img"
-              />
-              Platinum
-            </button>
-            <button
-              data-resource="titanium"
-              id="tab-resource-titanium"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/titanium/Ti.png"
-                alt="Titanium"
-                class="tab-icon-img"
-              />
-              Titanium
-            </button>
-            <button
-              data-resource="adamantium"
-              id="tab-resource-adamantium"
-              class="resource-tab locked"
-            >
-              <img
-                src="images/adamantium/Ad.png"
-                alt="Adamantium"
-                class="tab-icon-img"
-              />
-              Adamantium
-            </button>
+          <!-- Resource filter dropdown (inside the shop screen) -->
+          <div class="resource-filter-container">
+            <label for="resource-filter-select" class="resource-filter-label">
+              <span class="material-icons">filter_list</span>
+              Filter by Resource:
+            </label>
+            <select id="resource-filter-select" class="resource-filter-select">
+              <option value="iron" data-resource="iron">🔩 Iron</option>
+              <option
+                value="copper"
+                data-resource="copper"
+                class="locked-option"
+                disabled
+              >
+                🟫 Copper (Locked)
+              </option>
+              <option
+                value="nickel"
+                data-resource="nickel"
+                class="locked-option"
+                disabled
+              >
+                ⚪ Nickel (Locked)
+              </option>
+              <option
+                value="bronze"
+                data-resource="bronze"
+                class="locked-option"
+                disabled
+              >
+                🟤 Bronze (Locked)
+              </option>
+              <option
+                value="silver"
+                data-resource="silver"
+                class="locked-option"
+                disabled
+              >
+                ⚪ Silver (Locked)
+              </option>
+              <option
+                value="cobalt"
+                data-resource="cobalt"
+                class="locked-option"
+                disabled
+              >
+                🔵 Cobalt (Locked)
+              </option>
+              <option
+                value="gold"
+                data-resource="gold"
+                class="locked-option"
+                disabled
+              >
+                🟨 Gold (Locked)
+              </option>
+              <option
+                value="palladium"
+                data-resource="palladium"
+                class="locked-option"
+                disabled
+              >
+                ⚪ Palladium (Locked)
+              </option>
+              <option
+                value="platinum"
+                data-resource="platinum"
+                class="locked-option"
+                disabled
+              >
+                ⚪ Platinum (Locked)
+              </option>
+              <option
+                value="titanium"
+                data-resource="titanium"
+                class="locked-option"
+                disabled
+              >
+                🔘 Titanium (Locked)
+              </option>
+              <option
+                value="adamantium"
+                data-resource="adamantium"
+                class="locked-option"
+                disabled
+              >
+                ⚫ Adamantium (Locked)
+              </option>
+            </select>
           </div>
 
           <ul id="shop-list">
