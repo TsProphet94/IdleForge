@@ -2,6 +2,10 @@
 import { resources, RES_IDS, shopItems, stats } from './data.js';
 import { unlockState, coreUpgrades, autoSaveInterval, gameStarted } from './state.js';
 
+// Version control constants (defined early for use throughout module)
+const GAME_VERSION = "0.1.37"; // ⚡ UPDATE THIS WITH EACH RELEASE
+const RESET_SAVES_ON_VERSION_CHANGE = false; // ⚡ Set to true for major updates, false for minor
+
 // Performance: Centralized localStorage manager with batch operations
 class LocalStorageManager {
   constructor() {
@@ -78,10 +82,6 @@ class LocalStorageManager {
 }
 
 export const storageManager = new LocalStorageManager();
-
-// Game constants
-const GAME_VERSION = "0.1.36";
-const RESET_SAVES_ON_VERSION_CHANGE = false;
 
 // Check if localStorage is available
 export function isLocalStorageAvailable() {
@@ -350,8 +350,7 @@ const DEPLOYMENT_SAVE_WIPE = {
 };
 
 // Version control constants
-const GAME_VERSION = "0.1.37"; // ⚡ UPDATE THIS WITH EACH RELEASE
-const RESET_SAVES_ON_VERSION_CHANGE = false; // ⚡ Set to true for major updates, false for minor
+// (Moved to top of file)
 
 // Log version info
 console.log(
