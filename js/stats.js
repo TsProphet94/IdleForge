@@ -1,17 +1,11 @@
 // js/stats.js - Statistics UI updates and milestone tracking
-import { stats, RES_IDS } from './data.js';
+import { stats, RES_IDS, MILESTONE_THRESHOLDS, MILESTONE_LABELS, MILESTONE_MULTIPLIERS } from './data.js';
 import { fmt, isUnlocked } from './resources.js';
 import { setText } from './ui.js';
 
 // ───────────────────────────────────────────────────────────────────────────
-// MILESTONE CONSTANTS
+// MILESTONE STATE (constants moved to data.js)
 // ───────────────────────────────────────────────────────────────────────────
-
-export const MILESTONE_THRESHOLDS = [100, 1000, 10000, 100000, 1000000];
-export const MILESTONE_LABELS = ["100", "1K", "10K", "100K", "1M"];
-
-// Multipliers for each milestone tier
-export const MILESTONE_MULTIPLIERS = [1.2, 1.5, 1.8, 2, 2.5];
 
 // Track which rewards have been applied per resource & tier
 export const milestoneRewardsApplied = RES_IDS.reduce((acc, res) => {

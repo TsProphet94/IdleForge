@@ -129,3 +129,13 @@ export function setLastActive(value) {
 export function setDebugMode(value) {
   debugMode = value;
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// MILESTONE CONSTANTS (moved from stats.js to break circular dependency)
+// ───────────────────────────────────────────────────────────────────────────
+
+export const MILESTONE_THRESHOLDS = [100, 1000, 10000, 100000, 1000000];
+export const MILESTONE_LABELS = ["100", "1K", "10K", "100K", "1M"];
+
+// Multipliers for each milestone tier
+export const MILESTONE_MULTIPLIERS = [1.2, 1.5, 1.8, 2, 2.5];

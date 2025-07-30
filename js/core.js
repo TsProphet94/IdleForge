@@ -1,8 +1,8 @@
 // js/core.js - Prestige and core upgrades logic
-import { resources, stats, RES_IDS, ensureShopItemsInitialized } from './data.js';
+import { resources, stats, RES_IDS, ensureShopItemsInitialized, MILESTONE_THRESHOLDS } from './data.js';
 import { fmt, addCoreShards, spendCoreShards, nickelUnlocked, setUnlockState } from './resources.js';
 import { modalSystem, UI_ELEMENTS } from './ui.js';
-import { MILESTONE_THRESHOLDS, milestoneMultipliers } from './stats.js';
+import { milestoneMultipliers } from './stats.js';
 
 // ───────────────────────────────────────────────────────────────────────────
 // PRESTIGE & CORE STATE
@@ -394,13 +394,7 @@ export function updateCoreUI() {
       </div>
       <div class="upgrade-actions">
         ${upgrade.level < upgrade.maxLevel ? 
-          `<button 
-            onclick="purchaseForgeCore('${upgradeId}')" 
-            ${canAfford ? '' : 'disabled'}
-            class="upgrade-btn ${canAfford ? 'affordable' : ''}"
-          >
-            Buy (${fmt(cost)} Core Shards)
-          </button>` :
+          `<button onclick="purchaseForgeCore('${upgradeId}')" ${canAfford ? '' : 'disabled'} class="upgrade-btn ${canAfford ? 'affordable' : ''}">Buy (${fmt(cost)} Core Shards)</button>` :
           `<button disabled class="upgrade-btn maxed">Maxed</button>`
         }
       </div>
@@ -420,7 +414,24 @@ export function updateCoreUI() {
 // ───────────────────────────────────────────────────────────────────────────
 
 function stopAutoSell(resId) {
-  // Will be implemented in resources.js
+  clearInterval(autoSellTimers[resId]);
+  clearInterval(countdownTimers[resId]);
+
+  // Clean up progress bar
+  const progressBar = document.getElementById(`autosell-progress-${resId}`);
+  if (progressBar) {
+    progressBar.remove();
+  }
+
+  // Remove visual states
+  const timerEl = document.getElementById(`sell-timer-${resId}`);
+  if (timerEl) {
+    timerEl.classList.remove(
+      "autosell-urgent",
+      "autosell-ready",
+      "autosell-success"
+    );
+  }
 }
 
 // ───────────────────────────────────────────────────────────────────────────
