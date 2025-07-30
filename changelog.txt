@@ -1,3 +1,13 @@
+v0.1.38 – Header Sticky & CSS Fixes
+
+•   FIXED: Ensured header remains sticky across all screen widths, orientations, and PWA modes.
+•   FIXED: Corrected header positioning in landscape and very small screen media queries in layout.css and responsive.css.
+•   FIXED: Removed unintended position: relative overrides causing header to lose sticky behavior.
+•   IMPROVED: Unified header z-index and safe-area inset handling across CSS modules.
+•   TECHNICAL: Audited and refactored header CSS declarations for consistency and maintainability.
+
+-------------------------------------
+
 v0.1.37 – Mobile UX Fixes & Developer Save Reset Tools!
 
 •   FIXED: Resolved mobile header double-height issue that was causing layout problems on iPhone and Android devices.
