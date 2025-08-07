@@ -48,20 +48,22 @@ const milestoneMultipliers = RES_IDS.reduce((acc, res) => {
   return acc;
 }, {});
 
-// Game state variables
-let currentResource = "iron";
-let copperUnlocked = false;
-let nickelUnlocked = false;
-let bronzeUnlocked = false;
-let silverUnlocked = false;
-let cobaltUnlocked = false;
-let goldUnlocked = false;
-let palladiumUnlocked = false;
-let platinumUnlocked = false;
-let titaniumUnlocked = false;
-let adamantiumUnlocked = false;
-let prestigeUnlocked = false;
-let gameStarted = false;
+// Game state variables - using object to allow mutation across modules
+const gameState = {
+  currentResource: "iron",
+  copperUnlocked: false,
+  nickelUnlocked: false,
+  bronzeUnlocked: false,
+  silverUnlocked: false,
+  cobaltUnlocked: false,
+  goldUnlocked: false,
+  palladiumUnlocked: false,
+  platinumUnlocked: false,
+  titaniumUnlocked: false,
+  adamantiumUnlocked: false,
+  prestigeUnlocked: false,
+  gameStarted: false
+};
 
 // Lifetime/global stats
 const stats = {
@@ -111,25 +113,25 @@ function isUnlocked(resId) {
     case "iron":
       return true;
     case "copper":
-      return copperUnlocked;
+      return gameState.copperUnlocked;
     case "nickel":
-      return nickelUnlocked;
+      return gameState.nickelUnlocked;
     case "bronze":
-      return bronzeUnlocked;
+      return gameState.bronzeUnlocked;
     case "silver":
-      return silverUnlocked;
+      return gameState.silverUnlocked;
     case "cobalt":
-      return cobaltUnlocked;
+      return gameState.cobaltUnlocked;
     case "gold":
-      return goldUnlocked;
+      return gameState.goldUnlocked;
     case "palladium":
-      return palladiumUnlocked;
+      return gameState.palladiumUnlocked;
     case "platinum":
-      return platinumUnlocked;
+      return gameState.platinumUnlocked;
     case "titanium":
-      return titaniumUnlocked;
+      return gameState.titaniumUnlocked;
     case "adamantium":
-      return adamantiumUnlocked;
+      return gameState.adamantiumUnlocked;
     default:
       return false;
   }
@@ -153,19 +155,7 @@ export {
   MILESTONE_MULTIPLIERS,
   milestoneRewardsApplied,
   milestoneMultipliers,
-  currentResource,
-  copperUnlocked,
-  nickelUnlocked,
-  bronzeUnlocked,
-  silverUnlocked,
-  cobaltUnlocked,
-  goldUnlocked,
-  palladiumUnlocked,
-  platinumUnlocked,
-  titaniumUnlocked,
-  adamantiumUnlocked,
-  prestigeUnlocked,
-  gameStarted,
+  gameState,
   stats,
   resources,
   shopItems,
